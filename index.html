@@ -410,11 +410,6 @@ async function doLogin() {
   saveSession(result, rememberMe);
   showToast('Login successful! Redirecting...', 'success');
 
-  if (result.forceChangePassword) {
-    setTimeout(() => showPanel('changePasswordPanel'), 800);
-    return;
-  }
-
   setTimeout(() => {
     if (result.user.role === 'admin') {
       window.location.href = 'admin.html';
@@ -452,8 +447,19 @@ async function doRegister() {
     return;
   }
 
-  showToast('Registration submitted! Please wait for administrator approval.', 'success');
-  setTimeout(() => showPanel('loginPanel'), 2000);
+  // Auto-login after registration
+  showToast('Account created! Logging in...', 'success');
+  const loginResult = await callAPI({action:'login', email, password, rememberMe:false});
+  if(loginResult.success){
+    saveSession(loginResult, false);
+    setTimeout(()=>{
+      if(loginResult.user.role==='admin') window.location.href='admin.html';
+      else window.location.href='app.html';
+    }, 1000);
+  } else {
+    showToast('Account created! Please login.', 'success');
+    setTimeout(() => showPanel('loginPanel'), 1500);
+  }
 }
 
 /* ══ CHANGE PASSWORD ══ */
