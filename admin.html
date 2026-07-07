@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#7b0d0d">
+<title>RTC Cost Analysis — Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<!-- Instant session check -->
+<script>
+(function(){
+  var ls=localStorage.getItem('rtc_session');
+  var ss=sessionStorage.getItem('rtc_session');
+  var raw=ls||ss;
+  if(!raw){window.location.replace('index.html');return;}
+  try{
+    var s=JSON.parse(raw);
+    if(!s||!s.token){window.location.replace('index.html');return;}
+    if(!s.user||s.user.role!=='admin'){window.location.replace('app.html');return;}
+  }catch(e){window.location.replace('index.html');}
+})();
+</script>
+<style>
+:root{--maroon:#7b0d0d;--maroon-light:#a01515;--maroon-pale:#fdf3f3;--dark:#1a1a2e;--gray:#6b7280;--border:#e5e7eb;--bg:#f7f8fc;--white:#ffffff;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--dark);min-height:100vh;}
+
+/* HEADER */
+.app-header{background:var(--white);border-bottom:3px solid var(--maroon);padding:10px 24px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 2px 10px rgba(123,13,13,.08);position:sticky;top:0;z-index:100;}
+.header-left{display:flex;align-items:center;gap:12px;}
+.logo-placeholder{height:36px;width:36px;background:var(--maroon);border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.8rem;flex-shrink:0;}
+.header-logo{height:36px;width:36px;object-fit:contain;border-radius:5px;display:none;}
+.rtc-title{font-family:'Playfair Display',serif;color:var(--maroon);font-size:1.2rem;font-weight:900;}
+.rtc-sub{font-size:.65rem;color:var(--gray);display:block;}
+.admin-badge{background:var(--maroon);color:#fff;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:6px;vertical-align:middle;}
+
+/* USER MENU */
+.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;cursor:pointer;overflow:hidden;border:2px solid var(--maroon-pale);}
+.user-avatar img{width:100%;height:100%;object-fit:cover;}
+.user-dropdown{position:relative;}
+.user-menu{position:absolute;right:0;top:calc(100%+8px);background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.1);min-width:200px;z-index:999;display:none;overflow:hidden;}
+.user-menu.open{display:block;}
+.user-menu-header{padding:12px 16px;background:var(--maroon-pale);border-bottom:1px solid var(--border);}
+.user-menu-item{padding:10px 16px;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;}
+.user-menu-item:hover{background:var(--maroon-pale);color:var(--maroon);}
+.user-menu-item.danger{color:#991b1b;}
+.user-menu-item.danger:hover{background:#fee2e2;}
+
+/* LAYOUT */
+.admin-wrap{display:flex;min-height:calc(100vh - 61px);}
+
+/* SIDEBAR */
+.sidebar{width:220px;background:var(--white);border-right:1px solid var(--border);padding:16px 0;flex-shrink:0;position:sticky;top:61px;height:calc(100vh - 61px);overflow-y:auto;}
+.sidebar-section{padding:0 12px;margin-bottom:6px;}
+.sidebar-label{font-size:.62rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;padding:8px 8px 4px;}
+.sidebar-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--dark);transition:all .15s;margin-bottom:2px;}
+.sidebar-item:hover{background:var(--maroon-pale);color:var(--maroon);}
+.sidebar-item.active{background:var(--maroon);color:#fff;}
+.sidebar-badge{margin-left:auto;background:#fee2e2;color:#991b1b;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:8px;}
+.sidebar-item.active .sidebar-badge{background:rgba(255,255,255,.3);color:#fff;}
+
+/* MAIN */
+.admin-main{flex:1;padding:20px 24px;overflow-x:hidden;}
+.page{display:none;}
+.page.active{display:block;}
+.page-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--maroon);margin-bottom:16px;}
+
+/* SUMMARY CARDS */
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.summary-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.summary-card-label{font-size:.68rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
+.summary-card-val{font-size:1.4rem;font-weight:700;color:var(--dark);line-height:1.2;}
+.summary-card-val.green{color:#166534;}
+.summary-card-val.maroon{color:var(--maroon);}
+.summary-card-sub{font-size:.7rem;color:var(--gray);margin-top:4px;}
+
+/* FILTERS */
+.filters-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
+.filter-btn{padding:6px 14px;border-radius:7px;font-size:.76rem;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.filter-btn:hover{border-color:var(--maroon);color:var(--maroon);}
+.filter-btn.active{background:var(--maroon);color:#fff;border-color:var(--maroon);}
+.filter-dept{border:1.5px solid var(--border);border-radius:7px;padding:6px 12px;font-size:.76rem;outline:none;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--white);cursor:pointer;}
+.filter-dept:focus{border-color:var(--maroon);}
+.search-box{position:relative;flex:1;min-width:180px;}
+.search-box input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;font-size:.78rem;outline:none;font-family:'DM Sans',sans-serif;}
+.search-box input:focus{border-color:var(--maroon);}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.8rem;}
+
+/* TABLE */
+.data-table{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--white);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);}
+.data-table thead tr{background:var(--maroon);}
+.data-table thead th{color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:.72rem;letter-spacing:.2px;white-space:nowrap;}
+.data-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
+.data-table tbody tr:hover{background:var(--maroon-pale);}
+.data-table tbody td{padding:10px 12px;vertical-align:middle;}
+.data-table tbody tr:last-child{border-bottom:none;}
+
+/* STATUS BADGE */
+.badge{padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.3px;}
+.badge-active{background:#dcfce7;color:#166534;}
+.badge-inactive{background:#f3f4f6;color:#6b7280;}
+.badge-pending{background:#fef9c3;color:#854d0e;}
+.badge-rejected{background:#fee2e2;color:#991b1b;}
+.badge-Draft{background:#f3f4f6;color:#374151;}
+.badge-Submitted{background:#dbeafe;color:#1e40af;}
+.badge-Approved{background:#dcfce7;color:#166534;}
+.badge-Rejected{background:#fee2e2;color:#991b1b;}
+.badge-Archived{background:#f9fafb;color:#9ca3af;}
+
+/* ACTION BUTTONS */
+.btn-sm{padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.btn-approve{background:#dcfce7;color:#166534;}
+.btn-approve:hover{background:#166534;color:#fff;}
+.btn-reject{background:#fee2e2;color:#991b1b;}
+.btn-reject:hover{background:#991b1b;color:#fff;}
+.btn-reset{background:#fef9c3;color:#854d0e;}
+.btn-reset:hover{background:#854d0e;color:#fff;}
+.btn-toggle{background:#f3f4f6;color:#374151;}
+.btn-toggle:hover{background:#374151;color:#fff;}
+.btn-view{background:var(--maroon-pale);color:var(--maroon);}
+.btn-view:hover{background:var(--maroon);color:#fff;}
+
+/* DETAIL PANEL */
+.detail-panel{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;display:none;}
+.detail-panel.open{display:block;}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:16px;}
+.detail-item label{font-size:.65rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:2px;}
+.detail-item span{font-size:.84rem;font-weight:600;color:var(--dark);}
+.detail-item span.green{color:#166534;}
+
+/* LOGO UPLOAD */
+.logo-upload-wrap{display:flex;align-items:center;gap:16px;padding:16px;background:var(--maroon-pale);border-radius:10px;border:1px solid #fca5a5;margin-bottom:16px;}
+.logo-preview{width:60px;height:60px;border-radius:8px;object-fit:contain;background:var(--white);border:1px solid var(--border);padding:4px;}
+.logo-placeholder-lg{width:60px;height:60px;border-radius:8px;background:var(--maroon);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;}
+.btn-upload-logo{background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-remove-logo{background:#fee2e2;color:#991b1b;border:none;border-radius:8px;padding:8px 16px;font-size:.8rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--white);border-radius:12px;padding:24px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.15);}
+.modal-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--maroon);margin-bottom:16px;}
+.modal-body{font-size:.84rem;color:var(--dark);margin-bottom:20px;line-height:1.6;}
+.modal-actions{display:flex;gap:8px;justify-content:flex-end;}
+.btn-cancel{background:transparent;border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--gray);}
+.btn-confirm{background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-confirm.danger{background:#dc3545;}
+
+/* TOAST */
+.toast-container{position:fixed;top:16px;right:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;}
+.toast{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:.82rem;box-shadow:0 4px 16px rgba(0,0,0,.12);display:flex;align-items:center;gap:10px;min-width:260px;max-width:340px;animation:slideIn .3s ease;}
+.toast.success{border-left:4px solid #166534;}
+.toast.error{border-left:4px solid #dc3545;}
+.toast.info{border-left:4px solid var(--maroon);}
+@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+
+/* SPINNER */
+.spinner-sm{width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--maroon);border-radius:50%;animation:spin .7s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* MOBILE */
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .admin-main{padding:14px 12px;}
+  .summary-grid{grid-template-columns:repeat(2,1fr);}
+}
+@media(max-width:480px){
+  .summary-grid{grid-template-columns:1fr 1fr;}
+  .filters-bar{flex-direction:column;align-items:stretch;}
+  .app-header{padding:10px 14px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+  <div class="header-left">
+    <div>
+      <div class="logo-placeholder" id="logoPlaceholder">RTC</div>
+      <img id="logoImg" class="header-logo" src="" alt="Logo">
+    </div>
+    <div>
+      <div class="rtc-title">RTC Cost Analysis <span class="admin-badge">ADMIN</span></div>
+      <span class="rtc-sub">Ramesh Trading Corporation</span>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div class="user-dropdown">
+      <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">A</div>
+      <div class="user-menu" id="userMenu">
+        <div class="user-menu-header">
+          <div style="font-weight:600;font-size:.85rem;" id="menuName">Admin</div>
+          <div style="font-size:.7rem;color:var(--gray);" id="menuEmail"></div>
+        </div>
+        <div class="user-menu-item danger" onclick="doLogout()">🚪 Logout</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="admin-wrap">
+
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Overview</div>
+      <div class="sidebar-item active" onclick="showPage('pageDashboard',this)">📊 Dashboard</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Users</div>
+      <div class="sidebar-item" onclick="showPage('pageUsers',this)">👥 All Users</div>
+      <div class="sidebar-item" onclick="showPage('pagePending',this)">⏳ Pending
+        <span class="sidebar-badge" id="pendingBadge">0</span>
+      </div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Quotations</div>
+      <div class="sidebar-item" onclick="showPage('pageQuotations',this)">📄 All Quotations</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Settings</div>
+      <div class="sidebar-item" onclick="showPage('pageSettings',this)">⚙️ System Settings</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="admin-main">
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="pageDashboard">
+      <div class="page-title">Dashboard</div>
+
+      <div class="summary-grid" id="summaryGrid">
+        <div class="summary-card"><div class="summary-card-label">Total Users</div><div class="summary-card-val maroon" id="statUsers">—</div><div class="summary-card-sub">Active accounts</div></div>
+        <div class="summary-card"><div class="summary-card-label">Total Quotations</div><div class="summary-card-val" id="statQuotes">—</div><div class="summary-card-sub">All time</div></div>
+        <div class="summary-card"><div class="summary-card-label">Total Selling</div><div class="summary-card-val green" id="statSelling">—</div><div class="summary-card-sub">All quotations</div></div>
+        <div class="summary-card"><div class="summary-card-label">Total Cost</div><div class="summary-card-val" id="statCost">—</div><div class="summary-card-sub">All quotations</div></div>
+        <div class="summary-card"><div class="summary-card-label">Avg Net Margin</div><div class="summary-card-val" id="statMargin">—</div><div class="summary-card-sub">Across all quotes</div></div>
+        <div class="summary-card"><div class="summary-card-label">Pending Approvals</div><div class="summary-card-val maroon" id="statPending">—</div><div class="summary-card-sub">New registrations</div></div>
+      </div>
+
+      <!-- PER USER TABLE -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+        <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--maroon);">Quotations Per User</div>
+        <div class="filters-bar" style="margin-bottom:0;">
+          <button class="filter-btn active" onclick="filterDate('all',this)">All Time</button>
+          <button class="filter-btn" onclick="filterDate('today',this)">Today</button>
+          <button class="filter-btn" onclick="filterDate('week',this)">This Week</button>
+          <button class="filter-btn" onclick="filterDate('month',this)">This Month</button>
+          <select class="filter-dept" id="deptFilter" onchange="renderUserStats()">
+            <option value="">All Departments</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <table class="data-table">
+          <thead><tr>
+            <th>User</th><th>Department</th><th># Quotes</th>
+            <th>Total Selling</th><th>Total Cost</th><th>Net Profit</th><th>Action</th>
+          </tr></thead>
+          <tbody id="userStatsTable"><tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray);"><div class="spinner-sm"></div> Loading...</td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- USER QUOTES DETAIL -->
+      <div class="detail-panel" id="userDetailPanel">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--maroon);" id="detailUserName">User Quotations</div>
+          <button onclick="closeDetail()" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:1.1rem;">✕</button>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="data-table">
+            <thead><tr>
+              <th>Quote No</th><th>Client</th><th>Date</th><th>Status</th>
+              <th>Total Selling</th><th>Total Cost</th><th>Net Profit</th><th>Net Margin</th>
+            </tr></thead>
+            <tbody id="userQuotesTable"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALL USERS PAGE -->
+    <div class="page" id="pageUsers">
+      <div class="page-title">All Users</div>
+      <div class="filters-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search users..." id="userSearch" oninput="renderUsers()">
+        </div>
+        <select class="filter-dept" id="userDeptFilter" onchange="renderUsers()">
+          <option value="">All Departments</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <table class="data-table">
+          <thead><tr>
+            <th>Name</th><th>Email</th><th>Department</th><th>Role</th>
+            <th>Status</th><th>Last Login</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="usersTable"><tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray);"><div class="spinner-sm"></div> Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- PENDING USERS PAGE -->
+    <div class="page" id="pagePending">
+      <div class="page-title">Pending Registrations</div>
+      <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <table class="data-table">
+          <thead><tr>
+            <th>Name</th><th>Email</th><th>Department</th><th>Registered</th><th>Actions</th>
+          </tr></thead>
+          <tbody id="pendingTable"><tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray);"><div class="spinner-sm"></div> Loading...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ALL QUOTATIONS PAGE -->
+    <div class="page" id="pageQuotations">
+      <div class="page-title">All Quotations</div>
+      <div class="filters-bar">
+        <div class="search-box">
+          <span class="search-icon">🔍</span>
+          <input type="text" placeholder="Search quotations..." id="quoteSearch" oninput="renderAllQuotes()">
+        </div>
+        <select class="filter-dept" id="quoteDeptFilter" onchange="renderAllQuotes()">
+          <option value="">All Departments</option>
+        </select>
+        <select class="filter-dept" id="quoteStatusFilter" onchange="renderAllQuotes()">
+          <option value="">All Statuses</option>
+          <option>Draft</option><option>Submitted</option>
+          <option>Approved</option><option>Rejected</option><option>Archived</option>
+        </select>
+        <button class="filter-btn active" onclick="filterQuoteDate('all',this)">All Time</button>
+        <button class="filter-btn" onclick="filterQuoteDate('today',this)">Today</button>
+        <button class="filter-btn" onclick="filterQuoteDate('week',this)">This Week</button>
+        <button class="filter-btn" onclick="filterQuoteDate('month',this)">This Month</button>
+      </div>
+      <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <table class="data-table">
+          <thead><tr>
+            <th>Quote No</th><th>Owner</th><th>Client</th><th>Date</th><th>Status</th>
+            <th>Total Selling</th><th>Total Cost</th><th>Net Profit</th><th>Net Margin</th>
+          </tr></thead>
+          <tbody id="allQuotesTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SETTINGS PAGE -->
+    <div class="page" id="pageSettings">
+      <div class="page-title">System Settings</div>
+
+      <!-- LOGO -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <div style="font-weight:700;font-size:.9rem;margin-bottom:14px;color:var(--dark);">Company Logo</div>
+        <div class="logo-upload-wrap">
+          <div id="logoPreviewWrap">
+            <div class="logo-placeholder-lg" id="logoSettingsPlaceholder">RTC</div>
+            <img id="logoSettingsImg" class="logo-preview" src="" alt="Logo" style="display:none;">
+          </div>
+          <div>
+            <div style="font-size:.84rem;font-weight:600;margin-bottom:4px;">Upload Company Logo</div>
+            <div style="font-size:.74rem;color:var(--gray);margin-bottom:10px;">Appears on all pages. Recommended: square image, min 100×100px.</div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn-upload-logo" onclick="document.getElementById('logoFileInput').click()">📁 Upload Logo</button>
+              <button class="btn-remove-logo" onclick="removeLogo()">✕ Remove</button>
+            </div>
+            <input type="file" id="logoFileInput" accept="image/*" style="display:none;" onchange="handleLogoUpload(this)">
+          </div>
+        </div>
+      </div>
+
+      <!-- ADD USER -->
+      <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
+        <div style="font-weight:700;font-size:.9rem;margin-bottom:14px;color:var(--dark);">Add User Manually</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:12px;">
+          <div>
+            <label style="font-size:.72rem;font-weight:600;color:var(--maroon);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Full Name</label>
+            <input type="text" id="addName" placeholder="Juan Dela Cruz" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.84rem;width:100%;outline:none;font-family:'DM Sans',sans-serif;">
+          </div>
+          <div>
+            <label style="font-size:.72rem;font-weight:600;color:var(--maroon);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Email</label>
+            <input type="email" id="addEmail" placeholder="juan@rameshtrading.com.ph" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.84rem;width:100%;outline:none;font-family:'DM Sans',sans-serif;">
+          </div>
+          <div>
+            <label style="font-size:.72rem;font-weight:600;color:var(--maroon);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Department</label>
+            <input type="text" id="addDept" placeholder="Corporate Sales" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.84rem;width:100%;outline:none;font-family:'DM Sans',sans-serif;">
+          </div>
+          <div>
+            <label style="font-size:.72rem;font-weight:600;color:var(--maroon);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;">Role</label>
+            <select id="addRole" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.84rem;width:100%;outline:none;font-family:'DM Sans',sans-serif;background:var(--white);">
+              <option value="user">User</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+        </div>
+        <div style="font-size:.74rem;color:var(--gray);margin-bottom:12px;">Default password: <strong>ChangeMe123!</strong> — user will be required to change on first login.</div>
+        <button onclick="addUserManually()" style="background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:9px 20px;font-size:.84rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;">➕ Add User</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CONFIRM MODAL -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-title" id="confirmTitle">Confirm Action</div>
+    <div class="modal-body" id="confirmBody">Are you sure?</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="btn-confirm" id="confirmBtn" onclick="executeConfirm()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+const API_URL = 'https://script.google.com/macros/s/AKfycbyNB0bS_5Yqf4k39d7QX3GsyR-VbE7Dud75OeioRdKHla1j7pDXvs6zZHSyPF92Zd9yEA/exec';
+
+let session = null;
+let adminData = null;
+let currentDateFilter = 'all';
+let currentQuoteDateFilter = 'all';
+let confirmCallback = null;
+
+/* SESSION */
+function getSession(){const ls=localStorage.getItem('rtc_session');const ss=sessionStorage.getItem('rtc_session');const raw=ls||ss;if(!raw)return null;try{return JSON.parse(raw);}catch(e){return null;}}
+function clearSession(){localStorage.removeItem('rtc_session');sessionStorage.removeItem('rtc_session');}
+
+/* API */
+async function callAPI(data){
+  try{const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return await res.json();}
+  catch(e){return{success:false,message:'Connection failed.'};}
+}
+
+/* TOAST */
+function showToast(msg,type='info'){
+  const icons={success:'✅',error:'❌',info:'ℹ️'};
+  const t=document.createElement('div');
+  t.className='toast '+type;
+  t.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;
+  document.getElementById('toastContainer').appendChild(t);
+  setTimeout(()=>t.remove(),4000);
+}
+
+/* PESO */
+function peso(v){return Number(v||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+/* DATE FORMAT */
+function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});}
+
+/* LOGO */
+function loadLogo(){
+  const logo=localStorage.getItem('rtc_logo');
+  if(logo){
+    document.getElementById('logoImg').src=logo;
+    document.getElementById('logoImg').style.display='block';
+    document.getElementById('logoPlaceholder').style.display='none';
+    document.getElementById('logoSettingsImg').src=logo;
+    document.getElementById('logoSettingsImg').style.display='block';
+    document.getElementById('logoSettingsPlaceholder').style.display='none';
+  }
+}
+
+function handleLogoUpload(input){
+  if(!input.files||!input.files[0])return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const img=new Image();
+    img.onload=()=>{
+      const canvas=document.createElement('canvas');
+      const max=200;let w=img.width,h=img.height;
+      if(w>h){if(w>max){h=h*max/w;w=max;}}else{if(h>max){w=w*max/h;h=max;}}
+      canvas.width=w;canvas.height=h;
+      canvas.getContext('2d').drawImage(img,0,0,w,h);
+      const compressed=canvas.toDataURL('image/png',0.9);
+      localStorage.setItem('rtc_logo',compressed);
+      document.getElementById('logoImg').src=compressed;
+      document.getElementById('logoImg').style.display='block';
+      document.getElementById('logoPlaceholder').style.display='none';
+      document.getElementById('logoSettingsImg').src=compressed;
+      document.getElementById('logoSettingsImg').style.display='block';
+      document.getElementById('logoSettingsPlaceholder').style.display='none';
+      showToast('Logo updated!','success');
+    };
+    img.src=e.target.result;
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function removeLogo(){
+  localStorage.removeItem('rtc_logo');
+  document.getElementById('logoImg').style.display='none';
+  document.getElementById('logoPlaceholder').style.display='flex';
+  document.getElementById('logoSettingsImg').style.display='none';
+  document.getElementById('logoSettingsPlaceholder').style.display='flex';
+  showToast('Logo removed.','info');
+}
+
+/* USER MENU */
+function toggleUserMenu(){document.getElementById('userMenu').classList.toggle('open');}
+document.addEventListener('click',e=>{if(!e.target.closest('.user-dropdown'))document.getElementById('userMenu').classList.remove('open');});
+
+/* SIDEBAR */
+function showPage(pageId,item){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(s=>s.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  if(item)item.classList.add('active');
+}
+
+/* CONFIRM MODAL */
+function showConfirm(title,body,cb,danger=false){
+  document.getElementById('confirmTitle').textContent=title;
+  document.getElementById('confirmBody').textContent=body;
+  document.getElementById('confirmBtn').className='btn-confirm'+(danger?' danger':'');
+  confirmCallback=cb;
+  document.getElementById('confirmModal').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirmModal').classList.remove('open');confirmCallback=null;}
+function executeConfirm(){if(confirmCallback)confirmCallback();closeConfirm();}
+
+/* DATE FILTER HELPER */
+function inDateRange(dateStr,range){
+  if(range==='all')return true;
+  const d=new Date(dateStr);const now=new Date();
+  if(range==='today'){return d.toDateString()===now.toDateString();}
+  if(range==='week'){const w=new Date(now);w.setDate(now.getDate()-7);return d>=w;}
+  if(range==='month'){return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();}
+  return true;
+}
+
+/* ══ DASHBOARD ══ */
+function filterDate(range,btn){
+  currentDateFilter=range;
+  document.querySelectorAll('#pageDashboard .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderUserStats();
+}
+
+function renderUserStats(){
+  if(!adminData)return;
+  const dept=document.getElementById('deptFilter').value;
+  let stats=adminData.userStats||[];
+  if(dept)stats=stats.filter(u=>u.department===dept);
+
+  const filtered=stats.map(u=>{
+    const quotes=(u.quotes||[]).filter(q=>inDateRange(q.createdDate||q.lastModified,currentDateFilter));
+    return{...u,filteredQuotes:quotes,
+      filteredSelling:quotes.reduce((s,q)=>s+Number(q.totalSelling||0),0),
+      filteredCost:quotes.reduce((s,q)=>s+Number(q.totalCost||0),0),
+      filteredProfit:quotes.reduce((s,q)=>s+Number(q.netProfit||0),0)
+    };
+  }).filter(u=>u.filteredQuotes.length>0||currentDateFilter==='all');
+
+  const tbody=document.getElementById('userStatsTable');
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray);">No data found.</td></tr>';return;}
+
+  tbody.innerHTML=filtered.map(u=>`
+    <tr>
+      <td><div style="font-weight:600;">${u.name}</div><div style="font-size:.7rem;color:var(--gray);">${u.email}</div></td>
+      <td>${u.department||'—'}</td>
+      <td style="text-align:center;font-weight:700;">${u.filteredQuotes.length}</td>
+      <td style="color:#166534;font-weight:600;">₱${peso(u.filteredSelling)}</td>
+      <td>₱${peso(u.filteredCost)}</td>
+      <td style="font-weight:600;">₱${peso(u.filteredProfit)}</td>
+      <td><button class="btn-sm btn-view" onclick="showUserDetail('${u.email}')">View Quotes</button></td>
+    </tr>`).join('');
+}
+
+function showUserDetail(email){
+  const user=adminData.userStats.find(u=>u.email===email);
+  if(!user)return;
+  document.getElementById('detailUserName').textContent=user.name+' — Quotations';
+  const quotes=(user.quotes||[]).filter(q=>inDateRange(q.createdDate||q.lastModified,currentDateFilter));
+  const tbody=document.getElementById('userQuotesTable');
+  if(!quotes.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:16px;color:var(--gray);">No quotations found.</td></tr>';}
+  else{
+    tbody.innerHTML=quotes.map(q=>`
+      <tr>
+        <td>${q.quotationNumber||'—'}</td>
+        <td>${q.client||'—'}</td>
+        <td>${fmtDate(q.date)}</td>
+        <td><span class="badge badge-${q.status}">${q.status}</span></td>
+        <td style="color:#166534;font-weight:600;">₱${peso(q.totalSelling)}</td>
+        <td>₱${peso(q.totalCost)}</td>
+        <td>₱${peso(q.netProfit)}</td>
+        <td style="${Number(q.netMargin)>=20?'color:#166534;':'color:#991b1b;'}font-weight:600;">${Number(q.netMargin||0).toFixed(1)}%</td>
+      </tr>`).join('');
+  }
+  document.getElementById('userDetailPanel').classList.add('open');
+  document.getElementById('userDetailPanel').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function closeDetail(){document.getElementById('userDetailPanel').classList.remove('open');}
+
+/* ══ ALL USERS ══ */
+function renderUsers(){
+  if(!adminData)return;
+  const search=(document.getElementById('userSearch').value||'').toLowerCase();
+  const dept=document.getElementById('userDeptFilter').value;
+  let users=adminData.users.filter(u=>u.status!=='pending');
+  if(dept)users=users.filter(u=>u.department===dept);
+  if(search)users=users.filter(u=>(u.name||'').toLowerCase().includes(search)||(u.email||'').toLowerCase().includes(search));
+
+  const tbody=document.getElementById('usersTable');
+  if(!users.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray);">No users found.</td></tr>';return;}
+
+  tbody.innerHTML=users.map(u=>`
+    <tr>
+      <td><div style="font-weight:600;">${u.name}</div></td>
+      <td>${u.email}</td>
+      <td>${u.department||'—'}</td>
+      <td><span class="badge ${u.role==='admin'?'badge-Submitted':'badge-Draft'}">${u.role}</span></td>
+      <td><span class="badge badge-${u.status}">${u.status}</span></td>
+      <td style="font-size:.76rem;color:var(--gray);">${fmtDate(u.lastLogin)}</td>
+      <td style="display:flex;gap:4px;flex-wrap:wrap;">
+        <button class="btn-sm btn-reset" onclick="resetPw('${u.email}')">🔑 Reset PW</button>
+        <button class="btn-sm btn-toggle" onclick="toggleUser('${u.email}','${u.status}')">${u.status==='active'?'🚫 Deactivate':'✅ Activate'}</button>
+      </td>
+    </tr>`).join('');
+}
+
+async function resetPw(email){
+  showConfirm('Reset Password','Reset password for '+email+' to ChangeMe123!?',async()=>{
+    const result=await callAPI({action:'resetPassword',email:session.email,token:session.token,targetEmail:email});
+    if(!result.success){showToast(result.message,'error');return;}
+    showToast('Password reset to ChangeMe123!','success');
+  },false);
+}
+
+async function toggleUser(email,status){
+  const action=status==='active'?'deactivate':'activate';
+  showConfirm('Confirm','Are you sure you want to '+action+' this user?',async()=>{
+    const result=await callAPI({action:'toggleUserStatus',email:session.email,token:session.token,targetEmail:email});
+    if(!result.success){showToast(result.message,'error');return;}
+    showToast('User status updated.','success');
+    loadAdminData();
+  },status==='active');
+}
+
+/* ══ PENDING USERS ══ */
+function renderPending(){
+  if(!adminData)return;
+  const pending=adminData.users.filter(u=>u.status==='pending');
+  document.getElementById('pendingBadge').textContent=pending.length;
+  document.getElementById('statPending').textContent=pending.length;
+
+  const tbody=document.getElementById('pendingTable');
+  if(!pending.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray);">No pending registrations.</td></tr>';return;}
+
+  tbody.innerHTML=pending.map(u=>`
+    <tr>
+      <td><div style="font-weight:600;">${u.name}</div></td>
+      <td>${u.email}</td>
+      <td>${u.department||'—'}</td>
+      <td style="font-size:.76rem;color:var(--gray);">${fmtDate(u.createdDate)}</td>
+      <td style="display:flex;gap:6px;">
+        <button class="btn-sm btn-approve" onclick="approveUser('${u.email}')">✅ Approve</button>
+        <button class="btn-sm btn-reject" onclick="rejectUser('${u.email}')">❌ Reject</button>
+      </td>
+    </tr>`).join('');
+}
+
+async function approveUser(email){
+  showConfirm('Approve User','Approve registration for '+email+'?',async()=>{
+    const result=await callAPI({action:'approveUser',email:session.email,token:session.token,targetEmail:email});
+    if(!result.success){showToast(result.message,'error');return;}
+    showToast('User approved!','success');
+    loadAdminData();
+  },false);
+}
+
+async function rejectUser(email){
+  showConfirm('Reject User','Reject registration for '+email+'?',async()=>{
+    const result=await callAPI({action:'rejectUser',email:session.email,token:session.token,targetEmail:email});
+    if(!result.success){showToast(result.message,'error');return;}
+    showToast('User rejected.','info');
+    loadAdminData();
+  },true);
+}
+
+/* ══ ALL QUOTATIONS ══ */
+function filterQuoteDate(range,btn){
+  currentQuoteDateFilter=range;
+  document.querySelectorAll('#pageQuotations .filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderAllQuotes();
+}
+
+function renderAllQuotes(){
+  if(!adminData)return;
+  const search=(document.getElementById('quoteSearch').value||'').toLowerCase();
+  const dept=document.getElementById('quoteDeptFilter').value;
+  const status=document.getElementById('quoteStatusFilter').value;
+  let quotes=adminData.quotes||[];
+  if(dept)quotes=quotes.filter(q=>q.department===dept);
+  if(status)quotes=quotes.filter(q=>q.status===status);
+  if(search)quotes=quotes.filter(q=>(q.client||'').toLowerCase().includes(search)||(q.project||'').toLowerCase().includes(search)||(q.quotationNumber||'').toLowerCase().includes(search)||(q.ownerName||'').toLowerCase().includes(search));
+  quotes=quotes.filter(q=>inDateRange(q.createdDate||q.lastModified,currentQuoteDateFilter));
+
+  const tbody=document.getElementById('allQuotesTable');
+  if(!quotes.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray);">No quotations found.</td></tr>';return;}
+
+  tbody.innerHTML=quotes.map(q=>`
+    <tr>
+      <td>${q.quotationNumber||'—'}</td>
+      <td><div style="font-weight:600;">${q.ownerName}</div><div style="font-size:.7rem;color:var(--gray);">${q.department||'—'}</div></td>
+      <td>${q.client||'—'}</td>
+      <td style="font-size:.76rem;">${fmtDate(q.date)}</td>
+      <td><span class="badge badge-${q.status}">${q.status}</span></td>
+      <td style="color:#166534;font-weight:600;">₱${peso(q.totalSelling)}</td>
+      <td>₱${peso(q.totalCost)}</td>
+      <td>₱${peso(q.netProfit)}</td>
+      <td style="${Number(q.netMargin)>=20?'color:#166534;':'color:#991b1b;'}font-weight:600;">${Number(q.netMargin||0).toFixed(1)}%</td>
+    </tr>`).join('');
+}
+
+/* ══ ADD USER MANUALLY ══ */
+async function addUserManually(){
+  const name=document.getElementById('addName').value.trim();
+  const email=document.getElementById('addEmail').value.trim().toLowerCase();
+  const dept=document.getElementById('addDept').value.trim();
+  const role=document.getElementById('addRole').value;
+
+  if(!name||!email||!dept){showToast('Please fill all fields.','error');return;}
+  if(!email.endsWith('@rameshtrading.com.ph')){showToast('Only @rameshtrading.com.ph emails allowed.','error');return;}
+
+  const result=await callAPI({
+    action:'register',
+    email,password:'ChangeMe123!',name,department:dept,
+  });
+
+  if(!result.success){showToast(result.message,'error');return;}
+
+  // Auto-approve
+  const approveResult=await callAPI({action:'approveUser',email:session.email,token:session.token,targetEmail:email});
+  if(!approveResult.success){showToast('User registered but approval failed. Please approve manually.','info');return;}
+
+  showToast('User added and approved!','success');
+  document.getElementById('addName').value='';
+  document.getElementById('addEmail').value='';
+  document.getElementById('addDept').value='';
+  loadAdminData();
+}
+
+/* ══ LOAD DATA ══ */
+async function loadAdminData(){
+  const result=await callAPI({action:'getAdminData',email:session.email,token:session.token});
+  if(!result.success){showToast(result.message,'error');return;}
+
+  adminData=result;
+
+  // Summary
+  document.getElementById('statUsers').textContent=result.summary.totalUsers;
+  document.getElementById('statQuotes').textContent=result.summary.totalQuotes;
+  document.getElementById('statSelling').textContent='₱'+peso(result.summary.totalSelling);
+  document.getElementById('statCost').textContent='₱'+peso(result.summary.totalCost);
+  document.getElementById('statMargin').textContent=Number(result.summary.avgMargin||0).toFixed(1)+'%';
+
+  // Dept filter options
+  const depts=[...new Set((result.users||[]).map(u=>u.department).filter(Boolean))].sort();
+  ['deptFilter','userDeptFilter','quoteDeptFilter'].forEach(id=>{
+    const el=document.getElementById(id);
+    const cur=el.value;
+    el.innerHTML='<option value="">All Departments</option>'+depts.map(d=>`<option value="${d}">${d}</option>`).join('');
+    el.value=cur;
+  });
+
+  renderUserStats();
+  renderUsers();
+  renderPending();
+  renderAllQuotes();
+}
+
+/* ══ LOGOUT ══ */
+function doLogout(){
+  if(!confirm('Logout?'))return;
+  clearSession();window.location.href='index.html';
+}
+
+/* ══ INIT ══ */
+window.onload=async function(){
+  loadLogo();
+  session=getSession();
+  if(!session){window.location.href='index.html';return;}
+  if(session.user.role!=='admin'){window.location.href='app.html';return;}
+
+  const initials=(session.user.name||'A').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('menuName').textContent=session.user.name||'Admin';
+  document.getElementById('menuEmail').textContent=session.user.email||'';
+  if(session.user.profilePicture){document.getElementById('userAvatar').innerHTML=`<img src="${session.user.profilePicture}" alt="avatar">`;}
+  else{document.getElementById('userAvatar').textContent=initials;}
+
+  loadAdminData();
+};
+</script>
+</body>
+</html>
