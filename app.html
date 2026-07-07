@@ -837,7 +837,32 @@ function backToDashboard(){if(document.getElementById('viewQuote').style.display
 function updateQVClient(){document.getElementById('qvClient').textContent=document.getElementById('docClient').value||'New Quotation';}
 function updateStatusBadge(status){const el=document.getElementById('qvStatus');el.className='qvb-status qs-'+status;el.textContent=status;}
 function markSaving(){document.getElementById('saveStatus').textContent='⏳ Saving...';document.getElementById('saveStatus').className='save-status cloud';}
-async function cloudSave(){if(document.getElementById('viewQuote').style.display==='none')return;markSaving();const data=collectCurrentData();let tSelling=0,tCost=0,grossProfit=0,netProfit=0,netMargin=0;try{tSelling=parseFloat(document.getElementById('totalSelling').innerText.replace(/[₱,]/g,''))||0;tCost=parseFloat(document.getElementById('totalCost').innerText.replace(/[₱,]/g,''))||0;grossProfit=parseFloat(document.getElementById('grossProfit').innerText.replace(/[₱,]/g,''))||0;netProfit=parseFloat(document.getElementById('netProfit').innerText.replace(/[₱,]/g,''))||0;netMargin=parseFloat(document.getElementById('netMargin').innerText)||0;}catch(e){}const result=await callAPI({action:'saveQuotation',email:session.email,token:session.token,quoteId:currentQuoteId,status:document.getElementById('qvStatus').textContent||'Draft',quoteData:{...data,totalSelling:tSelling,totalCost:tCost,grossProfit,netProfit,netMargin}});if(!result.success){document.getElementById('saveStatus').textContent='✗ Save failed';document.getElementById('saveStatus').className='save-status unsaved';showToast('Save failed: '+result.message,'error');return;}if(!currentQuoteId&&result.quoteId){currentQuoteId=result.quoteId;document.getElementById('qvId').textContent=result.quoteId;}document.getElementById('saveStatus').textContent='✓ Saved to Cloud';document.getElementById('saveStatus').className='save-status saved';}
+async function cloudSave(){
+  if(document.getElementById('viewQuote').style.display==='none')return;
+  markSaving();
+  const data=collectCurrentData();
+  let tSelling=0,tCost=0,grossProfit=0,netProfit=0,netMargin=0;
+  try{
+    tSelling=parseFloat(document.getElementById('totalSelling').innerText.replace(/[₱,]/g,''))||0;
+    tCost=parseFloat(document.getElementById('totalCost').innerText.replace(/[₱,]/g,''))||0;
+    grossProfit=parseFloat(document.getElementById('grossProfit').innerText.replace(/[₱,]/g,''))||0;
+    netProfit=parseFloat(document.getElementById('netProfit').innerText.replace(/[₱,]/g,''))||0;
+    netMargin=parseFloat(document.getElementById('netMargin').innerText)||0;
+  }catch(e){}
+  const payload={action:'saveQuotation',email:session.email,token:session.token,quoteId:currentQuoteId,status:document.getElementById('qvStatus').textContent||'Draft',quoteData:{...data,totalSelling:tSelling,totalCost:tCost,grossProfit,netProfit,netMargin}};
+  console.log('Saving payload:', JSON.stringify(payload).substring(0,200));
+  const result=await callAPI(payload);
+  console.log('Save result:', JSON.stringify(result).substring(0,200));
+  if(!result.success){
+    document.getElementById('saveStatus').textContent='✗ '+result.message;
+    document.getElementById('saveStatus').className='save-status unsaved';
+    showToast('Save failed: '+result.message,'error');
+    return;
+  }
+  if(!currentQuoteId&&result.quoteId){currentQuoteId=result.quoteId;document.getElementById('qvId').textContent=result.quoteId;}
+  document.getElementById('saveStatus').textContent='✓ Saved to Cloud';
+  document.getElementById('saveStatus').className='save-status saved';
+}
 function manualSave(){cloudSave();}
 async function deleteQuote(quoteId,e){e.stopPropagation();if(!confirm('Delete this quotation?'))return;const result=await callAPI({action:'deleteQuotation',quoteId,email:session.email,token:session.token});if(!result.success){showToast(result.message,'error');return;}showToast('Deleted.','success');allQuotes=allQuotes.filter(q=>q.quoteId!==quoteId);updateCounts();renderQuotes();}
 async function duplicateQuote(quoteId,e){e.stopPropagation();showToast('Duplicating...','info');const result=await callAPI({action:'duplicateQuotation',quoteId,email:session.email,token:session.token});if(!result.success){showToast(result.message,'error');return;}showToast('Duplicated!','success');loadQuotes();}
