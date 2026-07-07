@@ -447,19 +447,11 @@ async function doRegister() {
     return;
   }
 
-  // Auto-login after registration
-  showToast('Account created! Logging in...', 'success');
-  const loginResult = await callAPI({action:'login', email, password, rememberMe:false});
-  if(loginResult.success){
-    saveSession(loginResult, false);
-    setTimeout(()=>{
-      if(loginResult.user.role==='admin') window.location.href='admin.html';
-      else window.location.href='app.html';
-    }, 1000);
-  } else {
-    showToast('Account created! Please login.', 'success');
-    setTimeout(() => showPanel('loginPanel'), 1500);
-  }
+  showToast('Account created! You can now login.', 'success');
+  // Pre-fill login form
+  document.getElementById('loginEmail').value = email;
+  document.getElementById('loginPassword').value = password;
+  setTimeout(() => showPanel('loginPanel'), 1500);
 }
 
 /* ══ CHANGE PASSWORD ══ */
