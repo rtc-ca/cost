@@ -822,7 +822,9 @@ let session=null,allQuotes=[],currentStatus='All',currentQuoteId=null,selectedSt
 
 function getSession(){const ls=localStorage.getItem('rtc_session');const ss=sessionStorage.getItem('rtc_session');const raw=ls||ss;if(!raw)return null;try{return JSON.parse(raw);}catch(e){return null;}}
 function clearSession(){localStorage.removeItem('rtc_session');sessionStorage.removeItem('rtc_session');}
-async function callAPI(data){try{const res=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});return await res.json();}catch(e){return{success:false,message:'Connection failed.'};}}
+async function callAPI(data){try{const form=new FormData();form.append('payload',JSON.stringify(data));const res=await fetch(API_URL,{method:'POST',body:form});return await res.json();}catch(e){try{const res=await fetch(API_URL+'?payload='+encodeURIComponent(JSON.stringify(data)));return await res.json();}catch(e2){return{success:false,message:'Connection failed.'};}}
+}
+}
 function showToast(msg,type='info'){const icons={success:'✅',error:'❌',info:'ℹ️'};const t=document.createElement('div');t.className='toast '+type;t.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;document.getElementById('toastContainer').appendChild(t);setTimeout(()=>t.remove(),4000);}
 function loadLogo(){const logo=localStorage.getItem('rtc_logo');if(logo){document.getElementById('logoImg').src=logo;document.getElementById('logoImg').style.display='block';document.getElementById('logoPlaceholder').style.display='none';}}
 function toggleUserMenu(){document.getElementById('userMenu').classList.toggle('open');}
