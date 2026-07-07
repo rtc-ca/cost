@@ -306,14 +306,17 @@ function clearSession() {
 /* ══ API ══ */
 async function callAPI(data) {
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
-    });
+    const form = new FormData();
+    form.append('payload', JSON.stringify(data));
+    const res = await fetch(API_URL, {method: 'POST', body: form});
     return await res.json();
   } catch(e) {
-    return {success: false, message: 'Connection failed. Please check your internet.'};
+    try {
+      const res = await fetch(API_URL + '?payload=' + encodeURIComponent(JSON.stringify(data)));
+      return await res.json();
+    } catch(e2) {
+      return {success: false, message: 'Connection failed. Please check your internet.'};
+    }
   }
 }
 
