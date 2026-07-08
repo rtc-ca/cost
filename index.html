@@ -396,7 +396,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
   </div>
   <div class="d-flex gap-2 align-items-center flex-wrap">
     <span class="save-status" id="saveStatus" style="display:none;">✓ Saved to Cloud</span>
-    <div id="quoteHeaderBtns" class="d-flex gap-2 align-items-center" style="display:none;">
+    <div id="quoteHeaderBtns" style="display:none;gap:8px;align-items:center;">
       <button class="btn-green" onclick="manualSave()">💾 Save</button>
       <button class="btn-outline-maroon" onclick="toggleSettings()">⚙ Settings</button>
       <button class="btn-outline-maroon" onclick="toggleHelp()">Help?</button>
@@ -2228,6 +2228,7 @@ async function cloudSave(){
       cloudDirty=false;
       clearLocalDraft(String(res.quoteId));
       if(tab)clearLocalDraft('unsaved_'+tab.id);
+      qcachePut(String(res.quoteId),payload.data,Date.now());
       updateQuoteToolbar();
       st.textContent='✓ Saved to Cloud';st.className='save-status saved';
     }else{
@@ -2247,6 +2248,32 @@ function backToDashboard(){
 /* ═══════════════ DASHBOARD ═══════════════ */
 const QUOTE_STATUSES=['All','Draft','Submitted','Approved','Rejected','Archived'];
 const pendingDeletes=new Set();
+/* Local quote cache — open instantly, refresh from cloud in background */
+const QCACHE_KEY='rtc_qcache_v1';
+function qcacheGet(id){try{const c=JSON.parse(localStorage.getItem(QCACHE_KEY)||'{}');return c[id]||null;}catch(e){return null;}}
+function qcachePut(id,data,updated){
+  try{
+    let c={};try{c=JSON.parse(localStorage.getItem(QCACHE_KEY)||'{}');}catch(e){}
+    c[id]={data:data,updated:updated||Date.now(),at:Date.now()};
+    const keys=Object.keys(c);
+    if(keys.length>6){keys.sort((a,b)=>c[a].at-c[b].at);while(keys.length>6)delete c[keys.shift()];}
+    localStorage.setItem(QCACHE_KEY,JSON.stringify(c));
+  }catch(e){try{localStorage.removeItem(QCACHE_KEY);}catch(e2){}}
+}
+function qcacheRemove(id){try{const c=JSON.parse(localStorage.getItem(QCACHE_KEY)||'{}');delete c[id];localStorage.setItem(QCACHE_KEY,JSON.stringify(c));}catch(e){}}
+function getDraft(id){try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');return d[id]||null;}catch(e){return null;}}
+let prefetched=false;
+function prefetchRecentQuotes(){
+  if(prefetched||!allQuotes.length)return;prefetched=true;
+  allQuotes.slice().sort((a,b)=>new Date(b.updated)-new Date(a.updated)).slice(0,3).forEach(q=>{
+    const c=qcacheGet(q.quoteId);
+    const serverTs=new Date(q.updated).getTime();
+    if(c&&c.updated>=serverTs)return;
+    callAPI({action:'getQuotation',token:session.token,quoteId:q.quoteId},true).then(r=>{
+      if(r&&r.success)qcachePut(q.quoteId,r.data,r.meta&&r.meta.updated?new Date(r.meta.updated).getTime():serverTs);
+    });
+  });
+}
 async function loadDashboard(){
   if(!session)return;
   showView('dash');
@@ -2262,6 +2289,7 @@ async function loadDashboard(){
   if(!res.success){if(!dashLoaded)showToast(res.message||'Failed to load quotations.','error');return;}
   allQuotes=(res.quotes||[]).filter(q=>!pendingDeletes.has(q.quoteId));
   dashLoaded=true;
+  prefetchRecentQuotes();
   if(document.getElementById('viewDash').style.display!=='none')renderDashboard();
 }
 function setStatusFilter(s){currentStatus=s;renderDashboard();}
@@ -2321,6 +2349,24 @@ function newQuotation(){
   clearTimeout(cloudSaveTimer);
   cloudSave(); /* create the cloud record immediately — Quote ID assigned on first response */
 }
+function openQuoteRenderTab(id,data,metaName){
+  if(activeTabId){const cur=tabs.find(t=>t.id===activeTabId);if(cur)cur.data=collectCurrentData();}
+  const tid=uid();
+  tabs.push({id:tid,quoteId:id,name:String(metaName||'Quote').substring(0,18),data:data||{}});
+  activeTabId=tid;renderTabs();
+  document.getElementById('tableBody').innerHTML='';
+  goodsSectionCount=0;pdmSectionCount=0;
+  document.getElementById('goodsContainer').innerHTML='';
+  document.getElementById('pdmContainer').innerHTML='';
+  loadDataIntoUI(data||{});
+  compressLegacyImages();
+  currentQuoteId=id;
+  updateQuoteToolbar();
+  showView('quote');
+  const st=document.getElementById('saveStatus');
+  st.textContent='\u2713 Saved to Cloud';st.className='save-status saved';
+  return tid;
+}
 async function openQuote(id){
   const existing=tabs.find(t=>t.quoteId===id);
   if(existing){
@@ -2329,36 +2375,39 @@ async function openQuote(id){
     else{currentQuoteId=id;updateQuoteToolbar();}
     return;
   }
+  const meta=allQuotes.find(q=>q.quoteId===id);
+  const cached=qcacheGet(id);
+  const draft=getDraft(id);
+  /* INSTANT open from local copy when available; verify against cloud in background */
+  if(cached&&cached.data){
+    let data=cached.data,ts=cached.updated||0;
+    if(draft&&draft.ts>ts&&confirm('You have an unsaved draft of this quotation. Restore it?')){data=draft.data;ts=draft.ts;cloudDirty=true;}
+    const tid=openQuoteRenderTab(id,data,meta&&(meta.client||meta.quotationNo));
+    if(cloudDirty){const st=document.getElementById('saveStatus');st.textContent='Unsaved changes';st.className='save-status unsaved';}
+    const res=await callAPI({action:'getQuotation',token:session.token,quoteId:id},true);
+    if(res&&res.success){
+      const serverTs=res.meta&&res.meta.updated?new Date(res.meta.updated).getTime():0;
+      qcachePut(id,res.data,serverTs||Date.now());
+      if(!cloudDirty&&serverTs>ts&&activeTabId===tid){
+        const tb=tabs.find(t=>t.id===tid);if(tb)tb.data=res.data;
+        loadDataIntoUI(res.data||{});
+        showToast('Updated with the latest cloud copy.');
+      }
+    }
+    return;
+  }
+  /* First open on this device: fetch from cloud */
   showToast('Opening quotation...');
   const res=await callAPI({action:'getQuotation',token:session.token,quoteId:id});
   if(!res.success){showToast(res.message||'Failed to open quotation.','error');return;}
-  if(activeTabId){const cur=tabs.find(t=>t.id===activeTabId);if(cur)cur.data=collectCurrentData();}
-  const tid=uid();
-  const tname=(res.meta&&(res.meta.client||res.meta.quotationNo))||'Quote';
-  tabs.push({id:tid,quoteId:id,name:String(tname).substring(0,18),data:res.data||{}});
-  activeTabId=tid;renderTabs();
-  document.getElementById('tableBody').innerHTML='';
-  goodsSectionCount=0;pdmSectionCount=0;
-  document.getElementById('goodsContainer').innerHTML='';
-  document.getElementById('pdmContainer').innerHTML='';
-  loadDataIntoUI(res.data||{});
-  compressLegacyImages(); /* shrink old full-res images so future saves are fast */
-  try{
-    const drafts=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');
-    const d=drafts[id];
-    if(d&&d.data&&(!res.meta||d.ts>new Date(res.meta.updated).getTime())
-       &&confirm('You have an unsaved draft of this quotation that is newer than the cloud copy. Restore it?')){
-      loadDataIntoUI(d.data);
-      const tb=tabs.find(t=>t.id===tid);if(tb)tb.data=d.data;
-      cloudDirty=true;
-    }
-  }catch(e){}
-  currentQuoteId=id;
+  let data=res.data||{};
+  const serverTs=res.meta&&res.meta.updated?new Date(res.meta.updated).getTime():0;
+  qcachePut(id,data,serverTs||Date.now());
+  if(draft&&draft.ts>serverTs&&confirm('You have an unsaved draft of this quotation that is newer than the cloud copy. Restore it?')){data=draft.data;cloudDirty=true;}
   if(res.meta&&!allQuotes.find(q=>q.quoteId===id))allQuotes.push(res.meta);
-  updateQuoteToolbar();
-  showView('quote');
-  const st=document.getElementById('saveStatus');
-  st.textContent='✓ Saved to Cloud';st.className='save-status saved';
+  const tid2=openQuoteRenderTab(id,data,res.meta&&(res.meta.client||res.meta.quotationNo));
+  const tb2=tabs.find(t=>t.id===tid2);if(tb2)tb2.data=data;
+  if(cloudDirty){const st=document.getElementById('saveStatus');st.textContent='Unsaved changes';st.className='save-status unsaved';}
 }
 async function duplicateQuote(id){
   showToast('Duplicating...');
@@ -2371,6 +2420,7 @@ async function deleteQuote(id){
   /* Optimistic: remove from UI instantly, sync with server in background */
   const backup=allQuotes.slice();
   pendingDeletes.add(id);
+  qcacheRemove(id);
   allQuotes=allQuotes.filter(q=>q.quoteId!==id);
   const t=tabs.find(t=>t.quoteId===id);
   if(t){
