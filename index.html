@@ -1160,6 +1160,7 @@ async function doLogin(){
   setLoading('loginBtn','loginSpinner','loginBtnText',true,'Signing in...');
   const result=await callAPI({action:'login',email,password,rememberMe});
   setLoading('loginBtn','loginSpinner','loginBtnText',false,'Login');
+  alert('Login result: ' + JSON.stringify(result).substring(0,300));
   if(!result.success){showToast(result.message,'error');return;}
   saveSession(result,rememberMe);
   session=result;
@@ -1842,7 +1843,6 @@ function collectCurrentData(){
 
 /* ══ SAVE ══ */
 
-function manualSave(){cloudSave();}
 
 /* ══ LOAD ══ */
 function loadDataIntoUI(data){
