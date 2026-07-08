@@ -6,12 +6,12 @@
 <meta name="theme-color" content="#7b0d0d">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="RTC Cost Analysis">
 <title>RTC Cost Analysis</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-
 :root{--maroon:#7b0d0d;--maroon-light:#a01515;--maroon-pale:#fdf3f3;--dark:#1a1a2e;--gray:#6b7280;--border:#e5e7eb;--bg:#f7f8fc;--white:#ffffff;--tbl-bw:1.5px;--tbl-bc:#000;}
 *{box-sizing:border-box;}
 body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--dark);font-size:.875rem;margin:0;}
@@ -169,7 +169,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
   @page{size:letter landscape;margin:1.2cm 1.4cm;}
   *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
   body{background:#fff !important;font-size:8.5pt;}
-  .no-print,.app-header,.toolbar,#addGoodsBtn,#addPdmBtn,#addNotesBtn,.tabs-bar,.settings-panel,.help-panel,#viewAuth,#viewDash,#viewAdmin,.quote-view-bar,.modal-overlay,.toast-container,.user-dropdown{display:none !important;}#viewQuote{display:block !important;}
+  .no-print,.app-header,.toolbar,#addGoodsBtn,#addPdmBtn,#addNotesBtn,.tabs-bar,.settings-panel,.help-panel{display:none !important;}
   .container-fluid{padding:0 !important;}
   .row{display:block !important;}
   .col-lg-9,.col-lg-3{width:100% !important;max-width:100% !important;flex:none !important;padding:0 !important;}
@@ -229,347 +229,296 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
   .summary-panel{position:relative;}
   .sig-grid{grid-template-columns:repeat(2,1fr);}
 }
+/* ═══════ CLOUD UPGRADE STYLES ═══════ */
+/* Loading screen */
+#loadingScreen{position:fixed;inset:0;background:var(--maroon);z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+#loadingScreen .ls-title{font-family:'Playfair Display',serif;color:#fff;font-size:2rem;font-weight:900;}
+#loadingScreen .ls-sub{color:rgba(255,255,255,.75);font-size:.9rem;letter-spacing:1.5px;text-transform:uppercase;}
+.spinner{width:42px;height:42px;border:4px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:rtcspin .9s linear infinite;}
+.spinner.dark{border-color:#eadada;border-top-color:var(--maroon);}
+@keyframes rtcspin{to{transform:rotate(360deg);}}
 
-
-/* ══ VIEW SYSTEM ══ */
-#viewAuth,#viewDash,#viewQuote,#viewAdmin{display:none;}
-body.show-auth #viewAuth{display:flex;}
-body.show-dash #viewDash{display:block;}
-body.show-quote #viewQuote{display:block;}
-body.show-admin #viewAdmin{display:block;}
-
-/* ══ LOADING ══ */
-#loadingScreen{position:fixed;inset:0;background:var(--maroon);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:99999;}
-#loadingScreen.hidden{display:none;}
-.loading-spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .8s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-
-/* ══ AUTH ══ */
-#viewAuth{min-height:100vh;flex-direction:column;background:var(--bg);}
-.auth-header{background:var(--white);border-bottom:3px solid var(--maroon);padding:12px 24px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 10px rgba(123,13,13,.08);}
-.auth-logo-wrap{height:36px;width:36px;background:var(--maroon);border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.8rem;flex-shrink:0;overflow:hidden;}
-.auth-logo-wrap img{width:100%;height:100%;object-fit:contain;}
-.auth-main{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px;}
-.auth-card{background:var(--white);border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 24px rgba(123,13,13,.08);width:100%;max-width:420px;overflow:hidden;}
-.auth-card-header{background:var(--maroon);padding:24px 28px;text-align:center;}
-.auth-card-header h2{font-family:'Playfair Display',serif;color:#fff;font-size:1.3rem;font-weight:700;margin-bottom:4px;}
-.auth-card-header p{color:rgba(255,255,255,.75);font-size:.78rem;margin:0;}
-.auth-card-body{padding:28px;}
-.auth-label{font-size:.75rem;font-weight:600;color:var(--maroon);text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;display:block;}
-.auth-input{border:1.5px solid var(--border);border-radius:8px;padding:10px 14px;font-size:.88rem;font-family:'DM Sans',sans-serif;color:var(--dark);width:100%;outline:none;transition:border-color .2s;background:#fff;}
-.auth-input:focus{border-color:var(--maroon);}
-.auth-input.is-invalid{border-color:#dc3545;}
-.invalid-msg{font-size:.72rem;color:#dc3545;margin-top:4px;display:none;}
-.auth-input.is-invalid ~ .invalid-msg{display:block;}
+/* Auth */
+.auth-bg{min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(135deg,#5c0808 0%,#7b0d0d 55%,#a01515 100%);padding:20px;}
+.auth-card{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);width:100%;max-width:430px;padding:34px 32px 28px;}
+.auth-logo-title{font-family:'Playfair Display',serif;color:var(--maroon);font-size:1.7rem;font-weight:900;text-align:center;margin:0;}
+.auth-sub{text-align:center;color:var(--gray);font-size:.78rem;letter-spacing:1.2px;text-transform:uppercase;margin:4px 0 22px;}
+.auth-field{margin-bottom:14px;}
+.auth-field label{font-size:.7rem;font-weight:700;color:var(--maroon);text-transform:uppercase;letter-spacing:.7px;display:block;margin-bottom:4px;}
+.auth-field input,.auth-field select{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:9px 12px;font-size:.88rem;outline:none;transition:border-color .2s;font-family:'DM Sans',sans-serif;background:#fff;color:var(--dark);}
+.auth-field input:focus,.auth-field select:focus{border-color:var(--maroon);}
 .pw-wrap{position:relative;}
-.pw-wrap .auth-input{padding-right:44px;}
-.toggle-pw{position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--gray);font-size:1rem;padding:4px;}
-.btn-auth{background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:11px;font-size:.9rem;font-weight:600;width:100%;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;display:flex;align-items:center;justify-content:center;gap:8px;}
-.btn-auth:hover{background:var(--maroon-light);}
-.btn-auth:disabled{opacity:.7;cursor:not-allowed;}
-.auth-divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
-.auth-link{background:none;border:none;color:var(--maroon);font-size:.82rem;font-weight:600;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;padding:0;}
-.auth-spinner{width:18px;height:18px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;display:none;}
-.auth-panel{display:none;}.auth-panel.active{display:block;}
+.pw-eye{position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1rem;color:var(--gray);padding:2px;}
+.auth-btn{width:100%;background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:11px;font-size:.92rem;font-weight:700;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.auth-btn:hover{background:var(--maroon-light);}
+.auth-btn:disabled{opacity:.7;cursor:wait;}
+.auth-btn .btn-spin{width:16px;height:16px;border:2.5px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:rtcspin .8s linear infinite;display:none;}
+.auth-links{display:flex;justify-content:space-between;margin-top:14px;font-size:.8rem;}
+.auth-links a{color:var(--maroon);font-weight:600;cursor:pointer;text-decoration:none;}
+.auth-links a:hover{text-decoration:underline;}
+.auth-err{background:#fee2e2;color:#991b1b;border-radius:7px;padding:8px 12px;font-size:.78rem;margin-bottom:12px;display:none;}
 
-/* ══ DASHBOARD ══ */
-.dash-wrap{padding:20px 24px;max-width:1400px;margin:0 auto;}
-.dash-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--maroon);}
-.btn-new-quote{background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;}
-.btn-new-quote:hover{background:var(--maroon-light);}
-.status-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;background:var(--white);padding:8px;border-radius:10px;border:1px solid var(--border);}
-.status-tab{padding:6px 14px;border-radius:7px;font-size:.78rem;font-weight:600;cursor:pointer;border:none;background:transparent;color:var(--gray);transition:all .15s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
-.status-tab:hover{background:var(--maroon-pale);color:var(--maroon);}
-.status-tab.active{background:var(--maroon);color:#fff;}
-.status-count{background:rgba(255,255,255,.3);border-radius:10px;padding:1px 6px;font-size:.68rem;margin-left:4px;}
-.status-tab:not(.active) .status-count{background:var(--border);color:var(--gray);}
-.search-sort{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
-.search-box{flex:1;min-width:200px;position:relative;}
-.search-box input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px 8px 36px;font-size:.82rem;outline:none;font-family:'DM Sans',sans-serif;transition:border-color .2s;}
-.search-box input:focus{border-color:var(--maroon);}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.9rem;}
-.sort-sel{border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.82rem;outline:none;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--white);cursor:pointer;}
-.quotes-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;}
-.quote-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;transition:all .2s;box-shadow:0 1px 4px rgba(0,0,0,.04);}
-.quote-card:hover{border-color:var(--maroon);box-shadow:0 4px 16px rgba(123,13,13,.1);transform:translateY(-1px);}
-.quote-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;gap:8px;}
-.qc-client{font-weight:700;font-size:.9rem;color:var(--dark);flex:1;}
-.qc-status{padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:700;text-transform:uppercase;flex-shrink:0;}
-.qs-Draft{background:#f3f4f6;color:#374151;}.qs-Submitted{background:#dbeafe;color:#1e40af;}
-.qs-Approved{background:#dcfce7;color:#166534;}.qs-Rejected{background:#fee2e2;color:#991b1b;}
-.qs-Archived{background:#f9fafb;color:#9ca3af;}
-.qc-project{font-size:.76rem;color:var(--gray);margin-bottom:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.qc-meta{display:flex;justify-content:space-between;font-size:.72rem;color:var(--gray);margin-bottom:10px;flex-wrap:wrap;gap:4px;}
-.qc-amounts{display:flex;gap:12px;padding-top:10px;border-top:1px solid var(--border);}
-.qca-item{flex:1;}.qca-label{font-size:.62rem;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;}
-.qca-val{font-size:.82rem;font-weight:700;color:var(--dark);}.qca-val.green{color:#166534;}
-.qc-actions{display:flex;gap:6px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
-.qc-btn{flex:1;padding:5px 8px;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;border:1.5px solid;transition:all .15s;font-family:'DM Sans',sans-serif;text-align:center;}
-.qc-open{border-color:var(--maroon);color:var(--maroon);background:transparent;}.qc-open:hover{background:var(--maroon);color:#fff;}
-.qc-dup{border-color:var(--gray);color:var(--gray);background:transparent;}.qc-dup:hover{border-color:var(--dark);color:var(--dark);}
-.qc-stat{border-color:#bfdbfe;color:#1e40af;background:transparent;font-size:.68rem;}.qc-stat:hover{background:#dbeafe;}
-.qc-del{border-color:#fca5a5;color:#991b1b;background:transparent;}.qc-del:hover{background:#fee2e2;}
-.dash-empty{text-align:center;padding:60px 20px;color:var(--gray);grid-column:1/-1;}
-.dash-loading{text-align:center;padding:60px 20px;grid-column:1/-1;}
-.dash-spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--maroon);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 16px;}
+/* Shared header extras */
+.header-logo{height:34px;max-width:120px;object-fit:contain;display:none;}
+.avatar{width:36px;height:36px;border-radius:50%;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;cursor:pointer;overflow:hidden;flex-shrink:0;border:2px solid var(--maroon-pale);}
+.avatar img{width:100%;height:100%;object-fit:cover;}
+.user-menu-wrap{position:relative;}
+.user-drop{position:absolute;right:0;top:115%;background:#fff;border:1px solid var(--border);border-radius:10px;box-shadow:0 8px 28px rgba(0,0,0,.15);min-width:200px;z-index:10001;display:none;overflow:hidden;}
+.user-drop.open{display:block;}
+.ud-head{padding:12px 14px;border-bottom:1px solid var(--border);background:var(--maroon-pale);}
+.ud-name{font-weight:700;font-size:.85rem;color:var(--dark);}
+.ud-email{font-size:.7rem;color:var(--gray);word-break:break-all;}
+.ud-item{padding:10px 14px;font-size:.82rem;cursor:pointer;color:var(--dark);display:flex;align-items:center;gap:8px;transition:background .15s;}
+.ud-item:hover{background:var(--maroon-pale);color:var(--maroon);}
+.ud-item.danger{color:#991b1b;border-top:1px solid var(--border);}
+.ud-item.danger:hover{background:#fee2e2;}
 
-/* ══ HEADER ══ */
-.header-logo{height:36px;width:36px;object-fit:contain;border-radius:5px;display:none;}
-.logo-placeholder{height:36px;width:36px;background:var(--maroon);border-radius:5px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:.8rem;flex-shrink:0;}
-.user-avatar{width:34px;height:34px;border-radius:50%;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.78rem;cursor:pointer;flex-shrink:0;overflow:hidden;border:2px solid var(--maroon-pale);}
-.user-avatar img{width:100%;height:100%;object-fit:cover;}
-.user-dropdown{position:relative;}
-.user-menu{position:absolute;right:0;top:calc(100% + 8px);background:var(--white);border:1px solid var(--border);border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.1);min-width:200px;z-index:9999;display:none;overflow:hidden;}
-.user-menu.open{display:block;}
-.user-menu-header{padding:12px 16px;background:var(--maroon-pale);border-bottom:1px solid var(--border);}
-.user-menu-item{padding:10px 16px;font-size:.82rem;cursor:pointer;display:flex;align-items:center;gap:8px;color:var(--dark);transition:background .15s;}
-.user-menu-item:hover{background:var(--maroon-pale);color:var(--maroon);}
-.user-menu-item.danger{color:#991b1b;}.user-menu-item.danger:hover{background:#fee2e2;}
-.save-status{font-size:.7rem;color:var(--gray);font-style:italic;}
-.save-status.saved{color:#166534;}.save-status.unsaved{color:#b07d27;}.save-status.cloud{color:#1e40af;}
+/* Quote toolbar */
+.quote-toolbar{display:flex;align-items:center;gap:10px;padding:8px 24px;background:#fff;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.qt-id{font-size:.72rem;color:var(--gray);font-weight:600;background:#f3f4f6;border-radius:5px;padding:3px 8px;}
+.qt-client{font-size:.85rem;font-weight:700;color:var(--dark);max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
-/* ══ QUOTE VIEW BAR ══ */
-.quote-view-bar{background:var(--white);border-bottom:2px solid var(--border);padding:8px 24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
-.btn-back{background:transparent;border:1.5px solid var(--border);border-radius:8px;padding:6px 14px;font-size:.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:'DM Sans',sans-serif;color:var(--dark);transition:all .15s;white-space:nowrap;}
-.btn-back:hover{border-color:var(--maroon);color:var(--maroon);}
-.qvb-status{padding:4px 14px;border-radius:20px;font-size:.72rem;font-weight:700;text-transform:uppercase;}
-.btn-chg-status{background:transparent;border:1.5px solid var(--border);border-radius:7px;padding:5px 12px;font-size:.76rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--dark);transition:all .15s;}
-.btn-chg-status:hover{border-color:var(--maroon);color:var(--maroon);}
+/* Status badges */
+.badge-status{font-size:.68rem;font-weight:700;border-radius:20px;padding:3px 10px;text-transform:uppercase;letter-spacing:.5px;display:inline-block;}
+.badge-Draft{background:#f3f4f6;color:#374151;}
+.badge-Submitted{background:#dbeafe;color:#1d4ed8;}
+.badge-Approved{background:#dcfce7;color:#166534;}
+.badge-Rejected{background:#fee2e2;color:#991b1b;}
+.badge-Archived{background:#fef3c7;color:#92400e;}
 
-/* ══ ADMIN ══ */
-#viewAdmin{min-height:100vh;background:var(--bg);}
-.admin-wrap{display:flex;min-height:calc(100vh - 61px);}
-.admin-sidebar{width:220px;background:var(--white);border-right:1px solid var(--border);padding:16px 0;flex-shrink:0;position:sticky;top:61px;height:calc(100vh - 61px);overflow-y:auto;}
-.admin-sidebar-label{font-size:.62rem;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:.8px;padding:8px 20px 4px;}
-.admin-sidebar-item{display:flex;align-items:center;gap:8px;padding:8px 18px;cursor:pointer;font-size:.82rem;font-weight:500;color:var(--dark);transition:all .15s;margin-bottom:2px;}
-.admin-sidebar-item:hover{background:var(--maroon-pale);color:var(--maroon);}
-.admin-sidebar-item.active{background:var(--maroon);color:#fff;margin:0 8px;border-radius:8px;padding:8px 10px;}
-.admin-badge-count{margin-left:auto;background:#fee2e2;color:#991b1b;font-size:.6rem;font-weight:700;padding:1px 6px;border-radius:8px;}
-.admin-main{flex:1;padding:20px 24px;overflow-x:hidden;}
-.admin-page{display:none;}.admin-page.active{display:block;}
-.admin-page-title{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--maroon);margin-bottom:16px;}
-.admin-summary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:14px;margin-bottom:24px;}
-.admin-stat-card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.04);}
-.admin-stat-label{font-size:.68rem;font-weight:600;color:var(--gray);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;}
-.admin-stat-val{font-size:1.4rem;font-weight:700;color:var(--dark);line-height:1.2;}
-.admin-stat-val.green{color:#166534;}.admin-stat-val.maroon{color:var(--maroon);}
-.data-table{width:100%;border-collapse:collapse;font-size:.8rem;background:var(--white);border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.04);}
-.data-table thead tr{background:var(--maroon);}
-.data-table thead th{color:#fff;padding:10px 12px;text-align:left;font-weight:600;font-size:.72rem;white-space:nowrap;}
-.data-table tbody tr{border-bottom:1px solid var(--border);transition:background .1s;}
-.data-table tbody tr:hover{background:var(--maroon-pale);}
-.data-table tbody td{padding:10px 12px;vertical-align:middle;}
-.data-table tbody tr:last-child{border-bottom:none;}
-.abadge{padding:3px 10px;border-radius:20px;font-size:.65rem;font-weight:700;text-transform:uppercase;}
-.abadge-active{background:#dcfce7;color:#166534;}.abadge-inactive{background:#f3f4f6;color:#6b7280;}
-.abadge-pending{background:#fef9c3;color:#854d0e;}.abadge-rejected{background:#fee2e2;color:#991b1b;}
-.abadge-Draft{background:#f3f4f6;color:#374151;}.abadge-Submitted{background:#dbeafe;color:#1e40af;}
-.abadge-Approved{background:#dcfce7;color:#166534;}.abadge-Rejected{background:#fee2e2;color:#991b1b;}
-.btn-xs{padding:4px 10px;border-radius:6px;font-size:.72rem;font-weight:600;cursor:pointer;border:none;font-family:'DM Sans',sans-serif;transition:all .15s;}
-.btn-xs-approve{background:#dcfce7;color:#166534;}.btn-xs-approve:hover{background:#166534;color:#fff;}
-.btn-xs-reject{background:#fee2e2;color:#991b1b;}.btn-xs-reject:hover{background:#991b1b;color:#fff;}
-.btn-xs-reset{background:#fef9c3;color:#854d0e;}.btn-xs-toggle{background:#f3f4f6;color:#374151;}
-.admin-filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;align-items:center;}
-.filter-btn{padding:6px 14px;border-radius:7px;font-size:.76rem;font-weight:600;border:1.5px solid var(--border);background:var(--white);color:var(--gray);cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
-.filter-btn:hover{border-color:var(--maroon);color:var(--maroon);}.filter-btn.active{background:var(--maroon);color:#fff;border-color:var(--maroon);}
-.filter-sel{border:1.5px solid var(--border);border-radius:7px;padding:6px 12px;font-size:.76rem;outline:none;font-family:'DM Sans',sans-serif;color:var(--dark);background:var(--white);}
-.admin-search{position:relative;flex:1;min-width:180px;}
-.admin-search input{width:100%;border:1.5px solid var(--border);border-radius:8px;padding:7px 12px 7px 32px;font-size:.78rem;outline:none;font-family:'DM Sans',sans-serif;}
-.admin-search input:focus{border-color:var(--maroon);}
-.admin-search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--gray);font-size:.8rem;}
-.admin-detail-panel{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;margin-top:16px;display:none;}
-.admin-detail-panel.open{display:block;}
+/* Dashboard */
+.dash-wrap{max-width:1250px;margin:0 auto;padding:22px 18px 60px;}
+.dash-title{font-family:'Playfair Display',serif;color:var(--maroon);font-size:1.5rem;font-weight:900;margin:0;}
+.status-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:16px 0 12px;}
+.status-tab{border:1.5px solid var(--border);background:#fff;color:var(--gray);border-radius:20px;padding:5px 14px;font-size:.78rem;font-weight:600;cursor:pointer;transition:all .15s;}
+.status-tab:hover{border-color:var(--maroon);color:var(--maroon);}
+.status-tab.active{background:var(--maroon);border-color:var(--maroon);color:#fff;}
+.status-tab .cnt{background:rgba(0,0,0,.08);border-radius:10px;padding:0 6px;font-size:.68rem;margin-left:4px;}
+.status-tab.active .cnt{background:rgba(255,255,255,.25);}
+.dash-controls{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+.dash-controls input[type="text"]{flex:1;min-width:200px;border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.85rem;outline:none;}
+.dash-controls input:focus{border-color:var(--maroon);}
+.dash-controls select{border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.82rem;outline:none;background:#fff;color:var(--dark);}
+.q-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:14px;}
+.q-card{background:#fff;border:1px solid var(--border);border-left:4px solid var(--maroon);border-radius:10px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,.05);transition:box-shadow .2s,transform .15s;}
+.q-card:hover{box-shadow:0 6px 18px rgba(123,13,13,.13);transform:translateY(-1px);}
+.q-card-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px;}
+.q-client{font-weight:700;font-size:.95rem;color:var(--dark);word-break:break-word;}
+.q-project{font-size:.78rem;color:var(--gray);margin-bottom:8px;word-break:break-word;}
+.q-dates{font-size:.68rem;color:#9ca3af;margin-bottom:10px;}
+.q-nums{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;background:#fafafa;border-radius:8px;padding:8px 10px;margin-bottom:10px;}
+.q-num small{font-size:.6rem;color:var(--gray);text-transform:uppercase;letter-spacing:.4px;display:block;}
+.q-num div{font-size:.82rem;font-weight:700;}
+.q-num .sell{color:#166534;}
+.q-card-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.q-card-btns button{font-size:.72rem;font-weight:600;border-radius:6px;padding:5px 10px;cursor:pointer;border:1px solid var(--border);background:#fff;color:var(--dark);transition:all .15s;}
+.q-card-btns button:hover{border-color:var(--maroon);color:var(--maroon);}
+.q-card-btns button.primary{background:var(--maroon);border-color:var(--maroon);color:#fff;}
+.q-card-btns button.primary:hover{background:var(--maroon-light);}
+.q-card-btns button.del:hover{border-color:#991b1b;color:#991b1b;background:#fee2e2;}
+.dash-empty{text-align:center;padding:60px 20px;color:var(--gray);}
+.dash-empty .big{font-size:2.4rem;margin-bottom:10px;}
+.dash-loading{display:flex;justify-content:center;padding:60px 0;}
 
-/* ══ MODALS ══ */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;}
-.modal-overlay.open{display:flex;}
-.modal-box{background:var(--white);border-radius:12px;padding:24px;width:100%;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,.15);}
-.modal-title{font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--maroon);margin-bottom:16px;}
-.status-options{display:flex;flex-direction:column;gap:8px;margin-bottom:16px;}
-.status-opt{padding:10px 14px;border-radius:8px;border:1.5px solid var(--border);cursor:pointer;font-size:.84rem;font-weight:600;transition:all .15s;display:flex;align-items:center;gap:8px;font-family:'DM Sans',sans-serif;}
-.status-opt:hover{border-color:var(--maroon);background:var(--maroon-pale);}.status-opt.sel{border-color:var(--maroon);background:var(--maroon);color:#fff;}
-.btn-cancel-sm{background:transparent;border:1.5px solid var(--border);border-radius:8px;padding:8px 16px;font-size:.82rem;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--gray);}
-.btn-save-sm{background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:.82rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
-.profile-avatar-lg{width:80px;height:80px;border-radius:50%;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.5rem;margin:0 auto 8px;overflow:hidden;border:3px solid var(--maroon-pale);}
-.profile-avatar-lg img{width:100%;height:100%;object-fit:cover;}
-.profile-input{border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:.84rem;width:100%;outline:none;font-family:'DM Sans',sans-serif;margin-bottom:12px;}
-.profile-input:focus{border-color:var(--maroon);}
-.profile-label{font-size:.72rem;font-weight:600;color:var(--maroon);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px;}
-.btn-save-profile{background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:9px;font-size:.84rem;font-weight:600;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;margin-bottom:8px;}
-.btn-outline-profile{background:transparent;border:1.5px solid var(--maroon);color:var(--maroon);border-radius:8px;padding:9px;font-size:.84rem;font-weight:600;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;}
+/* Admin */
+.admin-wrap{display:flex;min-height:calc(100vh - 64px);}
+.admin-side{width:212px;background:#fff;border-right:1px solid var(--border);padding:16px 10px;flex-shrink:0;}
+.as-item{display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:8px;font-size:.84rem;font-weight:600;color:var(--gray);cursor:pointer;margin-bottom:4px;transition:all .15s;}
+.as-item:hover{background:var(--maroon-pale);color:var(--maroon);}
+.as-item.active{background:var(--maroon);color:#fff;}
+.admin-main{flex:1;padding:22px;overflow-x:auto;min-width:0;}
+.admin-h{font-family:'Playfair Display',serif;color:var(--maroon);font-size:1.3rem;font-weight:900;margin:0 0 16px;}
+.sum-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin-bottom:20px;}
+.sum-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;border-top:3px solid var(--maroon);}
+.sum-card small{font-size:.64rem;color:var(--gray);text-transform:uppercase;letter-spacing:.6px;font-weight:700;}
+.sum-card .val{font-size:1.25rem;font-weight:800;color:var(--dark);margin-top:2px;}
+.admin-filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.admin-filters select,.admin-filters input{border:1.5px solid var(--border);border-radius:7px;padding:6px 10px;font-size:.8rem;outline:none;background:#fff;}
+.admin-filters input{min-width:180px;}
+.admin-card{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;overflow-x:auto;}
+.admin-table{width:100%;border-collapse:collapse;font-size:.8rem;}
+.admin-table th{background:var(--maroon);color:#fff;font-weight:600;padding:8px 10px;text-align:left;font-size:.7rem;letter-spacing:.4px;white-space:nowrap;}
+.admin-table td{padding:8px 10px;border-bottom:1px solid #f0f0f0;vertical-align:middle;}
+.admin-table tr:hover td{background:var(--maroon-pale);}
+.admin-table .clickable{cursor:pointer;}
+.at-btn{font-size:.7rem;font-weight:600;border-radius:5px;padding:4px 8px;cursor:pointer;border:1px solid var(--border);background:#fff;margin-right:4px;transition:all .15s;white-space:nowrap;}
+.at-btn:hover{border-color:var(--maroon);color:var(--maroon);}
+.at-btn.warn:hover{border-color:#991b1b;color:#991b1b;background:#fee2e2;}
 
-/* ══ TOAST ══ */
-.toast-container{position:fixed;top:16px;right:16px;z-index:99999;display:flex;flex-direction:column;gap:8px;}
-.toast{background:#fff;border:1px solid var(--border);border-radius:10px;padding:12px 16px;font-size:.82rem;box-shadow:0 4px 16px rgba(0,0,0,.12);display:flex;align-items:center;gap:10px;min-width:260px;max-width:340px;animation:slideIn .3s ease;}
-.toast.success{border-left:4px solid #166534;}.toast.error{border-left:4px solid #dc3545;}.toast.info{border-left:4px solid var(--maroon);}
-@keyframes slideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}
+/* Modals */
+.modal-back{position:fixed;inset:0;background:rgba(26,26,46,.5);z-index:10005;display:none;align-items:center;justify-content:center;padding:16px;}
+.modal-card{background:#fff;border-radius:14px;width:100%;max-width:430px;box-shadow:0 20px 60px rgba(0,0,0,.3);overflow:hidden;max-height:92vh;display:flex;flex-direction:column;}
+.modal-head{background:var(--maroon);color:#fff;padding:13px 18px;font-family:'Playfair Display',serif;font-weight:700;font-size:1rem;display:flex;justify-content:space-between;align-items:center;}
+.modal-head button{background:none;border:none;color:#fff;font-size:1.15rem;cursor:pointer;opacity:.85;line-height:1;}
+.modal-body{padding:18px;overflow-y:auto;}
+.modal-foot{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px;}
+.status-opt{display:flex;align-items:center;gap:10px;border:1.5px solid var(--border);border-radius:9px;padding:10px 14px;margin-bottom:8px;cursor:pointer;transition:all .15s;font-size:.85rem;font-weight:600;}
+.status-opt:hover{border-color:var(--maroon);}
+.status-opt.sel{border-color:var(--maroon);background:var(--maroon-pale);}
+.profile-photo-wrap{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.profile-photo{width:74px;height:74px;border-radius:50%;background:var(--maroon);color:#fff;display:flex;align-items:center;justify-content:center;font-size:1.5rem;font-weight:700;overflow:hidden;flex-shrink:0;}
+.profile-photo img{width:100%;height:100%;object-fit:cover;}
 
-@media(max-width:768px){
-  .dash-wrap{padding:14px 12px;}
-  .quotes-grid{grid-template-columns:1fr;}
-  .search-sort{flex-direction:column;}
-  .admin-sidebar{display:none;}
-  .admin-main{padding:14px 12px;}
-}
-@media(max-width:480px){
-  .status-tabs{gap:4px;}
-  .status-tab{padding:5px 10px;font-size:.72rem;}
+/* Toasts */
+#toastWrap{position:fixed;bottom:20px;right:20px;z-index:11000;display:flex;flex-direction:column;gap:8px;align-items:flex-end;}
+.toastx{background:#1a1a2e;color:#fff;padding:11px 18px;border-radius:9px;font-size:.83rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:340px;animation:toastin .25s ease;display:flex;gap:8px;align-items:center;}
+.toastx.success{background:#166534;}
+.toastx.error{background:#991b1b;}
+.toastx.warn{background:#b07d27;}
+@keyframes toastin{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+@media (max-width:820px){
+  .admin-wrap{flex-direction:column;}
+  .admin-side{width:100%;display:flex;overflow-x:auto;padding:8px;border-right:none;border-bottom:1px solid var(--border);}
+  .as-item{white-space:nowrap;margin-bottom:0;margin-right:4px;}
+  .app-header{flex-wrap:wrap;gap:8px;padding:10px 14px;}
+  .quote-toolbar{padding:8px 14px;}
+  .dash-wrap{padding:16px 12px 50px;}
+  .q-cards{grid-template-columns:1fr;}
 }
 
 </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
-<div id="loadingScreen">
-  <div style="font-family:'Playfair Display',serif;color:#fff;font-size:2rem;font-weight:900;margin-bottom:8px;">RTC Cost Analysis</div>
-  <div style="color:rgba(255,255,255,.7);font-size:.85rem;margin-bottom:32px;">Ramesh Trading Corporation</div>
-  <div class="loading-spinner"></div>
+<!-- ═══════ LOADING SCREEN ═══════ -->
+<div id="loadingScreen" class="no-print">
+  <div class="ls-title">RTC Cost Analysis</div>
+  <div class="ls-sub">Ramesh Trading Corporation</div>
+  <div class="spinner"></div>
 </div>
 
-<!-- ══ AUTH VIEW ══ -->
-<div id="viewAuth">
-  <div class="auth-header">
-    <div class="auth-logo-wrap" id="authLogoWrap">
-      <span id="authLogoPlaceholder">RTC</span>
-      <img id="authLogoImg" style="display:none;" src="" alt="Logo">
-    </div>
-    <div>
-      <div style="font-family:'Playfair Display',serif;color:var(--maroon);font-size:1.1rem;font-weight:900;">RTC Cost Analysis</div>
-      <div style="font-size:.65rem;color:var(--gray);">Ramesh Trading Corporation</div>
-    </div>
-  </div>
-  <div class="auth-main">
-    <div class="auth-card">
-      <!-- LOGIN -->
-      <div id="authLogin" class="auth-panel active">
-        <div class="auth-card-header"><h2>Welcome Back</h2><p>Sign in to your account to continue</p></div>
-        <div class="auth-card-body">
-          <div style="margin-bottom:18px;"><label class="auth-label">Email Address</label><input type="email" id="loginEmail" class="auth-input" placeholder="you@rameshtrading.com.ph" autocomplete="email"><div class="invalid-msg" id="loginEmailErr">Please enter a valid @rameshtrading.com.ph email.</div></div>
-          <div style="margin-bottom:18px;"><label class="auth-label">Password</label><div class="pw-wrap"><input type="password" id="loginPassword" class="auth-input" placeholder="Enter your password" autocomplete="current-password"><button class="toggle-pw" onclick="togglePw('loginPassword',this)" tabindex="-1">👁</button></div><div class="invalid-msg" id="loginPasswordErr">Please enter your password.</div></div>
-          <div style="margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
-            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:.84rem;color:var(--gray);user-select:none;"><input type="checkbox" id="rememberMe" style="accent-color:var(--maroon);width:16px;height:16px;"> Remember Me</label>
-            <button class="auth-link" onclick="showAuthPanel('authForgot')">Forgot Password?</button>
-          </div>
-          <button class="btn-auth" id="loginBtn" onclick="doLogin()"><div class="auth-spinner" id="loginSpinner"></div><span id="loginBtnText">Login</span></button>
-          <hr class="auth-divider">
-          <div style="text-align:center;font-size:.82rem;color:var(--gray);">Don't have an account? <button class="auth-link" onclick="showAuthPanel('authRegister')">Register</button></div>
-        </div>
-      </div>
-      <!-- REGISTER -->
-      <div id="authRegister" class="auth-panel">
-        <div class="auth-card-header"><h2>Create Account</h2><p>Register with your company email</p></div>
-        <div class="auth-card-body">
-          <div style="margin-bottom:14px;"><label class="auth-label">Full Name</label><input type="text" id="regName" class="auth-input" placeholder="Juan Dela Cruz"><div class="invalid-msg" id="regNameErr">Full name is required.</div></div>
-          <div style="margin-bottom:14px;"><label class="auth-label">Email Address</label><input type="email" id="regEmail" class="auth-input" placeholder="you@rameshtrading.com.ph"><div class="invalid-msg" id="regEmailErr">Only @rameshtrading.com.ph emails allowed.</div></div>
-          <div style="margin-bottom:14px;"><label class="auth-label">Department</label><input type="text" id="regDept" class="auth-input" placeholder="e.g. Corporate Sales, SPD, EA"><div class="invalid-msg" id="regDeptErr">Department is required.</div></div>
-          <div style="margin-bottom:14px;"><label class="auth-label">Password</label><div class="pw-wrap"><input type="password" id="regPassword" class="auth-input" placeholder="At least 8 characters"><button class="toggle-pw" onclick="togglePw('regPassword',this)" tabindex="-1">👁</button></div><div class="invalid-msg" id="regPasswordErr">Password must be at least 8 characters.</div></div>
-          <div style="margin-bottom:20px;"><label class="auth-label">Confirm Password</label><div class="pw-wrap"><input type="password" id="regConfirm" class="auth-input" placeholder="Repeat password"><button class="toggle-pw" onclick="togglePw('regConfirm',this)" tabindex="-1">👁</button></div><div class="invalid-msg" id="regConfirmErr">Passwords do not match.</div></div>
-          <button class="btn-auth" id="registerBtn" onclick="doRegister()"><div class="auth-spinner" id="registerSpinner"></div><span id="registerBtnText">Create Account</span></button>
-          <hr class="auth-divider">
-          <div style="text-align:center;font-size:.82rem;color:var(--gray);">Already have an account? <button class="auth-link" onclick="showAuthPanel('authLogin')">Login</button></div>
-        </div>
-      </div>
-      <!-- FORGOT -->
-      <div id="authForgot" class="auth-panel">
-        <div class="auth-card-header"><h2>Forgot Password?</h2><p>Contact your administrator to reset</p></div>
-        <div class="auth-card-body">
-          <div style="background:var(--maroon-pale);border:1px solid #fca5a5;border-radius:10px;padding:20px;text-align:center;margin-bottom:20px;">
-            <div style="font-size:2rem;margin-bottom:10px;">🔒</div>
-            <p style="font-size:.88rem;color:#991b1b;font-weight:600;margin-bottom:6px;">Password Reset</p>
-            <p style="font-size:.82rem;color:#991b1b;line-height:1.5;">Please contact your <strong>Administrator</strong> to reset your password.</p>
-          </div>
-          <button class="btn-auth" onclick="showAuthPanel('authLogin')" style="background:var(--gray);">← Back to Login</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div style="text-align:center;padding:16px;font-size:.7rem;color:var(--gray);">© 2026 Ramesh Trading Corporation. All rights reserved.</div>
-</div>
-
-<!-- ══ APP HEADER (shared) ══ -->
+<!-- ═══════ SHARED HEADER ═══════ -->
 <div class="app-header no-print" id="appHeader" style="display:none;">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <div>
-      <div class="logo-placeholder" id="logoPlaceholder">RTC</div>
-      <img id="logoImg" class="header-logo" src="" alt="Logo">
-    </div>
-    <div>
-      <div class="rtc-title">RTC Cost Analysis</div>
-    </div>
+  <div class="d-flex align-items-center gap-2">
+    <img id="headerLogo" class="header-logo" alt="logo">
+    <div class="rtc-title">RTC Cost Analysis</div>
   </div>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <span class="save-status" id="saveStatus" style="display:none;"></span>
-    <span id="quoteHeaderBtns" style="display:none;" class="d-flex gap-2 align-items-center">
+  <div class="d-flex gap-2 align-items-center flex-wrap">
+    <span class="save-status" id="saveStatus" style="display:none;">✓ Saved to Cloud</span>
+    <div id="quoteHeaderBtns" class="d-flex gap-2 align-items-center" style="display:none;">
       <button class="btn-green" onclick="manualSave()">💾 Save</button>
       <button class="btn-outline-maroon" onclick="toggleSettings()">⚙ Settings</button>
       <button class="btn-outline-maroon" onclick="toggleHelp()">Help?</button>
       <button class="btn-maroon" onclick="exportPDF()">⬇ Export PDF</button>
-    </span>
-    <div class="user-dropdown">
-      <div class="user-avatar" id="userAvatar" onclick="toggleUserMenu()">?</div>
-      <div class="user-menu" id="userMenu">
-        <div class="user-menu-header">
-          <div style="font-weight:600;font-size:.85rem;" id="menuName">Loading...</div>
-          <div style="font-size:.7rem;color:var(--gray);" id="menuEmail"></div>
+    </div>
+    <button id="installBtn" class="btn-outline-maroon" onclick="installApp()" style="display:none;">📲 Install App</button>
+    <div class="user-menu-wrap">
+      <div class="avatar" id="userAvatar" onclick="toggleUserDrop(event)">?</div>
+      <div class="user-drop" id="userDrop">
+        <div class="ud-head">
+          <div class="ud-name" id="udName">—</div>
+          <div class="ud-email" id="udEmail">—</div>
         </div>
-        <div class="user-menu-item" onclick="openProfile()">👤 My Profile</div>
-        <div class="user-menu-item" onclick="showDashboard()">📋 My Quotations</div>
-        <div class="user-menu-item" id="adminMenuItem" style="display:none;" onclick="showAdminView()">🔧 Admin Dashboard</div>
-        <div class="user-menu-item danger" onclick="doLogout()">🚪 Logout</div>
+        <div class="ud-item" onclick="openProfileModal()">👤 My Profile</div>
+        <div class="ud-item" onclick="closeUserDrop();loadDashboard()">📄 My Quotations</div>
+        <div class="ud-item" id="udAdmin" style="display:none;" onclick="closeUserDrop();openAdmin()">🛡 Admin Dashboard</div>
+        <div class="ud-item danger" onclick="doLogout()">↩ Logout</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ DASHBOARD VIEW ══ -->
-<div id="viewDash" style="display:none;">
-  <div class="dash-wrap">
-    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
-      <div><div class="dash-title">My Quotations</div><div style="font-size:.76rem;color:var(--gray);margin-top:2px;" id="quoteCountLabel">Loading...</div></div>
-      <button class="btn-new-quote" onclick="createNewQuote()">＋ New Quotation</button>
+<!-- ═══════ VIEW: AUTH ═══════ -->
+<div id="viewAuth" class="auth-bg no-print" style="display:none;">
+  <div class="auth-card">
+    <!-- LOGIN PANEL -->
+    <div id="loginPanel">
+      <h1 class="auth-logo-title">RTC Cost Analysis</h1>
+      <div class="auth-sub">Ramesh Trading Corporation</div>
+      <div class="auth-err" id="loginErr"></div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="you@rameshtrading.com.ph" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <div class="pw-wrap">
+          <input type="password" id="loginPassword" placeholder="Password" autocomplete="current-password" style="padding-right:38px;" onkeydown="if(event.key==='Enter')doLogin()">
+          <button type="button" class="pw-eye" onclick="togglePw('loginPassword',this)">👁</button>
+        </div>
+      </div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:.82rem;margin-bottom:16px;cursor:pointer;">
+        <input type="checkbox" id="loginRemember" style="accent-color:var(--maroon);width:15px;height:15px;"> Remember Me
+      </label>
+      <button class="auth-btn" id="loginBtn" onclick="doLogin()"><span class="btn-spin" id="loginSpin"></span><span id="loginBtnTxt">Login</span></button>
+      <div class="auth-links">
+        <a onclick="forgotPassword()">Forgot Password?</a>
+        <a onclick="showAuthPanel('register')">Create Account</a>
+      </div>
     </div>
-    <div class="status-tabs">
-      <button class="status-tab active" onclick="filterStatus('All',this)">All <span class="status-count" id="cnt-All">0</span></button>
-      <button class="status-tab" onclick="filterStatus('Draft',this)">Draft <span class="status-count" id="cnt-Draft">0</span></button>
-      <button class="status-tab" onclick="filterStatus('Submitted',this)">Submitted <span class="status-count" id="cnt-Submitted">0</span></button>
-      <button class="status-tab" onclick="filterStatus('Approved',this)">Approved <span class="status-count" id="cnt-Approved">0</span></button>
-      <button class="status-tab" onclick="filterStatus('Rejected',this)">Rejected <span class="status-count" id="cnt-Rejected">0</span></button>
-      <button class="status-tab" onclick="filterStatus('Archived',this)">Archived <span class="status-count" id="cnt-Archived">0</span></button>
+    <!-- REGISTER PANEL -->
+    <div id="registerPanel" style="display:none;">
+      <h1 class="auth-logo-title">Create Account</h1>
+      <div class="auth-sub">@rameshtrading.com.ph only</div>
+      <div class="auth-err" id="regErr"></div>
+      <div class="auth-field">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Juan Dela Cruz">
+      </div>
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="you@rameshtrading.com.ph">
+      </div>
+      <div class="auth-field">
+        <label>Department</label>
+        <input type="text" id="regDept" placeholder="e.g. Sales, Accounting, Executive Assistant">
+      </div>
+      <div class="auth-field">
+        <label>Password (min 8 characters)</label>
+        <div class="pw-wrap">
+          <input type="password" id="regPass" placeholder="Password" style="padding-right:38px;">
+          <button type="button" class="pw-eye" onclick="togglePw('regPass',this)">👁</button>
+        </div>
+      </div>
+      <div class="auth-field">
+        <label>Confirm Password</label>
+        <input type="password" id="regPass2" placeholder="Repeat password" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button class="auth-btn" id="regBtn" onclick="doRegister()"><span class="btn-spin" id="regSpin"></span><span id="regBtnTxt">Register</span></button>
+      <div class="auth-links" style="justify-content:center;">
+        <a onclick="showAuthPanel('login')">← Back to Login</a>
+      </div>
     </div>
-    <div class="search-sort">
-      <div class="search-box"><span class="search-icon">🔍</span><input type="text" id="searchInput" placeholder="Search by client, project, quotation no..." oninput="renderQuotes()"></div>
-      <select class="sort-sel" id="sortSelect" onchange="renderQuotes()">
-        <option value="date-desc">Newest First</option><option value="date-asc">Oldest First</option>
-        <option value="client-asc">Client A-Z</option><option value="amount-desc">Highest Amount</option><option value="amount-asc">Lowest Amount</option>
-      </select>
-    </div>
-    <div id="quotesGrid" class="quotes-grid"><div class="dash-loading"><div class="dash-spinner"></div><p style="color:var(--gray);font-size:.84rem;">Loading your quotations...</p></div></div>
   </div>
 </div>
 
-<!-- ══ QUOTATION VIEW ══ -->
-<div id="viewQuote" style="display:none;">
-  <div class="quote-view-bar no-print">
-    <button class="btn-back" onclick="showDashboard()">← Dashboard</button>
-    <div style="flex:1;min-width:0;">
-      <div style="font-size:.7rem;color:var(--gray);" id="qvId"></div>
-      <div style="font-size:.88rem;font-weight:600;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;" id="qvClient">New Quotation</div>
+<!-- ═══════ VIEW: DASHBOARD ═══════ -->
+<div id="viewDash" class="no-print" style="display:none;">
+  <div class="dash-wrap">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
+      <h2 class="dash-title">My Quotations</h2>
+      <button class="btn-maroon" onclick="newQuotation()" style="padding:9px 18px;">＋ New Quotation</button>
     </div>
-    <span class="qvb-status" id="qvStatus"></span>
-    <button class="btn-chg-status no-print" onclick="openStatusModal()">⚡ Change Status</button>
+    <div class="status-tabs" id="statusTabs"></div>
+    <div class="dash-controls">
+      <input type="text" id="dashSearch" placeholder="🔍 Search client, project, or quotation number..." oninput="renderDashboard()">
+      <select id="dashSort" onchange="renderDashboard()">
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+        <option value="client">Client A–Z</option>
+        <option value="amountHigh">Highest amount</option>
+        <option value="amountLow">Lowest amount</option>
+      </select>
+    </div>
+    <div class="dash-loading" id="dashLoading" style="display:none;"><div class="spinner dark"></div></div>
+    <div class="q-cards" id="qCards"></div>
+    <div class="dash-empty" id="dashEmpty" style="display:none;">
+      <div class="big">📄</div>
+      <div style="font-weight:700;font-size:1rem;color:var(--dark);margin-bottom:4px;">No quotations found</div>
+      <div style="font-size:.82rem;">Click <strong>＋ New Quotation</strong> to create your first one.</div>
+    </div>
   </div>
-  <div class="tabs-bar no-print" id="tabsBar"><button class="add-tab-btn" onclick="addTab()">＋ New Quote</button></div>
-  
+</div>
 
-<div class="d-flex gap-2 align-items-center">
-    <span class="save-status" id="saveStatus">All changes saved</span>
-    <button class="btn-green" onclick="manualSave()">💾 Save</button>
-    <button id="installBtn" class="btn-outline-maroon" onclick="installApp()" style="display:none;">📲 Install App</button>
-    <button class="btn-outline-maroon" onclick="toggleSettings()">⚙ Settings</button>
-    <button class="btn-outline-maroon" onclick="toggleHelp()">Help?</button>
-    <button class="btn-maroon" onclick="exportPDF()">⬇ Export PDF</button>
-  </div>
+<!-- ═══════ VIEW: QUOTATION (existing system embedded) ═══════ -->
+<div id="viewQuote" style="display:none;">
+<div class="quote-toolbar no-print">
+  <button class="btn-outline-maroon" onclick="backToDashboard()">← Dashboard</button>
+  <span class="qt-id" id="qtQuoteId">New</span>
+  <span class="qt-client" id="qtClient"></span>
+  <span class="badge-status badge-Draft" id="qtStatus">Draft</span>
+  <button class="btn-outline-maroon" style="padding:4px 10px;font-size:.72rem;" onclick="openStatusModal(currentQuoteId)">Change Status</button>
 </div>
 
 <div class="tabs-bar no-print" id="tabsBar">
@@ -581,7 +530,7 @@ body.show-admin #viewAdmin{display:block;}
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
       <div class="doc-info-grid" style="flex:1;">
         <div class="doc-field"><label>Date</label><input type="date" id="docDate" oninput="markUnsaved()"></div>
-        <div class="doc-field"><label>Client</label><textarea id="docClient" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved();updateQVClient()"></textarea></div>
+        <div class="doc-field"><label>Client</label><textarea id="docClient" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved()"></textarea></div>
         <div class="doc-field"><label>Name of Project</label><textarea id="docProject" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved()"></textarea></div>
         <div class="doc-field"><label>Ref No.</label><textarea id="docRef" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved()"></textarea></div>
         <div class="doc-field"><label>Quotation Number</label><textarea id="docQuotation" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved()"></textarea></div>
@@ -722,6 +671,172 @@ body.show-admin #viewAdmin{display:block;}
     </div>
   </div>
 </div>
+</div><!-- /viewQuote -->
+
+<!-- ═══════ VIEW: ADMIN ═══════ -->
+<div id="viewAdmin" class="no-print" style="display:none;">
+  <div class="admin-wrap">
+    <div class="admin-side">
+      <div class="as-item active" id="asDash" onclick="showAdminPage('dash')">📊 Dashboard</div>
+      <div class="as-item" id="asUsers" onclick="showAdminPage('users')">👥 All Users</div>
+      <div class="as-item" id="asQuotes" onclick="showAdminPage('quotes')">📄 All Quotations</div>
+      <div class="as-item" id="asSettings" onclick="showAdminPage('settings')">⚙ Settings</div>
+    </div>
+    <div class="admin-main">
+      <div class="dash-loading" id="adminLoading" style="display:none;"><div class="spinner dark"></div></div>
+
+      <!-- ADMIN: DASHBOARD -->
+      <div id="adminPageDash" style="display:none;">
+        <h3 class="admin-h">Admin Dashboard</h3>
+        <div class="sum-cards" id="adminSumCards"></div>
+        <div class="admin-filters">
+          <select id="admDashDept" onchange="renderAdminDash()"><option value="All">All Departments</option></select>
+          <select id="admDashDate" onchange="renderAdminDash()">
+            <option value="All">All Time</option>
+            <option value="Today">Today</option>
+            <option value="Week">This Week</option>
+            <option value="Month">This Month</option>
+          </select>
+        </div>
+        <div class="admin-card">
+          <div style="font-weight:700;font-size:.9rem;color:var(--maroon);margin-bottom:8px;">Quotations per User <span style="font-weight:400;color:var(--gray);font-size:.72rem;">(click a user to see their quotations)</span></div>
+          <table class="admin-table"><thead><tr>
+            <th>User</th><th>Department</th><th>Quotes</th><th>Total Selling</th><th>Net Profit</th><th>Avg Margin</th>
+          </tr></thead><tbody id="admUserStats"></tbody></table>
+        </div>
+        <div class="admin-card" id="admUserDetailCard" style="display:none;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div style="font-weight:700;font-size:.9rem;color:var(--maroon);" id="admUserDetailTitle"></div>
+            <button class="at-btn" onclick="document.getElementById('admUserDetailCard').style.display='none'">✕ Close</button>
+          </div>
+          <table class="admin-table"><thead><tr>
+            <th>Quote No</th><th>Client</th><th>Project</th><th>Date</th><th>Status</th><th>Total Selling</th><th>Net Margin</th>
+          </tr></thead><tbody id="admUserDetailBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ADMIN: ALL USERS -->
+      <div id="adminPageUsers" style="display:none;">
+        <h3 class="admin-h">All Users</h3>
+        <div class="admin-filters">
+          <input type="text" id="admUserSearch" placeholder="🔍 Search name or email..." oninput="renderAdminUsers()">
+          <select id="admUserDept" onchange="renderAdminUsers()"><option value="All">All Departments</option></select>
+        </div>
+        <div class="admin-card">
+          <table class="admin-table"><thead><tr>
+            <th>Name</th><th>Email</th><th>Dept</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th>
+          </tr></thead><tbody id="admUsersBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ADMIN: ALL QUOTATIONS -->
+      <div id="adminPageQuotes" style="display:none;">
+        <h3 class="admin-h">All Quotations</h3>
+        <div class="admin-filters">
+          <input type="text" id="admQSearch" placeholder="🔍 Search client, project, owner..." oninput="renderAdminQuotes()">
+          <select id="admQDept" onchange="renderAdminQuotes()"><option value="All">All Departments</option></select>
+          <select id="admQStatus" onchange="renderAdminQuotes()">
+            <option value="All">All Status</option><option>Draft</option><option>Submitted</option>
+            <option>Approved</option><option>Rejected</option><option>Archived</option>
+          </select>
+          <select id="admQDate" onchange="renderAdminQuotes()">
+            <option value="All">All Time</option><option value="Today">Today</option>
+            <option value="Week">This Week</option><option value="Month">This Month</option>
+          </select>
+        </div>
+        <div class="admin-card">
+          <table class="admin-table"><thead><tr>
+            <th>Quote No</th><th>Owner</th><th>Client</th><th>Date</th><th>Status</th>
+            <th>Total Selling</th><th>Total Cost</th><th>Net Profit</th><th>Net Margin</th><th></th>
+          </tr></thead><tbody id="admQuotesBody"></tbody></table>
+        </div>
+      </div>
+
+      <!-- ADMIN: SETTINGS -->
+      <div id="adminPageSettings" style="display:none;">
+        <h3 class="admin-h">Admin Settings</h3>
+        <div class="admin-card" style="max-width:520px;">
+          <div style="font-weight:700;font-size:.9rem;color:var(--maroon);margin-bottom:8px;">Company Logo</div>
+          <p style="font-size:.76rem;color:var(--gray);">Shown in the app header. Auto-compressed and stored in this browser.</p>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;">
+            <img id="admLogoPreview" style="height:48px;max-width:160px;object-fit:contain;border:1px dashed var(--border);border-radius:8px;padding:4px;display:none;">
+            <label class="btn-outline-maroon" style="cursor:pointer;">Upload Logo<input type="file" accept="image/*" onchange="uploadLogo(this)" style="display:none;"></label>
+            <button class="btn-danger-sm" onclick="removeLogo()">Remove</button>
+          </div>
+        </div>
+        <div class="admin-card" style="max-width:520px;">
+          <div style="font-weight:700;font-size:.9rem;color:var(--maroon);margin-bottom:8px;">Add User Manually</div>
+          <p style="font-size:.76rem;color:var(--gray);">Default password: <strong>ChangeMe123!</strong> — ask the user to change it after first login.</p>
+          <div class="auth-field"><label>Full Name</label><input type="text" id="admNewName"></div>
+          <div class="auth-field"><label>Email (@rameshtrading.com.ph)</label><input type="email" id="admNewEmail"></div>
+          <div class="auth-field"><label>Department</label><input type="text" id="admNewDept"></div>
+          <div class="auth-field"><label>Role</label>
+            <select id="admNewRole"><option value="user">User</option><option value="admin">Admin</option></select>
+          </div>
+          <button class="btn-maroon" onclick="adminAddUser()" style="width:100%;padding:9px;">+ Add User</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ STATUS MODAL ═══════ -->
+<div class="modal-back no-print" id="statusModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-head">Change Status <button onclick="closeModal('statusModal')">✕</button></div>
+    <div class="modal-body" id="statusOpts">
+      <div class="status-opt" data-s="Draft" onclick="selectStatus('Draft')"><span class="badge-status badge-Draft">Draft</span> Work in progress</div>
+      <div class="status-opt" data-s="Submitted" onclick="selectStatus('Submitted')"><span class="badge-status badge-Submitted">Submitted</span> Sent for approval</div>
+      <div class="status-opt" data-s="Approved" onclick="selectStatus('Approved')"><span class="badge-status badge-Approved">Approved</span> Approved by CSO</div>
+      <div class="status-opt" data-s="Rejected" onclick="selectStatus('Rejected')"><span class="badge-status badge-Rejected">Rejected</span> Not approved</div>
+      <div class="status-opt" data-s="Archived" onclick="selectStatus('Archived')"><span class="badge-status badge-Archived">Archived</span> Filed away</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline-maroon" onclick="closeModal('statusModal')">Cancel</button>
+      <button class="btn-maroon" onclick="applyStatus()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ PROFILE MODAL ═══════ -->
+<div class="modal-back no-print" id="profileModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-head">My Profile <button onclick="closeModal('profileModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="profile-photo-wrap">
+        <div class="profile-photo" id="profilePhotoPrev">?</div>
+        <label class="btn-outline-maroon" style="cursor:pointer;font-size:.76rem;">📷 Change Photo<input type="file" accept="image/*" onchange="changeProfilePhoto(this)" style="display:none;"></label>
+      </div>
+      <div class="auth-field"><label>Full Name</label><input type="text" id="profName"></div>
+      <div class="auth-field"><label>Department</label><input type="text" id="profDept"></div>
+      <div class="auth-field"><label>Email</label><input type="email" id="profEmail" disabled style="background:#f3f4f6;color:var(--gray);"></div>
+      <button class="btn-outline-maroon" style="width:100%;padding:8px;" onclick="openPasswordModal()">🔒 Change Password</button>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline-maroon" onclick="closeModal('profileModal')">Cancel</button>
+      <button class="btn-maroon" id="profSaveBtn" onclick="saveProfile()">Save Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ CHANGE PASSWORD MODAL ═══════ -->
+<div class="modal-back no-print" id="passwordModal" style="display:none;">
+  <div class="modal-card">
+    <div class="modal-head">Change Password <button onclick="closeModal('passwordModal')">✕</button></div>
+    <div class="modal-body">
+      <div class="auth-field"><label>Current Password</label><input type="password" id="pwOld"></div>
+      <div class="auth-field"><label>New Password (min 8 characters)</label><input type="password" id="pwNew"></div>
+      <div class="auth-field"><label>Confirm New Password</label><input type="password" id="pwNew2"></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline-maroon" onclick="closeModal('passwordModal')">Cancel</button>
+      <button class="btn-maroon" id="pwSaveBtn" onclick="submitPasswordChange()">Change Password</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ TOASTS ═══════ -->
+<div id="toastWrap" class="no-print"></div>
 
 <!-- SETTINGS PANEL -->
 <div class="settings-panel" id="settingsPanel">
@@ -809,7 +924,7 @@ body.show-admin #viewAdmin{display:block;}
         <li><strong>7. Sign</strong> — Fill signatory names at the bottom.</li>
         <li><strong>8. Export</strong> — Click <em>Export PDF</em> to save or print.</li>
         <li><strong>9. Multiple Quotes</strong> — Use tabs at top. Click <em>＋ New Quote</em>. Double-click tab to rename.</li>
-        <li><strong>10. Auto-Save</strong> — Saves every 2 seconds to your browser.</li>
+        <li><strong>10. Auto-Save</strong> — Saves to the cloud automatically every 3 seconds.</li>
       </ul>
       <h4 style="margin-top:14px;margin-bottom:8px;">Goods &amp; PDM Breakdown</h4>
       <ul>
@@ -864,8 +979,8 @@ body.show-admin #viewAdmin{display:block;}
       <h4>Frequently Asked Questions</h4>
       <p><strong>Why is my Net Margin red?</strong><br>It's below 20%. Increase selling price or reduce costs.</p>
       <p><strong>How do I rename a tab?</strong><br>Double-click the tab name and type the new name. Press Enter to confirm.</p>
-      <p><strong>Is my data saved automatically?</strong><br>Yes — every 2 seconds, saved to your browser's local storage.</p>
-      <p><strong>Can others see my saved data?</strong><br>No. Stored only in your browser on your device. Private.</p>
+      <p><strong>Is my data saved automatically?</strong><br>Yes — every 3 seconds, saved automatically to the cloud.</p>
+      <p><strong>Can others see my saved data?</strong><br>Your quotations are stored in your company account. Only you and administrators can see them.</p>
       <p><strong>Keyboard shortcuts:</strong><br>
         <span class="kbd">Enter</span> — move to next row &nbsp;
         <span class="kbd">Shift+Enter</span> — new line in supplier field &nbsp;
@@ -894,679 +1009,257 @@ body.show-admin #viewAdmin{display:block;}
     </div>
   </div>
 </div>
-
-
-</div>
-
-<!-- ══ ADMIN VIEW ══ -->
-<div id="viewAdmin" style="display:none;">
-  <div class="admin-wrap">
-    <div class="admin-sidebar">
-      <div class="admin-sidebar-label">Overview</div>
-      <div class="admin-sidebar-item active" onclick="showAdminPage('adminDash',this)">📊 Dashboard</div>
-      <div class="admin-sidebar-label">Users</div>
-      <div class="admin-sidebar-item" onclick="showAdminPage('adminUsers',this)">👥 All Users</div>
-      <div class="admin-sidebar-item" onclick="showAdminPage('adminPending',this)">⏳ Pending <span class="admin-badge-count" id="pendingBadge">0</span></div>
-      <div class="admin-sidebar-label">Quotations</div>
-      <div class="admin-sidebar-item" onclick="showAdminPage('adminQuotes',this)">📄 All Quotations</div>
-      <div class="admin-sidebar-label">Settings</div>
-      <div class="admin-sidebar-item" onclick="showAdminPage('adminSettings',this)">⚙️ System Settings</div>
-    </div>
-    <div class="admin-main">
-      <div class="admin-page active" id="adminDash">
-        <div class="admin-page-title">Dashboard</div>
-        <div class="admin-summary-grid">
-          <div class="admin-stat-card"><div class="admin-stat-label">Total Users</div><div class="admin-stat-val maroon" id="statUsers">—</div></div>
-          <div class="admin-stat-card"><div class="admin-stat-label">Total Quotations</div><div class="admin-stat-val" id="statQuotes">—</div></div>
-          <div class="admin-stat-card"><div class="admin-stat-label">Total Selling</div><div class="admin-stat-val green" id="statSelling">—</div></div>
-          <div class="admin-stat-card"><div class="admin-stat-label">Total Cost</div><div class="admin-stat-val" id="statCost">—</div></div>
-          <div class="admin-stat-card"><div class="admin-stat-label">Avg Margin</div><div class="admin-stat-val" id="statMargin">—</div></div>
-          <div class="admin-stat-card"><div class="admin-stat-label">Pending</div><div class="admin-stat-val maroon" id="statPending">—</div></div>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:10px;">
-          <div style="font-family:'Playfair Display',serif;font-size:1rem;font-weight:700;color:var(--maroon);">Quotations Per User</div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
-            <button class="filter-btn active" onclick="filterAdminDate('all',this)">All Time</button>
-            <button class="filter-btn" onclick="filterAdminDate('today',this)">Today</button>
-            <button class="filter-btn" onclick="filterAdminDate('week',this)">This Week</button>
-            <button class="filter-btn" onclick="filterAdminDate('month',this)">This Month</button>
-            <select class="filter-sel" id="adminDeptFilter" onchange="renderAdminUserStats()"><option value="">All Departments</option></select>
-          </div>
-        </div>
-        <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
-          <table class="data-table"><thead><tr><th>User</th><th>Dept</th><th># Quotes</th><th>Total Selling</th><th>Total Cost</th><th>Net Profit</th><th>Action</th></tr></thead>
-          <tbody id="adminUserStatsTable"></tbody></table>
-        </div>
-        <div class="admin-detail-panel" id="adminDetailPanel">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <div style="font-family:'Playfair Display',serif;font-size:.95rem;font-weight:700;color:var(--maroon);" id="adminDetailTitle">User Quotations</div>
-            <button onclick="document.getElementById('adminDetailPanel').classList.remove('open')" style="background:none;border:none;cursor:pointer;color:var(--gray);font-size:1.1rem;">✕</button>
-          </div>
-          <div style="overflow-x:auto;"><table class="data-table"><thead><tr><th>Quote No</th><th>Client</th><th>Date</th><th>Status</th><th>Selling</th><th>Cost</th><th>Net Profit</th><th>Margin</th></tr></thead><tbody id="adminDetailTable"></tbody></table></div>
-        </div>
-      </div>
-      <div class="admin-page" id="adminUsers">
-        <div class="admin-page-title">All Users</div>
-        <div class="admin-filter-bar">
-          <div class="admin-search"><span class="admin-search-icon">🔍</span><input type="text" placeholder="Search users..." id="adminUserSearch" oninput="renderAdminUsers()"></div>
-          <select class="filter-sel" id="adminUserDeptFilter" onchange="renderAdminUsers()"><option value="">All Departments</option></select>
-        </div>
-        <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
-          <table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Dept</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
-          <tbody id="adminUsersTable"></tbody></table>
-        </div>
-      </div>
-      <div class="admin-page" id="adminPending">
-        <div class="admin-page-title">Pending Registrations</div>
-        <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
-          <table class="data-table"><thead><tr><th>Name</th><th>Email</th><th>Dept</th><th>Registered</th><th>Actions</th></tr></thead>
-          <tbody id="adminPendingTable"></tbody></table>
-        </div>
-      </div>
-      <div class="admin-page" id="adminQuotes">
-        <div class="admin-page-title">All Quotations</div>
-        <div class="admin-filter-bar">
-          <div class="admin-search"><span class="admin-search-icon">🔍</span><input type="text" placeholder="Search..." id="adminQuoteSearch" oninput="renderAdminQuotes()"></div>
-          <select class="filter-sel" id="adminQuoteDeptFilter" onchange="renderAdminQuotes()"><option value="">All Departments</option></select>
-          <select class="filter-sel" id="adminQuoteStatusFilter" onchange="renderAdminQuotes()"><option value="">All Statuses</option><option>Draft</option><option>Submitted</option><option>Approved</option><option>Rejected</option><option>Archived</option></select>
-          <button class="filter-btn active" onclick="filterAdminQuoteDate('all',this)">All</button>
-          <button class="filter-btn" onclick="filterAdminQuoteDate('today',this)">Today</button>
-          <button class="filter-btn" onclick="filterAdminQuoteDate('week',this)">Week</button>
-          <button class="filter-btn" onclick="filterAdminQuoteDate('month',this)">Month</button>
-        </div>
-        <div style="overflow-x:auto;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,.04);">
-          <table class="data-table"><thead><tr><th>Quote No</th><th>Owner</th><th>Client</th><th>Date</th><th>Status</th><th>Selling</th><th>Cost</th><th>Net Profit</th><th>Margin</th></tr></thead>
-          <tbody id="adminQuotesTable"></tbody></table>
-        </div>
-      </div>
-      <div class="admin-page" id="adminSettings">
-        <div class="admin-page-title">System Settings</div>
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;">
-          <div style="font-weight:700;font-size:.9rem;margin-bottom:14px;">Company Logo</div>
-          <div style="display:flex;align-items:center;gap:16px;padding:16px;background:var(--maroon-pale);border-radius:10px;border:1px solid #fca5a5;margin-bottom:8px;">
-            <div id="adminLogoPreview" style="width:60px;height:60px;border-radius:8px;background:var(--maroon);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:1.1rem;flex-shrink:0;">RTC</div>
-            <div>
-              <div style="font-size:.84rem;font-weight:600;margin-bottom:4px;">Upload Company Logo</div>
-              <div style="font-size:.74rem;color:var(--gray);margin-bottom:10px;">Square image recommended.</div>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <button onclick="document.getElementById('adminLogoInput').click()" class="btn-maroon" style="font-size:.8rem;padding:8px 16px;">📁 Upload</button>
-                <button onclick="removeLogo()" class="btn-danger-sm" style="padding:8px 16px;">✕ Remove</button>
-              </div>
-              <input type="file" id="adminLogoInput" accept="image/*" style="display:none;" onchange="handleLogoUpload(this)">
-            </div>
-          </div>
-        </div>
-        <div style="background:var(--white);border:1px solid var(--border);border-radius:10px;padding:20px;">
-          <div style="font-weight:700;font-size:.9rem;margin-bottom:14px;">Add User Manually</div>
-          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:12px;">
-            <div><label class="profile-label">Full Name</label><input type="text" id="addUserName" class="profile-input" style="margin-bottom:0;" placeholder="Juan Dela Cruz"></div>
-            <div><label class="profile-label">Email</label><input type="email" id="addUserEmail" class="profile-input" style="margin-bottom:0;" placeholder="juan@rameshtrading.com.ph"></div>
-            <div><label class="profile-label">Department</label><input type="text" id="addUserDept" class="profile-input" style="margin-bottom:0;" placeholder="Corporate Sales"></div>
-            <div><label class="profile-label">Role</label><select id="addUserRole" class="profile-input" style="margin-bottom:0;"><option value="user">User</option><option value="admin">Admin</option></select></div>
-          </div>
-          <div style="font-size:.74rem;color:var(--gray);margin-bottom:12px;">Default password: <strong>ChangeMe123!</strong></div>
-          <button onclick="addUserManually()" class="btn-maroon" style="font-size:.84rem;padding:9px 20px;">➕ Add User</button>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- STATUS MODAL -->
-<div class="modal-overlay" id="statusModal">
-  <div class="modal-box">
-    <div class="modal-title">Change Quotation Status</div>
-    <div class="status-options">
-      <div class="status-opt" onclick="selectStatus('Draft')">📝 Draft</div>
-      <div class="status-opt" onclick="selectStatus('Submitted')">📤 Submitted</div>
-      <div class="status-opt" onclick="selectStatus('Approved')">✅ Approved</div>
-      <div class="status-opt" onclick="selectStatus('Rejected')">❌ Rejected</div>
-      <div class="status-opt" onclick="selectStatus('Archived')">🗄️ Archived</div>
-    </div>
-    <div style="display:flex;gap:8px;justify-content:flex-end;">
-      <button class="btn-cancel-sm" onclick="closeStatusModal()">Cancel</button>
-      <button class="btn-save-sm" onclick="saveQuoteStatus()">Save Status</button>
-    </div>
-  </div>
-</div>
-
-<!-- PROFILE MODAL -->
-<div class="modal-overlay" id="profileModal">
-  <div class="modal-box" style="max-width:400px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div class="modal-title" style="margin-bottom:0;">My Profile</div>
-      <button onclick="closeProfile()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gray);">✕</button>
-    </div>
-    <div style="text-align:center;margin-bottom:20px;">
-      <div class="profile-avatar-lg" id="profileAvatarLg"></div>
-      <button onclick="document.getElementById('photoInput').click()" style="font-size:.72rem;color:var(--maroon);background:none;border:none;cursor:pointer;text-decoration:underline;font-family:'DM Sans',sans-serif;">Change Photo</button>
-      <input type="file" id="photoInput" accept="image/*" style="display:none;" onchange="handlePhotoChange(this)">
-    </div>
-    <label class="profile-label">Full Name</label><input type="text" class="profile-input" id="profileName">
-    <label class="profile-label">Department</label><input type="text" class="profile-input" id="profileDept">
-    <label class="profile-label">Email</label><input type="text" class="profile-input" id="profileEmail" disabled style="color:var(--gray);background:#f9fafb;">
-    <button class="btn-save-profile" onclick="saveProfile()">💾 Save Profile</button>
-    <button class="btn-outline-profile" onclick="openChangePw()">🔒 Change Password</button>
-  </div>
-</div>
-
-<!-- CHANGE PW MODAL -->
-<div class="modal-overlay" id="changePwModal">
-  <div class="modal-box" style="max-width:360px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <div class="modal-title" style="margin-bottom:0;">Change Password</div>
-      <button onclick="closeChangePw()" style="background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--gray);">✕</button>
-    </div>
-    <label class="profile-label">Current Password</label><input type="password" class="profile-input" id="pwCurrent">
-    <label class="profile-label">New Password</label><input type="password" class="profile-input" id="pwNew">
-    <label class="profile-label">Confirm New Password</label><input type="password" class="profile-input" id="pwConfirm">
-    <button class="btn-save-profile" onclick="doChangePw()">Change Password</button>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div class="toast-container" id="toastContainer"></div>
-
 <script>
-const SETTINGS_KEY='rtc_settings_v1';
-const SIG_CONTACTS_KEY='rtc_sig_contacts_v1';
-let tabs=[],activeTabId=null,ewtEnabled=false,goodsSectionCount=0,pdmSectionCount=0;
+/* ═══════════════ CLOUD CONFIG (declare once) ═══════════════ */
+const API_URL='https://script.google.com/macros/s/AKfycbyNB0bS_5Yqf4k39d7QX3GsyR-VbE7Dud75OeioRdKHla1j7pDXvs6zZHSyPF92Zd9yEA/exec';          // ← Google Apps Script Web App URL
+const SESSION_STORE_KEY='rtc_session';
+const LOGO_KEY='rtc_logo_v1';
+const ALLOWED_DOMAIN='@rameshtrading.com.ph';
+const DEFAULT_RESET_PW='ChangeMe123!';
 
-const API_URL='https://script.google.com/macros/s/AKfycbyNB0bS_5Yqf4k39d7QX3GsyR-VbE7Dud75OeioRdKHla1j7pDXvs6zZHSyPF92Zd9yEA/exec';
+let session=null;
+let allQuotes=[];
+let currentStatus='All';
+let currentQuoteId=null;
+let selectedStatus=null;
+let cloudSaveTimer=null;
+let adminData=null;
+let statusTargetId=null;
+let adminPageCur='dash';
+let sessionWarned=false;
+let dashLoaded=false;
 
-let session=null,allQuotes=[],currentStatus='All',currentQuoteId=null,selectedStatus=null,cloudSaveTimer=null,adminData=null,adminDateFilter='all',adminQuoteDateFilter='all';
+/* ═══════════════ VIEW SWITCHING ═══════════════ */
+function showView(view) {
+  ['viewAuth','viewDash','viewQuote','viewAdmin'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  const appHeader = document.getElementById('appHeader');
+  if (view === 'auth') {
+    document.getElementById('viewAuth').style.display = 'flex';
+    appHeader.style.display = 'none';
+  } else if (view === 'dash') {
+    document.getElementById('viewDash').style.display = 'block';
+    appHeader.style.display = 'flex';
+    document.getElementById('saveStatus').style.display = 'none';
+    document.getElementById('quoteHeaderBtns').style.display = 'none';
+  } else if (view === 'quote') {
+    document.getElementById('viewQuote').style.display = 'block';
+    appHeader.style.display = 'flex';
+    document.getElementById('saveStatus').style.display = 'inline';
+    document.getElementById('quoteHeaderBtns').style.display = 'flex';
+  } else if (view === 'admin') {
+    document.getElementById('viewAdmin').style.display = 'block';
+    appHeader.style.display = 'flex';
+    document.getElementById('saveStatus').style.display = 'none';
+    document.getElementById('quoteHeaderBtns').style.display = 'none';
+  }
+}
 
-/* ══ API ══ */
-async function callAPI(data){
+/* ═══════════════ TOASTS ═══════════════ */
+function showToast(msg,type){
+  const wrap=document.getElementById('toastWrap');
+  const t=document.createElement('div');
+  t.className='toastx'+(type?' '+type:'');
+  const icon=type==='success'?'✓':type==='error'?'✕':type==='warn'?'⚠':'ℹ';
+  t.innerHTML='<span>'+icon+'</span><span></span>';
+  t.lastElementChild.textContent=msg;
+  wrap.appendChild(t);
+  setTimeout(()=>{t.style.opacity='0';t.style.transition='opacity .3s';setTimeout(()=>t.remove(),320);},3500);
+}
+
+function escapeHtml(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function numFromText(t){return parseFloat(String(t==null?'':t).replace(/[^0-9.\-]/g,''))||0;}
+function fmtDate(v){if(!v)return'—';const d=new Date(v);return isNaN(d)?'—':d.toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'});}
+function fmtDateTime(v){if(!v)return'—';const d=new Date(v);return isNaN(d)?'—':d.toLocaleDateString('en-PH',{month:'short',day:'numeric'})+' '+d.toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit'});}
+function inDateRange(v,range){
+  if(range==='All')return true;
+  const d=new Date(v);if(isNaN(d))return false;
+  const now=new Date();const start=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  if(range==='Today')return d>=start;
+  if(range==='Week'){const w=new Date(start);w.setDate(w.getDate()-7);return d>=w;}
+  if(range==='Month'){const m=new Date(start);m.setMonth(m.getMonth()-1);return d>=m;}
+  return true;
+}
+
+/* ═══════════════ API ═══════════════ */
+async function callAPI(data) {
+  let out;
+  try {
+    const form = new FormData();
+    form.append('payload', JSON.stringify(data));
+    const res = await fetch(API_URL, {method:'POST', body:form});
+    out = await res.json();
+  } catch(e) {
+    try {
+      const res = await fetch(API_URL + '?payload=' + encodeURIComponent(JSON.stringify(data)));
+      out = await res.json();
+    } catch(e2) {
+      out = {success: false, message: 'Connection failed. Check your internet.'};
+    }
+  }
+  if(out && out.sessionExpired){ forceLogout('Your session has expired. Please log in again.'); }
+  return out;
+}
+
+/* ═══════════════ SESSION ═══════════════ */
+function saveSession(result, rememberMe){
+  session={email:result.user.email,token:result.token,expiry:result.expiry,rememberMe:!!rememberMe,user:result.user};
+  const str=JSON.stringify(session);
+  if(rememberMe){localStorage.setItem(SESSION_STORE_KEY,str);sessionStorage.removeItem(SESSION_STORE_KEY);}
+  else{sessionStorage.setItem(SESSION_STORE_KEY,str);localStorage.removeItem(SESSION_STORE_KEY);}
+}
+function getSession(){
   try{
-    const form=new FormData();
-    form.append('payload',JSON.stringify(data));
-    const res=await fetch(API_URL,{method:'POST',body:form});
-    return await res.json();
-  }catch(e){
-    try{
-      const res=await fetch(API_URL+'?payload='+encodeURIComponent(JSON.stringify(data)));
-      return await res.json();
-    }catch(e2){return{success:false,message:'Connection failed. Please check your internet.'};}
-  }
+    const raw=localStorage.getItem(SESSION_STORE_KEY)||sessionStorage.getItem(SESSION_STORE_KEY);
+    if(!raw)return null;
+    const s=JSON.parse(raw);
+    if(!s||!s.token||!s.expiry)return null;
+    return s;
+  }catch(e){return null;}
+}
+function persistSession(){
+  if(!session)return;
+  const str=JSON.stringify(session);
+  if(session.rememberMe)localStorage.setItem(SESSION_STORE_KEY,str);
+  else sessionStorage.setItem(SESSION_STORE_KEY,str);
+}
+function clearSession(){localStorage.removeItem(SESSION_STORE_KEY);sessionStorage.removeItem(SESSION_STORE_KEY);}
+function forceLogout(msg){
+  clearSession();session=null;allQuotes=[];adminData=null;dashLoaded=false;
+  currentQuoteId=null;sessionWarned=false;
+  closeUserDrop();
+  ['statusModal','profileModal','passwordModal'].forEach(id=>{const m=document.getElementById(id);if(m)m.style.display='none';});
+  showView('auth');showAuthPanel('login');
+  if(msg)showToast(msg,'warn');
+}
+function doLogout(){forceLogout();showToast('Logged out.','success');}
+function startExpiryWatch(){
+  setInterval(()=>{
+    if(!session)return;
+    const rem=session.expiry-Date.now();
+    if(rem<=0){forceLogout('Your session has expired. Please log in again.');return;}
+    if(rem<15*60*1000&&!sessionWarned){
+      sessionWarned=true;
+      showToast('⏰ Your session expires in less than 15 minutes. Save your work.','warn');
+    }
+  },60000);
 }
 
-/* ══ SESSION ══ */
-function getSession(){const ls=localStorage.getItem('rtc_session');const ss=sessionStorage.getItem('rtc_session');const raw=ls||ss;if(!raw)return null;try{return JSON.parse(raw);}catch(e){return null;}}
-function saveSession(data,rememberMe){const s={email:data.user.email,token:data.token,expiry:data.expiry,rememberMe,user:data.user};if(rememberMe)localStorage.setItem('rtc_session',JSON.stringify(s));else sessionStorage.setItem('rtc_session',JSON.stringify(s));}
-function clearSession(){localStorage.removeItem('rtc_session');sessionStorage.removeItem('rtc_session');}
-
-/* ══ TOAST ══ */
-function showToast(msg,type='info'){const icons={success:'✅',error:'❌',info:'ℹ️'};const t=document.createElement('div');t.className='toast '+type;t.innerHTML=`<span>${icons[type]||'ℹ️'}</span><span>${msg}</span>`;document.getElementById('toastContainer').appendChild(t);setTimeout(()=>t.remove(),4000);}
-
-/* ══ LOGO ══ */
-function loadLogo(){
-  const logo=localStorage.getItem('rtc_logo');
-  if(logo){
-    document.getElementById('logoImg').src=logo;document.getElementById('logoImg').style.display='block';document.getElementById('logoPlaceholder').style.display='none';
-    document.getElementById('authLogoImg').src=logo;document.getElementById('authLogoImg').style.display='block';document.getElementById('authLogoPlaceholder').style.display='none';
-    const ap=document.getElementById('adminLogoPreview');if(ap){ap.innerHTML=`<img src="${logo}" style="width:100%;height:100%;object-fit:contain;border-radius:6px;">`;}
-  }
+/* ═══════════════ AUTH UI ═══════════════ */
+function showAuthPanel(which){
+  document.getElementById('loginPanel').style.display=which==='login'?'block':'none';
+  document.getElementById('registerPanel').style.display=which==='register'?'block':'none';
+  document.getElementById('loginErr').style.display='none';
+  document.getElementById('regErr').style.display='none';
 }
-function handleLogoUpload(input){
-  if(!input.files||!input.files[0])return;
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const canvas=document.createElement('canvas');const max=200;let w=img.width,h=img.height;
-      if(w>h){if(w>max){h=h*max/w;w=max;}}else{if(h>max){w=w*max/h;h=max;}}
-      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
-      const compressed=canvas.toDataURL('image/png',0.9);
-      localStorage.setItem('rtc_logo',compressed);loadLogo();showToast('Logo updated!','success');
-    };img.src=e.target.result;
-  };reader.readAsDataURL(input.files[0]);
+function togglePw(id,btn){
+  const i=document.getElementById(id);
+  i.type=i.type==='password'?'text':'password';
+  btn.textContent=i.type==='password'?'👁':'🙈';
 }
-function removeLogo(){localStorage.removeItem('rtc_logo');document.getElementById('logoImg').style.display='none';document.getElementById('logoPlaceholder').style.display='flex';document.getElementById('authLogoImg').style.display='none';document.getElementById('authLogoPlaceholder').style.display='flex';const ap=document.getElementById('adminLogoPreview');if(ap)ap.innerHTML='RTC';showToast('Logo removed.','info');}
-
-/* ══ VIEW SWITCHING ══ */
-function showView(view){
-  document.getElementById('viewAuth').style.display='none';
-  document.getElementById('viewDash').style.display='none';
-  document.getElementById('viewQuote').style.display='none';
-  document.getElementById('viewAdmin').style.display='none';
-  document.body.className='show-'+view;
-  const header=document.getElementById('appHeader');
-  if(view==='auth'){
-    header.style.display='none';
-    document.getElementById('viewAuth').style.display='flex';
-  } else if(view==='dash'){
-    header.style.display='flex';
-    document.getElementById('viewDash').style.display='block';
-    document.getElementById('saveStatus').style.display='none';
-    document.getElementById('quoteHeaderBtns').style.display='none';
-  } else if(view==='quote'){
-    header.style.display='flex';
-    document.getElementById('viewQuote').style.display='block';
-    document.getElementById('saveStatus').style.display='flex';
-    document.getElementById('quoteHeaderBtns').style.display='flex';
-  } else if(view==='admin'){
-    header.style.display='flex';
-    document.getElementById('viewAdmin').style.display='block';
-    document.getElementById('saveStatus').style.display='none';
-    document.getElementById('quoteHeaderBtns').style.display='none';
-  }
+function authError(id,msg){const el=document.getElementById(id);el.textContent=msg;el.style.display='block';}
+function forgotPassword(){showToast('Contact your administrator to reset your password.','warn');}
+function setAuthBusy(btnId,spinId,txtId,busy,busyTxt,idleTxt){
+  document.getElementById(btnId).disabled=busy;
+  document.getElementById(spinId).style.display=busy?'inline-block':'none';
+  document.getElementById(txtId).textContent=busy?busyTxt:idleTxt;
 }
-
-/* ══ AUTH ══ */
-function showAuthPanel(id){
-  document.querySelectorAll('.auth-panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  document.querySelectorAll('.auth-input').forEach(el=>el.classList.remove('is-invalid'));
-}
-function togglePw(inputId,btn){const input=document.getElementById(inputId);const isText=input.type==='text';input.type=isText?'password':'text';btn.textContent=isText?'👁':'🙈';}
-function setInvalid(inputId,errId,show){const input=document.getElementById(inputId);if(show)input.classList.add('is-invalid');else input.classList.remove('is-invalid');}
-function setLoading(btnId,spinnerId,textId,loading,text){const btn=document.getElementById(btnId);const spinner=document.getElementById(spinnerId);const txtEl=document.getElementById(textId);btn.disabled=loading;spinner.style.display=loading?'block':'none';if(text)txtEl.textContent=text;}
 
 async function doLogin(){
   const email=document.getElementById('loginEmail').value.trim().toLowerCase();
   const password=document.getElementById('loginPassword').value;
-  const rememberMe=document.getElementById('rememberMe').checked;
-  let valid=true;
-  if(!email||!email.endsWith('@rameshtrading.com.ph')){setInvalid('loginEmail','loginEmailErr',true);valid=false;}else setInvalid('loginEmail','loginEmailErr',false);
-  if(!password){setInvalid('loginPassword','loginPasswordErr',true);valid=false;}else setInvalid('loginPassword','loginPasswordErr',false);
-  if(!valid)return;
-  setLoading('loginBtn','loginSpinner','loginBtnText',true,'Signing in...');
-  const result=await callAPI({action:'login',email,password,rememberMe});
-  setLoading('loginBtn','loginSpinner','loginBtnText',false,'Login');
-  if(!result.success){showToast(result.message,'error');return;}
-  saveSession(result,rememberMe);
-  session=result;
-  initUser(result.user);
-  showToast('Login successful!','success');
-  if(result.user.role==='admin'){showAdminView();}else{showDashboard();}
+  const remember=document.getElementById('loginRemember').checked;
+  document.getElementById('loginErr').style.display='none';
+  if(!email||!password){authError('loginErr','Please enter your email and password.');return;}
+  if(email.indexOf(ALLOWED_DOMAIN)===-1){authError('loginErr','Only '+ALLOWED_DOMAIN+' email addresses are allowed.');return;}
+  setAuthBusy('loginBtn','loginSpin','loginBtnTxt',true,'Logging in...','Login');
+  const res=await callAPI({action:'login',email,password,rememberMe:remember});
+  setAuthBusy('loginBtn','loginSpin','loginBtnTxt',false,'','Login');
+  if(!res.success){authError('loginErr',res.message||'Login failed.');return;}
+  saveSession(res,remember);
+  document.getElementById('loginPassword').value='';
+  initUser();
+  sessionWarned=false;
+  if(session.user.role==='admin'){showView('admin');openAdmin();}
+  else{showView('dash');loadDashboard();}
+  showToast('Welcome back, '+(session.user.name||'').split(' ')[0]+'!','success');
 }
 
 async function doRegister(){
   const name=document.getElementById('regName').value.trim();
   const email=document.getElementById('regEmail').value.trim().toLowerCase();
   const dept=document.getElementById('regDept').value.trim();
-  const password=document.getElementById('regPassword').value;
-  const confirm=document.getElementById('regConfirm').value;
-  let valid=true;
-  if(!name){setInvalid('regName','regNameErr',true);valid=false;}else setInvalid('regName','regNameErr',false);
-  if(!email||!email.endsWith('@rameshtrading.com.ph')){setInvalid('regEmail','regEmailErr',true);valid=false;}else setInvalid('regEmail','regEmailErr',false);
-  if(!dept){setInvalid('regDept','regDeptErr',true);valid=false;}else setInvalid('regDept','regDeptErr',false);
-  if(password.length<8){setInvalid('regPassword','regPasswordErr',true);valid=false;}else setInvalid('regPassword','regPasswordErr',false);
-  if(password!==confirm){setInvalid('regConfirm','regConfirmErr',true);valid=false;}else setInvalid('regConfirm','regConfirmErr',false);
-  if(!valid)return;
-  setLoading('registerBtn','registerSpinner','registerBtnText',true,'Creating account...');
-  const result=await callAPI({action:'register',email,password,name,department:dept});
-  setLoading('registerBtn','registerSpinner','registerBtnText',false,'Create Account');
-  if(!result.success){showToast(result.message,'error');return;}
-  showToast('Account created! You can now login.','success');
+  const p1=document.getElementById('regPass').value;
+  const p2=document.getElementById('regPass2').value;
+  document.getElementById('regErr').style.display='none';
+  if(!name||!email||!dept||!p1||!p2){authError('regErr','Please fill in all fields.');return;}
+  if(email.indexOf(ALLOWED_DOMAIN)===-1){authError('regErr','Only '+ALLOWED_DOMAIN+' email addresses are allowed.');return;}
+  if(p1.length<8){authError('regErr','Password must be at least 8 characters.');return;}
+  if(p1!==p2){authError('regErr','Passwords do not match.');return;}
+  setAuthBusy('regBtn','regSpin','regBtnTxt',true,'Creating account...','Register');
+  const res=await callAPI({action:'register',name,email,department:dept,password:p1});
+  setAuthBusy('regBtn','regSpin','regBtnTxt',false,'','Register');
+  if(!res.success){authError('regErr',res.message||'Registration failed.');return;}
+  showAuthPanel('login');
   document.getElementById('loginEmail').value=email;
-  document.getElementById('loginPassword').value=password;
-  setTimeout(()=>showAuthPanel('authLogin'),1500);
+  document.getElementById('loginPassword').value='';
+  ['regName','regEmail','regDept','regPass','regPass2'].forEach(id=>document.getElementById(id).value='');
+  showToast('Account created! You can log in now.','success');
 }
 
-/* ══ USER MENU ══ */
-function toggleUserMenu(){document.getElementById('userMenu').classList.toggle('open');}
-function initUser(user){
-  const initials=(user.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-  document.getElementById('menuName').textContent=user.name;
-  document.getElementById('menuEmail').textContent=user.email;
-  if(user.profilePicture)document.getElementById('userAvatar').innerHTML=`<img src="${user.profilePicture}" alt="avatar">`;
-  else document.getElementById('userAvatar').textContent=initials;
-  if(user.role==='admin')document.getElementById('adminMenuItem').style.display='flex';
+/* ═══════════════ USER / HEADER ═══════════════ */
+function initials(name){
+  return String(name||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'?';
 }
-function doLogout(){if(!confirm('Logout?'))return;clearSession();session=null;showView('auth');showAuthPanel('authLogin');}
+function initUser(){
+  if(!session)return;
+  const av=document.getElementById('userAvatar');
+  if(session.user.photo){av.innerHTML='<img src="'+session.user.photo+'" alt="me">';}
+  else{av.textContent=initials(session.user.name);}
+  document.getElementById('udName').textContent=session.user.name||'—';
+  document.getElementById('udEmail').textContent=session.user.email||'—';
+  document.getElementById('udAdmin').style.display=session.user.role==='admin'?'flex':'none';
+  applyLogo();
+}
+function applyLogo(){
+  const l=localStorage.getItem(LOGO_KEY);
+  const img=document.getElementById('headerLogo');
+  if(l){img.src=l;img.style.display='block';}else{img.style.display='none';}
+  const prev=document.getElementById('admLogoPreview');
+  if(prev){if(l){prev.src=l;prev.style.display='block';}else{prev.style.display='none';}}
+}
+function toggleUserDrop(e){e.stopPropagation();document.getElementById('userDrop').classList.toggle('open');}
+function closeUserDrop(){document.getElementById('userDrop').classList.remove('open');}
+document.addEventListener('click',function(e){
+  if(!e.target.closest('.user-menu-wrap'))closeUserDrop();
+});
 
-/* ══ DASHBOARD ══ */
-async function showDashboard(){
-  showView('dash');
-  document.getElementById('userMenu').classList.remove('open');
-  await loadQuotes();
-}
-async function loadQuotes(){
-  document.getElementById('quotesGrid').innerHTML='<div class="dash-loading"><div class="dash-spinner"></div><p style="color:var(--gray);font-size:.84rem;">Loading your quotations...</p></div>';
-  if(!session||!session.token){showView('auth');return;}
-  const result=await callAPI({action:'getQuotations',email:session.email,token:session.token});
-  if(!result.success){
-    if(result.message&&result.message.toLowerCase().includes('session')){clearSession();showView('auth');return;}
-    document.getElementById('quotesGrid').innerHTML=`<div class="dash-empty"><div style="font-size:3rem;margin-bottom:16px;">⚠️</div><p style="font-weight:600;margin-bottom:6px;">Failed to load</p><p style="font-size:.78rem;">${result.message}</p><button onclick="loadQuotes()" style="margin-top:12px;background:var(--maroon);color:#fff;border:none;border-radius:8px;padding:8px 16px;cursor:pointer;font-size:.82rem;font-family:'DM Sans',sans-serif;">Retry</button></div>`;
-    return;
-  }
-  allQuotes=result.quotes||[];
-  updateCounts();renderQuotes();
-}
-function updateCounts(){
-  ['All','Draft','Submitted','Approved','Rejected','Archived'].forEach(s=>{
-    const count=s==='All'?allQuotes.length:allQuotes.filter(q=>q.status===s).length;
-    const el=document.getElementById('cnt-'+s);if(el)el.textContent=count;
-  });
-  document.getElementById('quoteCountLabel').textContent=allQuotes.length+' quotation'+(allQuotes.length!==1?'s':'')+' total';
-}
-function renderQuotes(){
-  const search=(document.getElementById('searchInput').value||'').toLowerCase();
-  const sort=document.getElementById('sortSelect').value;
-  let filtered=allQuotes.filter(q=>{
-    if(currentStatus!=='All'&&q.status!==currentStatus)return false;
-    if(search)return(q.client||'').toLowerCase().includes(search)||(q.project||'').toLowerCase().includes(search)||(q.quotationNumber||'').toLowerCase().includes(search);
-    return true;
-  });
-  filtered.sort((a,b)=>{
-    if(sort==='date-desc')return new Date(b.lastModified||b.createdDate)-new Date(a.lastModified||a.createdDate);
-    if(sort==='date-asc')return new Date(a.lastModified||a.createdDate)-new Date(b.lastModified||b.createdDate);
-    if(sort==='client-asc')return(a.client||'').localeCompare(b.client||'');
-    if(sort==='amount-desc')return(b.totalSelling||0)-(a.totalSelling||0);
-    if(sort==='amount-asc')return(a.totalSelling||0)-(b.totalSelling||0);
-    return 0;
-  });
-  const grid=document.getElementById('quotesGrid');
-  if(!filtered.length){grid.innerHTML='<div class="dash-empty"><div style="font-size:3rem;margin-bottom:16px;">📄</div><p style="font-weight:600;margin-bottom:6px;">No quotations found</p><p style="font-size:.78rem;color:var(--gray);">Create a new quotation to get started.</p></div>';return;}
-  grid.innerHTML=filtered.map(q=>{
-    const date=q.date?new Date(q.date).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'}):'—';
-    const modified=q.lastModified?new Date(q.lastModified).toLocaleDateString('en-PH',{month:'short',day:'numeric'}):'—';
-    return `<div class="quote-card"><div class="quote-card-top"><div class="qc-client">${q.client||'(No Client)'}</div><span class="qc-status qs-${q.status}">${q.status}</span></div><div class="qc-project">${q.project||'(No Project)'}</div><div class="qc-meta"><span>📅 ${date}</span><span>✏️ ${modified}</span>${q.quotationNumber?`<span>🔢 ${q.quotationNumber}</span>`:''}</div><div class="qc-amounts"><div class="qca-item"><div class="qca-label">Total Selling</div><div class="qca-val green">₱${peso(q.totalSelling)}</div></div><div class="qca-item"><div class="qca-label">Net Profit</div><div class="qca-val">₱${peso(q.netProfit)}</div></div><div class="qca-item"><div class="qca-label">Margin</div><div class="qca-val ${Number(q.netMargin)>=20?'green':''}">${Number(q.netMargin||0).toFixed(1)}%</div></div></div><div class="qc-actions"><button class="qc-btn qc-open" onclick="openQuote('${q.quoteId}')">📂 Open</button><button class="qc-btn qc-dup" onclick="duplicateQuote('${q.quoteId}',event)">⧉ Dup</button><button class="qc-btn qc-stat" onclick="openStatusModalFor('${q.quoteId}','${q.status}',event)">⚡ Status</button><button class="qc-btn qc-del" onclick="deleteQuote('${q.quoteId}',event)">🗑</button></div></div>`;
-  }).join('');
-}
-function filterStatus(status,btn){currentStatus=status;document.querySelectorAll('.status-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderQuotes();}
-
-/* ══ QUOTATION ══ */
-function createNewQuote(){
-  currentQuoteId=null;
-  showView('quote');
-  resetQuoteSystem();
-  document.getElementById('qvId').textContent='New Quotation';
-  document.getElementById('qvClient').textContent='New Quotation';
-  updateStatusBadge('Draft');
-}
-async function openQuote(quoteId){
-  showToast('Loading quotation...','info');
-  const result=await callAPI({action:'getQuotation',quoteId,email:session.email,token:session.token});
-  if(!result.success){showToast(result.message,'error');return;}
-  currentQuoteId=quoteId;
-  showView('quote');
-  loadDataIntoUI(result.data);
-  document.getElementById('qvId').textContent=quoteId;
-  document.getElementById('qvClient').textContent=result.data.client||'Quotation';
-  updateStatusBadge(result.status||'Draft');
-}
-function updateQVClient(){document.getElementById('qvClient').textContent=document.getElementById('docClient').value||'New Quotation';}
-function updateStatusBadge(status){const el=document.getElementById('qvStatus');el.className='qvb-status qs-'+status;el.textContent=status;}
-function markSaving(){document.getElementById('saveStatus').textContent='⏳ Saving...';document.getElementById('saveStatus').className='save-status cloud';}
-async function cloudSave(){
-  if(!document.body.classList.contains('show-quote'))return;
-  markSaving();
-  const data=collectCurrentData();
-  let tSelling=0,tCost=0,grossProfit=0,netProfit=0,netMargin=0;
-  try{
-    tSelling=parseFloat(document.getElementById('totalSelling').innerText.replace(/[₱,]/g,''))||0;
-    tCost=parseFloat(document.getElementById('totalCost').innerText.replace(/[₱,]/g,''))||0;
-    grossProfit=parseFloat(document.getElementById('grossProfit').innerText.replace(/[₱,]/g,''))||0;
-    netProfit=parseFloat(document.getElementById('netProfit').innerText.replace(/[₱,]/g,''))||0;
-    netMargin=parseFloat(document.getElementById('netMargin').innerText)||0;
-  }catch(e){}
-  const result=await callAPI({action:'saveQuotation',email:session.email,token:session.token,quoteId:currentQuoteId,status:document.getElementById('qvStatus').textContent||'Draft',quoteData:{...data,totalSelling:tSelling,totalCost:tCost,grossProfit,netProfit,netMargin}});
-  if(!result.success){document.getElementById('saveStatus').textContent='✗ '+result.message;document.getElementById('saveStatus').className='save-status unsaved';showToast('Save failed: '+result.message,'error');return;}
-  if(!currentQuoteId&&result.quoteId){currentQuoteId=result.quoteId;document.getElementById('qvId').textContent=result.quoteId;}
-  document.getElementById('saveStatus').textContent='✓ Saved to Cloud';document.getElementById('saveStatus').className='save-status saved';
-}
-function manualSave(){cloudSave();}
-function saveAll(){cloudSave();}
-function resetQuoteSystem(){
-  document.getElementById('tableBody').innerHTML='';
-  goodsSectionCount=0;pdmSectionCount=0;
-  document.getElementById('goodsContainer').innerHTML='';
-  document.getElementById('pdmContainer').innerHTML='';
-  document.getElementById('notesText').value='';
-  document.getElementById('notesSection').style.display='none';
-  document.getElementById('addNotesBtn').style.display='block';
-  document.getElementById('docDate').value=getTodayDate();
-  ['docClient','docProject','docRef','docQuotation'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('expensePercent').value='';
-  document.getElementById('sigName3').value='RAM MIRCH';
-  document.getElementById('ewtOffState').style.display='flex';
-  document.getElementById('ewtOnState').style.display='none';
-  ewtEnabled=false;
-  const c=loadSigContacts();
-  const prep=c.prepared?.[0];const noted=c.noted?.[0];
-  if(prep){document.getElementById('sigName0').value=prep.name;document.getElementById('sigPos0').value=prep.pos||'';}
-  if(noted){document.getElementById('sigName1').value=noted.name;document.getElementById('sigPos1').value=noted.pos||'';}
-  addRow();calculate();
-  document.getElementById('saveStatus').textContent='New Quotation';
-  document.getElementById('saveStatus').className='save-status';
-}
-async function deleteQuote(quoteId,e){e.stopPropagation();if(!confirm('Delete this quotation?'))return;const result=await callAPI({action:'deleteQuotation',quoteId,email:session.email,token:session.token});if(!result.success){showToast(result.message,'error');return;}showToast('Deleted.','success');allQuotes=allQuotes.filter(q=>q.quoteId!==quoteId);updateCounts();renderQuotes();}
-async function duplicateQuote(quoteId,e){e.stopPropagation();showToast('Duplicating...','info');const result=await callAPI({action:'duplicateQuotation',quoteId,email:session.email,token:session.token});if(!result.success){showToast(result.message,'error');return;}showToast('Duplicated!','success');loadQuotes();}
-
-/* ══ STATUS MODAL ══ */
-function openStatusModal(){openStatusModalFor(currentQuoteId,document.getElementById('qvStatus').textContent||'Draft',null);}
-function openStatusModalFor(quoteId,currentStat,e){if(e)e.stopPropagation();currentQuoteId=quoteId;selectedStatus=currentStat;document.querySelectorAll('.status-opt').forEach(opt=>{opt.classList.toggle('sel',opt.textContent.includes(currentStat));});document.getElementById('statusModal').classList.add('open');}
-function closeStatusModal(){document.getElementById('statusModal').classList.remove('open');}
-function selectStatus(status){selectedStatus=status;document.querySelectorAll('.status-opt').forEach(opt=>{opt.classList.toggle('sel',opt.textContent.includes(status));});}
-async function saveQuoteStatus(){
-  if(!selectedStatus||!currentQuoteId){closeStatusModal();return;}
-  const result=await callAPI({action:'updateStatus',quoteId:currentQuoteId,status:selectedStatus,email:session.email,token:session.token});
-  closeStatusModal();
-  if(!result.success){showToast(result.message,'error');return;}
-  showToast('Status updated to '+selectedStatus,'success');
-  updateStatusBadge(selectedStatus);
-  const q=allQuotes.find(q=>q.quoteId===currentQuoteId);if(q)q.status=selectedStatus;
-  updateCounts();renderQuotes();
-}
-
-/* ══ PROFILE ══ */
-function openProfile(){
-  document.getElementById('userMenu').classList.remove('open');
-  const user=session.user;
-  document.getElementById('profileName').value=user.name||'';
-  document.getElementById('profileDept').value=user.department||'';
-  document.getElementById('profileEmail').value=user.email||'';
-  const avatarLg=document.getElementById('profileAvatarLg');
-  if(user.profilePicture)avatarLg.innerHTML=`<img src="${user.profilePicture}" style="width:100%;height:100%;object-fit:cover;">`;
-  else avatarLg.textContent=(user.name||'?').split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
-  document.getElementById('profileModal').classList.add('open');
-}
-function closeProfile(){document.getElementById('profileModal').classList.remove('open');}
-function handlePhotoChange(input){
-  if(!input.files||!input.files[0])return;
+/* ═══════════════ IMAGE COMPRESSION ═══════════════ */
+function compressImage(file,maxDim,quality,cb){
   const reader=new FileReader();
-  reader.onload=e=>{
+  reader.onload=ev=>{
     const img=new Image();
     img.onload=()=>{
-      const canvas=document.createElement('canvas');const max=200;let w=img.width,h=img.height;
-      if(w>h){if(w>max){h=h*max/w;w=max;}}else{if(h>max){w=w*max/h;h=max;}}
-      canvas.width=w;canvas.height=h;canvas.getContext('2d').drawImage(img,0,0,w,h);
-      const compressed=canvas.toDataURL('image/jpeg',0.7);
-      session.user.profilePicture=compressed;
-      document.getElementById('profileAvatarLg').innerHTML=`<img src="${compressed}" style="width:100%;height:100%;object-fit:cover;">`;
-      document.getElementById('userAvatar').innerHTML=`<img src="${compressed}" alt="avatar">`;
-    };img.src=e.target.result;
-  };reader.readAsDataURL(input.files[0]);
-}
-async function saveProfile(){
-  const name=document.getElementById('profileName').value.trim();
-  const dept=document.getElementById('profileDept').value.trim();
-  if(!name){showToast('Name is required.','error');return;}
-  const result=await callAPI({action:'updateProfile',email:session.email,token:session.token,name,department:dept,profilePicture:session.user.profilePicture||''});
-  if(!result.success){showToast(result.message,'error');return;}
-  session.user.name=name;session.user.department=dept;
-  const stored=localStorage.getItem('rtc_session')?'local':'session';
-  if(stored==='local')localStorage.setItem('rtc_session',JSON.stringify(session));
-  else sessionStorage.setItem('rtc_session',JSON.stringify(session));
-  initUser(session.user);showToast('Profile updated!','success');closeProfile();
-}
-function openChangePw(){closeProfile();document.getElementById('changePwModal').classList.add('open');}
-function closeChangePw(){document.getElementById('changePwModal').classList.remove('open');}
-async function doChangePw(){
-  const current=document.getElementById('pwCurrent').value;
-  const newPw=document.getElementById('pwNew').value;
-  const confirm=document.getElementById('pwConfirm').value;
-  if(!current||newPw.length<8||newPw!==confirm){showToast('Please check all password fields.','error');return;}
-  const result=await callAPI({action:'changePassword',email:session.email,token:session.token,oldPassword:current,newPassword:newPw});
-  if(!result.success){showToast(result.message,'error');return;}
-  showToast('Password changed successfully!','success');closeChangePw();
+      let w=img.width,h=img.height;
+      if(w>h&&w>maxDim){h=Math.round(h*maxDim/w);w=maxDim;}
+      else if(h>=w&&h>maxDim){w=Math.round(w*maxDim/h);h=maxDim;}
+      const c=document.createElement('canvas');c.width=w;c.height=h;
+      const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);ctx.drawImage(img,0,0,w,h);
+      cb(c.toDataURL('image/jpeg',quality));
+    };
+    img.src=ev.target.result;
+  };
+  reader.readAsDataURL(file);
 }
 
-/* ══ ADMIN ══ */
-function showAdminView(){
-  showView('admin');
-  document.getElementById('userMenu').classList.remove('open');
-  loadAdminData();
-}
-function showAdminPage(pageId,item){
-  document.querySelectorAll('.admin-page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.admin-sidebar-item').forEach(s=>s.classList.remove('active'));
-  document.getElementById(pageId).classList.add('active');
-  if(item)item.classList.add('active');
-}
-async function loadAdminData(){
-  const result=await callAPI({action:'getAdminData',email:session.email,token:session.token});
-  if(!result.success){showToast(result.message,'error');return;}
-  adminData=result;
-  document.getElementById('statUsers').textContent=result.summary.totalUsers;
-  document.getElementById('statQuotes').textContent=result.summary.totalQuotes;
-  document.getElementById('statSelling').textContent='₱'+peso(result.summary.totalSelling);
-  document.getElementById('statCost').textContent='₱'+peso(result.summary.totalCost);
-  document.getElementById('statMargin').textContent=Number(result.summary.avgMargin||0).toFixed(1)+'%';
-  const pending=result.users.filter(u=>u.status==='pending').length;
-  document.getElementById('statPending').textContent=pending;
-  document.getElementById('pendingBadge').textContent=pending;
-  const depts=[...new Set((result.users||[]).map(u=>u.department).filter(Boolean))].sort();
-  ['adminDeptFilter','adminUserDeptFilter','adminQuoteDeptFilter'].forEach(id=>{
-    const el=document.getElementById(id);if(!el)return;
-    const cur=el.value;
-    el.innerHTML='<option value="">All Departments</option>'+depts.map(d=>`<option value="${d}">${d}</option>`).join('');
-    el.value=cur;
-  });
-  renderAdminUserStats();renderAdminUsers();renderAdminPending();renderAdminQuotes();
-}
-function inDateRange(dateStr,range){
-  if(range==='all')return true;
-  const d=new Date(dateStr);const now=new Date();
-  if(range==='today')return d.toDateString()===now.toDateString();
-  if(range==='week'){const w=new Date(now);w.setDate(now.getDate()-7);return d>=w;}
-  if(range==='month')return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();
-  return true;
-}
-function filterAdminDate(range,btn){adminDateFilter=range;document.querySelectorAll('#adminDash .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAdminUserStats();}
-function filterAdminQuoteDate(range,btn){adminQuoteDateFilter=range;document.querySelectorAll('#adminQuotes .filter-btn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderAdminQuotes();}
-function fmtDate(d){if(!d)return'—';return new Date(d).toLocaleDateString('en-PH',{month:'short',day:'numeric',year:'numeric'});}
-function renderAdminUserStats(){
-  if(!adminData)return;
-  const dept=document.getElementById('adminDeptFilter').value;
-  let stats=adminData.userStats||[];
-  if(dept)stats=stats.filter(u=>u.department===dept);
-  const filtered=stats.map(u=>{
-    const quotes=(u.quotes||[]).filter(q=>inDateRange(q.createdDate||q.lastModified,adminDateFilter));
-    return{...u,fq:quotes,fs:quotes.reduce((s,q)=>s+Number(q.totalSelling||0),0),fc:quotes.reduce((s,q)=>s+Number(q.totalCost||0),0),fp:quotes.reduce((s,q)=>s+Number(q.netProfit||0),0)};
-  }).filter(u=>u.fq.length>0||adminDateFilter==='all');
-  const tbody=document.getElementById('adminUserStatsTable');
-  if(!filtered.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray);">No data found.</td></tr>';return;}
-  tbody.innerHTML=filtered.map(u=>`<tr><td><div style="font-weight:600;">${u.name}</div><div style="font-size:.7rem;color:var(--gray);">${u.email}</div></td><td>${u.department||'—'}</td><td style="text-align:center;font-weight:700;">${u.fq.length}</td><td style="color:#166534;font-weight:600;">₱${peso(u.fs)}</td><td>₱${peso(u.fc)}</td><td style="font-weight:600;">₱${peso(u.fp)}</td><td><button class="btn-xs btn-xs-approve" onclick="showAdminUserDetail('${u.email}')">View</button></td></tr>`).join('');
-}
-function showAdminUserDetail(email){
-  const user=adminData.userStats.find(u=>u.email===email);if(!user)return;
-  document.getElementById('adminDetailTitle').textContent=user.name+' — Quotations';
-  const quotes=(user.quotes||[]).filter(q=>inDateRange(q.createdDate||q.lastModified,adminDateFilter));
-  const tbody=document.getElementById('adminDetailTable');
-  if(!quotes.length){tbody.innerHTML='<tr><td colspan="8" style="text-align:center;padding:16px;color:var(--gray);">No quotations found.</td></tr>';}
-  else tbody.innerHTML=quotes.map(q=>`<tr><td>${q.quotationNumber||'—'}</td><td>${q.client||'—'}</td><td>${fmtDate(q.date)}</td><td><span class="abadge abadge-${q.status}">${q.status}</span></td><td style="color:#166534;font-weight:600;">₱${peso(q.totalSelling)}</td><td>₱${peso(q.totalCost)}</td><td>₱${peso(q.netProfit)}</td><td style="${Number(q.netMargin)>=20?'color:#166534;':'color:#991b1b;'}font-weight:600;">${Number(q.netMargin||0).toFixed(1)}%</td></tr>`).join('');
-  document.getElementById('adminDetailPanel').classList.add('open');
-  document.getElementById('adminDetailPanel').scrollIntoView({behavior:'smooth',block:'start'});
-}
-function renderAdminUsers(){
-  if(!adminData)return;
-  const search=(document.getElementById('adminUserSearch').value||'').toLowerCase();
-  const dept=document.getElementById('adminUserDeptFilter').value;
-  let users=adminData.users.filter(u=>u.status!=='pending');
-  if(dept)users=users.filter(u=>u.department===dept);
-  if(search)users=users.filter(u=>(u.name||'').toLowerCase().includes(search)||(u.email||'').toLowerCase().includes(search));
-  const tbody=document.getElementById('adminUsersTable');
-  if(!users.length){tbody.innerHTML='<tr><td colspan="7" style="text-align:center;padding:20px;color:var(--gray);">No users found.</td></tr>';return;}
-  tbody.innerHTML=users.map(u=>`<tr><td style="font-weight:600;">${u.name}</td><td>${u.email}</td><td>${u.department||'—'}</td><td><span class="abadge ${u.role==='admin'?'abadge-Submitted':'abadge-Draft'}">${u.role}</span></td><td><span class="abadge abadge-${u.status}">${u.status}</span></td><td style="font-size:.76rem;color:var(--gray);">${fmtDate(u.lastLogin)}</td><td style="display:flex;gap:4px;flex-wrap:wrap;"><button class="btn-xs btn-xs-reset" onclick="adminResetPw('${u.email}')">🔑 Reset</button><button class="btn-xs btn-xs-toggle" onclick="adminToggleUser('${u.email}','${u.status}')">${u.status==='active'?'🚫 Deactivate':'✅ Activate'}</button></td></tr>`).join('');
-}
-function renderAdminPending(){
-  if(!adminData)return;
-  const pending=adminData.users.filter(u=>u.status==='pending');
-  document.getElementById('pendingBadge').textContent=pending.length;
-  document.getElementById('statPending').textContent=pending.length;
-  const tbody=document.getElementById('adminPendingTable');
-  if(!pending.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--gray);">No pending registrations.</td></tr>';return;}
-  tbody.innerHTML=pending.map(u=>`<tr><td style="font-weight:600;">${u.name}</td><td>${u.email}</td><td>${u.department||'—'}</td><td style="font-size:.76rem;color:var(--gray);">${fmtDate(u.createdDate)}</td><td style="display:flex;gap:6px;"><button class="btn-xs btn-xs-approve" onclick="adminApproveUser('${u.email}')">✅ Approve</button><button class="btn-xs btn-xs-reject" onclick="adminRejectUser('${u.email}')">❌ Reject</button></td></tr>`).join('');
-}
-function renderAdminQuotes(){
-  if(!adminData)return;
-  const search=(document.getElementById('adminQuoteSearch').value||'').toLowerCase();
-  const dept=document.getElementById('adminQuoteDeptFilter').value;
-  const status=document.getElementById('adminQuoteStatusFilter').value;
-  let quotes=adminData.quotes||[];
-  if(dept)quotes=quotes.filter(q=>q.department===dept);
-  if(status)quotes=quotes.filter(q=>q.status===status);
-  if(search)quotes=quotes.filter(q=>(q.client||'').toLowerCase().includes(search)||(q.ownerName||'').toLowerCase().includes(search)||(q.quotationNumber||'').toLowerCase().includes(search));
-  quotes=quotes.filter(q=>inDateRange(q.createdDate||q.lastModified,adminQuoteDateFilter));
-  const tbody=document.getElementById('adminQuotesTable');
-  if(!quotes.length){tbody.innerHTML='<tr><td colspan="9" style="text-align:center;padding:20px;color:var(--gray);">No quotations found.</td></tr>';return;}
-  tbody.innerHTML=quotes.map(q=>`<tr><td>${q.quotationNumber||'—'}</td><td><div style="font-weight:600;">${q.ownerName}</div><div style="font-size:.7rem;color:var(--gray);">${q.department||'—'}</div></td><td>${q.client||'—'}</td><td style="font-size:.76rem;">${fmtDate(q.date)}</td><td><span class="abadge abadge-${q.status}">${q.status}</span></td><td style="color:#166534;font-weight:600;">₱${peso(q.totalSelling)}</td><td>₱${peso(q.totalCost)}</td><td>₱${peso(q.netProfit)}</td><td style="${Number(q.netMargin)>=20?'color:#166534;':'color:#991b1b;'}font-weight:600;">${Number(q.netMargin||0).toFixed(1)}%</td></tr>`).join('');
-}
-async function adminResetPw(email){if(!confirm('Reset password for '+email+' to ChangeMe123!?'))return;const result=await callAPI({action:'resetPassword',email:session.email,token:session.token,targetEmail:email});if(!result.success){showToast(result.message,'error');return;}showToast('Password reset!','success');}
-async function adminToggleUser(email,status){if(!confirm('Change status for '+email+'?'))return;const result=await callAPI({action:'toggleUserStatus',email:session.email,token:session.token,targetEmail:email});if(!result.success){showToast(result.message,'error');return;}showToast('User status updated.','success');loadAdminData();}
-async function adminApproveUser(email){if(!confirm('Approve '+email+'?'))return;const result=await callAPI({action:'approveUser',email:session.email,token:session.token,targetEmail:email});if(!result.success){showToast(result.message,'error');return;}showToast('User approved!','success');loadAdminData();}
-async function adminRejectUser(email){if(!confirm('Reject '+email+'?'))return;const result=await callAPI({action:'rejectUser',email:session.email,token:session.token,targetEmail:email});if(!result.success){showToast(result.message,'error');return;}showToast('User rejected.','info');loadAdminData();}
-async function addUserManually(){
-  const name=document.getElementById('addUserName').value.trim();
-  const email=document.getElementById('addUserEmail').value.trim().toLowerCase();
-  const dept=document.getElementById('addUserDept').value.trim();
-  const role=document.getElementById('addUserRole').value;
-  if(!name||!email||!dept){showToast('Please fill all fields.','error');return;}
-  if(!email.endsWith('@rameshtrading.com.ph')){showToast('Only @rameshtrading.com.ph emails allowed.','error');return;}
-  const result=await callAPI({action:'register',email,password:'ChangeMe123!',name,department:dept});
-  if(!result.success){showToast(result.message,'error');return;}
-  const approveResult=await callAPI({action:'approveUser',email:session.email,token:session.token,targetEmail:email});
-  if(!approveResult.success){showToast('User added but approval failed.','info');return;}
-  showToast('User added!','success');
-  document.getElementById('addUserName').value='';document.getElementById('addUserEmail').value='';document.getElementById('addUserDept').value='';
-  loadAdminData();
-}
-
-/* ══ SESSION EXPIRY ══ */
-function checkSessionExpiry(){
-  if(!session||session.rememberMe)return;
-  const remaining=session.expiry-Date.now();
-  if(remaining<15*60*1000&&remaining>0)showToast('Session expires in '+Math.round(remaining/60000)+' minutes.','info');
-  if(remaining<=0){showToast('Session expired. Please login again.','error');setTimeout(()=>{clearSession();session=null;showView('auth');},2000);}
-}
-
-/* ══ INIT ══ */
-function initApp(){
-  loadLogo();
-  loadSettings();
-  session=getSession();
-  document.getElementById('loadingScreen').classList.add('hidden');
-  if(!session){showView('auth');return;}
-  initUser(session.user);
-  if(session.user.role==='admin'){showAdminView();}
-  else{showDashboard();}
-  setInterval(checkSessionExpiry,5*60*1000);
-  document.addEventListener('click',e=>{
-    if(!e.target.closest('.user-dropdown'))document.getElementById('userMenu').classList.remove('open');
-    [0,1].forEach(i=>{const drop=document.getElementById('sigDrop'+i);const input=document.getElementById('sigName'+i);if(drop&&!drop.contains(e.target)&&e.target!==input)drop.classList.remove('open');});
-    if(!e.target.closest('#imgContextMenu')&&!e.target.closest('.img-upload-btn'))closeImgMenu();
-  });
-  document.addEventListener('keydown',e=>{
-    if(e.key==='Enter'){
-      const active=document.activeElement;
-      if(active.id==='loginPassword'||active.id==='loginEmail')doLogin();
-    }
-  });
-}
-window.onload=function(){initApp();};
-
-
-
+/* ═══════════════ EXISTING QUOTATION SYSTEM (preserved) ═══════════════ */
 /* ══ KEYS ══ */
+const SETTINGS_KEY='rtc_settings_v1';
+const SIG_CONTACTS_KEY='rtc_sig_contacts_v1';
 
-
-
-
-/* goodsSectionCount and pdmSectionCount declared above */
+let tabs=[],activeTabId=null,ewtEnabled=false;
+let goodsSectionCount=0,pdmSectionCount=0;
 
 /* ══ UTILS ══ */
 function peso(v){return Number(v||0).toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});}
@@ -1582,7 +1275,7 @@ function markUnsaved(){
   cloudSaveTimer=setTimeout(()=>cloudSave(),3000);
 }
 function markSaved(){
-  document.getElementById('saveStatus').textContent='✓ Saved to Cloud';
+  document.getElementById('saveStatus').textContent='\u2713 Saved to Cloud';
   document.getElementById('saveStatus').className='save-status saved';
 }
 
@@ -1694,7 +1387,7 @@ function addSigContact(role){
   const posId=role==='prepared'?'settingsPrepPos':'settingsNotedPos';
   const name=document.getElementById(nameId).value.trim();
   const pos=document.getElementById(posId).value.trim();
-  if(!name){alert('Please enter a name.');return;}
+  if(!name){showToast('Please enter a name.','error');return;}
   const contacts=loadSigContacts();
   if(!contacts[role])contacts[role]=[];
   const exists=contacts[role].find(c=>c.name===name);
@@ -1854,8 +1547,13 @@ function collectCurrentData(){
   };
 }
 
-/* ══ SAVE ══ */
-
+/* ══ SAVE (cloud) ══ */
+function saveAll(){
+  if(activeTabId){const tab=tabs.find(t=>t.id===activeTabId);if(tab)tab.data=collectCurrentData();}
+  clearTimeout(cloudSaveTimer);
+  cloudSaveTimer=setTimeout(()=>cloudSave(),3000);
+}
+function manualSave(){clearTimeout(cloudSaveTimer);cloudSave();}
 
 /* ══ LOAD ══ */
 function loadDataIntoUI(data){
@@ -1995,10 +1693,12 @@ function addTab(){
   const id=uid();const num=tabs.length+1;
   const c=loadSigContacts();
   const prep=c.prepared?.[0];const noted=c.noted?.[0];
-  tabs.push({id,name:`Quote ${num}`,data:{sigName3:'RAM MIRCH',sigName0:prep?.name||'',sigPos0:prep?.pos||'',sigName1:noted?.name||'',sigPos1:noted?.pos||'',rows:[{}]}});
+  tabs.push({id,quoteId:null,name:`Quote ${num}`,data:{sigName3:'RAM MIRCH',sigName0:prep?.name||'',sigPos0:prep?.pos||'',sigName1:noted?.name||'',sigPos1:noted?.pos||'',rows:[{}]}});
   activeTabId=id;renderTabs();
   loadDataIntoUI(tabs.find(t=>t.id===id).data);
-  addRow();saveAll();
+  addRow();
+  currentQuoteId=null;updateQuoteToolbar();
+  saveAll();
 }
 function switchTab(id){
   if(id===activeTabId)return;
@@ -2010,10 +1710,11 @@ function switchTab(id){
   document.getElementById('goodsContainer').innerHTML='';
   document.getElementById('pdmContainer').innerHTML='';
   loadDataIntoUI(tab.data);
+  currentQuoteId=tab.quoteId||null;updateQuoteToolbar();
 }
 function closeTab(id,e){
   e.stopPropagation();
-  if(tabs.length===1){alert('Need at least one tab.');return;}
+  if(tabs.length===1){showToast('Need at least one tab.','warn');return;}
   if(!confirm('Close this quotation tab?'))return;
   const idx=tabs.findIndex(t=>t.id===id);tabs.splice(idx,1);
   if(activeTabId===id){
@@ -2023,6 +1724,8 @@ function closeTab(id,e){
     document.getElementById('goodsContainer').innerHTML='';
     document.getElementById('pdmContainer').innerHTML='';
     loadDataIntoUI(tabs.find(t=>t.id===activeTabId).data);
+    const at=tabs.find(t=>t.id===activeTabId);
+    currentQuoteId=at&&at.quoteId?at.quoteId:null;updateQuoteToolbar();
   }
   renderTabs();saveAll();
 }
@@ -2031,7 +1734,7 @@ function renameTab(id,el){
   const input=document.createElement('input');
   input.className='tab-name-input';input.value=tab.name;
   el.replaceWith(input);input.focus();input.select();
-  function done(){tab.name=input.value.trim()||tab.name;renderTabs();cloudSave();}
+  function done(){tab.name=input.value.trim()||tab.name;renderTabs();saveAll();}
   input.addEventListener('blur',done);
   input.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='Escape')input.blur();});
 }
@@ -2141,7 +1844,7 @@ function removeImg(btn){if(!btn)return;const img=btn.querySelector('img');img.sr
 
 function createRows(){
   const n=parseInt(document.getElementById('rowCount').value);
-  if(isNaN(n)||n<=0){alert('Enter a valid number');return;}
+  if(isNaN(n)||n<=0){showToast('Enter a valid number','error');return;}
   for(let i=0;i<n;i++)addRow();
   document.getElementById('rowCount').value='';calculate();
 }
@@ -2429,7 +2132,454 @@ function exportPDF(){
   setTimeout(()=>{document.title=prev;},1500);
 }
 
-/* ══ INIT handled by initApp() ══ */
+/* ═══════════════ QUOTE TOOLBAR ═══════════════ */
+function updateQuoteToolbar(){
+  document.getElementById('qtQuoteId').textContent=currentQuoteId||'New — not saved yet';
+  const dc=document.getElementById('docClient');
+  document.getElementById('qtClient').textContent=dc?dc.value:'';
+  const meta=allQuotes.find(q=>q.quoteId===currentQuoteId);
+  const st=meta?meta.status:'Draft';
+  const b=document.getElementById('qtStatus');
+  b.textContent=st;b.className='badge-status badge-'+st;
+}
+
+/* ═══════════════ CLOUD SAVE ═══════════════ */
+let cloudSaving=false;
+function readSummaryMeta(){
+  const nm=document.getElementById('netMargin').innerText.match(/-?[\d.]+/);
+  return{
+    client:document.getElementById('docClient').value.trim(),
+    project:document.getElementById('docProject').value.trim(),
+    quotationNo:document.getElementById('docQuotation').value.trim(),
+    totalSelling:numFromText(document.getElementById('totalSelling').innerText),
+    totalCost:numFromText(document.getElementById('totalCost').innerText),
+    netProfit:numFromText(document.getElementById('netProfit').innerText),
+    netMargin:nm?parseFloat(nm[0]):0
+  };
+}
+async function cloudSave(){
+  if(!session)return;
+  if(document.getElementById('viewQuote').style.display==='none')return;
+  if(cloudSaving){clearTimeout(cloudSaveTimer);cloudSaveTimer=setTimeout(()=>cloudSave(),1500);return;}
+  cloudSaving=true;
+  const st=document.getElementById('saveStatus');
+  try{
+    const tab=tabs.find(t=>t.id===activeTabId);
+    if(tab)tab.data=collectCurrentData();
+    st.textContent='⏳ Saving...';st.className='save-status';
+    const res=await callAPI({
+      action:'saveQuotation',token:session.token,
+      quoteId:(tab&&tab.quoteId)?tab.quoteId:null,
+      meta:readSummaryMeta(),
+      data:tab?tab.data:collectCurrentData()
+    });
+    if(res&&res.success){
+      if(tab){tab.quoteId=res.quoteId;if(tab.id===activeTabId)currentQuoteId=res.quoteId;}
+      else currentQuoteId=res.quoteId;
+      dashLoaded=false;
+      updateQuoteToolbar();
+      st.textContent='✓ Saved to Cloud';st.className='save-status saved';
+    }else{
+      st.textContent='✗ Save failed';st.className='save-status unsaved';
+      if(res&&res.message&&!res.sessionExpired)showToast(res.message,'error');
+    }
+  }catch(e){
+    st.textContent='✗ Save failed';st.className='save-status unsaved';
+  }finally{cloudSaving=false;}
+}
+function backToDashboard(){
+  clearTimeout(cloudSaveTimer);
+  cloudSave();
+  loadDashboard();
+}
+
+/* ═══════════════ DASHBOARD ═══════════════ */
+const QUOTE_STATUSES=['All','Draft','Submitted','Approved','Rejected','Archived'];
+async function loadDashboard(){
+  if(!session)return;
+  showView('dash');
+  document.getElementById('dashLoading').style.display='flex';
+  document.getElementById('qCards').innerHTML='';
+  document.getElementById('dashEmpty').style.display='none';
+  const res=await callAPI({action:'getQuotations',token:session.token});
+  document.getElementById('dashLoading').style.display='none';
+  if(!res.success){showToast(res.message||'Failed to load quotations.','error');return;}
+  allQuotes=res.quotes||[];dashLoaded=true;
+  renderDashboard();
+}
+function setStatusFilter(s){currentStatus=s;renderDashboard();}
+function renderDashboard(){
+  // status tabs with counts
+  const tabsEl=document.getElementById('statusTabs');
+  tabsEl.innerHTML=QUOTE_STATUSES.map(s=>{
+    const cnt=s==='All'?allQuotes.length:allQuotes.filter(q=>q.status===s).length;
+    return '<button class="status-tab'+(currentStatus===s?' active':'')+'" onclick="setStatusFilter(\''+s+'\')">'+s+' <span class="cnt">'+cnt+'</span></button>';
+  }).join('');
+  // filter + search + sort
+  const term=document.getElementById('dashSearch').value.trim().toLowerCase();
+  const sort=document.getElementById('dashSort').value;
+  let list=allQuotes.filter(q=>currentStatus==='All'||q.status===currentStatus);
+  if(term)list=list.filter(q=>
+    String(q.client||'').toLowerCase().includes(term)||
+    String(q.project||'').toLowerCase().includes(term)||
+    String(q.quotationNo||'').toLowerCase().includes(term)||
+    String(q.quoteId||'').toLowerCase().includes(term));
+  list.sort((a,b)=>{
+    if(sort==='newest')return new Date(b.updated)-new Date(a.updated);
+    if(sort==='oldest')return new Date(a.updated)-new Date(b.updated);
+    if(sort==='client')return String(a.client||'').localeCompare(String(b.client||''));
+    if(sort==='amountHigh')return (Number(b.totalSelling)||0)-(Number(a.totalSelling)||0);
+    if(sort==='amountLow')return (Number(a.totalSelling)||0)-(Number(b.totalSelling)||0);
+    return 0;
+  });
+  const cards=document.getElementById('qCards');
+  document.getElementById('dashEmpty').style.display=list.length?'none':'block';
+  cards.innerHTML=list.map(q=>{
+    const sell=Number(q.totalSelling)||0,prof=Number(q.netProfit)||0,marg=Number(q.netMargin)||0;
+    return '<div class="q-card">'+
+      '<div class="q-card-top"><div class="q-client">'+(escapeHtml(q.client)||'<span style="color:#9ca3af;">(No client)</span>')+'</div>'+
+      '<span class="badge-status badge-'+q.status+'">'+q.status+'</span></div>'+
+      '<div class="q-project">'+(escapeHtml(q.project)||'—')+'</div>'+
+      '<div class="q-dates">Created '+fmtDate(q.created)+' · Modified '+fmtDateTime(q.updated)+
+      (q.quotationNo?' · #'+escapeHtml(q.quotationNo):'')+'</div>'+
+      '<div class="q-nums">'+
+      '<div class="q-num"><small>Total Selling</small><div class="sell">₱'+peso(sell)+'</div></div>'+
+      '<div class="q-num"><small>Net Profit</small><div style="color:'+(prof<0?'#991b1b':'#166534')+';">₱'+peso(prof)+'</div></div>'+
+      '<div class="q-num"><small>Net Margin</small><div style="color:'+(marg<20?'#991b1b':'#166534')+';">'+marg.toFixed(2)+'%</div></div>'+
+      '</div>'+
+      '<div class="q-card-btns">'+
+      '<button class="primary" onclick="openQuote(\''+q.quoteId+'\')">Open</button>'+
+      '<button onclick="duplicateQuote(\''+q.quoteId+'\')">Duplicate</button>'+
+      '<button onclick="openStatusModal(\''+q.quoteId+'\')">Change Status</button>'+
+      '<button class="del" onclick="deleteQuote(\''+q.quoteId+'\')">Delete</button>'+
+      '</div></div>';
+  }).join('');
+}
+
+/* ═══════════════ OPEN / NEW / DUPLICATE / DELETE ═══════════════ */
+function newQuotation(){
+  showView('quote');
+  addTab();
+  updateQuoteToolbar();
+}
+async function openQuote(id){
+  const existing=tabs.find(t=>t.quoteId===id);
+  if(existing){
+    showView('quote');
+    if(activeTabId!==existing.id)switchTab(existing.id);
+    else{currentQuoteId=id;updateQuoteToolbar();}
+    return;
+  }
+  showToast('Opening quotation...');
+  const res=await callAPI({action:'getQuotation',token:session.token,quoteId:id});
+  if(!res.success){showToast(res.message||'Failed to open quotation.','error');return;}
+  if(activeTabId){const cur=tabs.find(t=>t.id===activeTabId);if(cur)cur.data=collectCurrentData();}
+  const tid=uid();
+  const tname=(res.meta&&(res.meta.client||res.meta.quotationNo))||'Quote';
+  tabs.push({id:tid,quoteId:id,name:String(tname).substring(0,18),data:res.data||{}});
+  activeTabId=tid;renderTabs();
+  document.getElementById('tableBody').innerHTML='';
+  goodsSectionCount=0;pdmSectionCount=0;
+  document.getElementById('goodsContainer').innerHTML='';
+  document.getElementById('pdmContainer').innerHTML='';
+  loadDataIntoUI(res.data||{});
+  currentQuoteId=id;
+  if(res.meta&&!allQuotes.find(q=>q.quoteId===id))allQuotes.push(res.meta);
+  updateQuoteToolbar();
+  showView('quote');
+  const st=document.getElementById('saveStatus');
+  st.textContent='✓ Saved to Cloud';st.className='save-status saved';
+}
+async function duplicateQuote(id){
+  showToast('Duplicating...');
+  const res=await callAPI({action:'duplicateQuotation',token:session.token,quoteId:id});
+  if(res.success){showToast('Quotation duplicated.','success');loadDashboard();}
+  else showToast(res.message||'Failed to duplicate.','error');
+}
+async function deleteQuote(id){
+  if(!confirm('Delete this quotation permanently? This cannot be undone.'))return;
+  const res=await callAPI({action:'deleteQuotation',token:session.token,quoteId:id});
+  if(!res.success){showToast(res.message||'Failed to delete.','error');return;}
+  allQuotes=allQuotes.filter(q=>q.quoteId!==id);
+  const t=tabs.find(t=>t.quoteId===id);
+  if(t){
+    tabs=tabs.filter(x=>x.quoteId!==id);
+    if(activeTabId===t.id){activeTabId=tabs.length?tabs[0].id:null;currentQuoteId=activeTabId?(tabs[0].quoteId||null):null;}
+    renderTabs();
+  }
+  showToast('Quotation deleted.','success');
+  renderDashboard();
+}
+
+/* ═══════════════ MODALS ═══════════════ */
+function closeModal(id){document.getElementById(id).style.display='none';}
+function openStatusModal(id){
+  if(!id){showToast('This quotation has not been saved yet — auto-save runs every 3 seconds. Try again in a moment.','warn');return;}
+  statusTargetId=id;
+  const meta=allQuotes.find(q=>q.quoteId===id)||(adminData&&adminData.quotes?adminData.quotes.find(q=>q.quoteId===id):null);
+  selectedStatus=meta?meta.status:'Draft';
+  document.querySelectorAll('#statusOpts .status-opt').forEach(o=>o.classList.toggle('sel',o.dataset.s===selectedStatus));
+  document.getElementById('statusModal').style.display='flex';
+}
+function selectStatus(s){
+  selectedStatus=s;
+  document.querySelectorAll('#statusOpts .status-opt').forEach(o=>o.classList.toggle('sel',o.dataset.s===s));
+}
+async function applyStatus(){
+  if(!statusTargetId||!selectedStatus){closeModal('statusModal');return;}
+  const res=await callAPI({action:'updateStatus',token:session.token,quoteId:statusTargetId,status:selectedStatus});
+  if(res.success){
+    const q=allQuotes.find(x=>x.quoteId===statusTargetId);if(q)q.status=res.status;
+    if(adminData&&adminData.quotes){const aq=adminData.quotes.find(x=>x.quoteId===statusTargetId);if(aq)aq.status=res.status;}
+    updateQuoteToolbar();
+    if(document.getElementById('viewDash').style.display!=='none')renderDashboard();
+    if(document.getElementById('viewAdmin').style.display!=='none'&&adminPageCur==='quotes')renderAdminQuotes();
+    showToast('Status updated to '+res.status+'.','success');
+  }else showToast(res.message||'Failed to update status.','error');
+  closeModal('statusModal');
+}
+
+/* profile */
+let profPhotoTemp=null;
+function openProfileModal(){
+  closeUserDrop();
+  if(!session)return;
+  profPhotoTemp=null;
+  document.getElementById('profName').value=session.user.name||'';
+  document.getElementById('profDept').value=session.user.department||'';
+  document.getElementById('profEmail').value=session.user.email||'';
+  const pp=document.getElementById('profilePhotoPrev');
+  if(session.user.photo)pp.innerHTML='<img src="'+session.user.photo+'">';
+  else pp.textContent=initials(session.user.name);
+  document.getElementById('profileModal').style.display='flex';
+}
+function changeProfilePhoto(input){
+  if(!input.files||!input.files[0])return;
+  compressImage(input.files[0],200,0.7,dataUrl=>{
+    profPhotoTemp=dataUrl;
+    document.getElementById('profilePhotoPrev').innerHTML='<img src="'+dataUrl+'">';
+  });
+  input.value='';
+}
+async function saveProfile(){
+  const name=document.getElementById('profName').value.trim();
+  const dept=document.getElementById('profDept').value.trim();
+  if(!name){showToast('Name is required.','error');return;}
+  const btn=document.getElementById('profSaveBtn');btn.disabled=true;btn.textContent='Saving...';
+  const payload={action:'updateProfile',token:session.token,name,department:dept};
+  if(profPhotoTemp)payload.photo=profPhotoTemp;
+  const res=await callAPI(payload);
+  btn.disabled=false;btn.textContent='Save Profile';
+  if(!res.success){showToast(res.message||'Failed to update profile.','error');return;}
+  session.user=res.user;persistSession();initUser();
+  showToast('Profile updated.','success');
+  closeModal('profileModal');
+}
+function openPasswordModal(){
+  ['pwOld','pwNew','pwNew2'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('passwordModal').style.display='flex';
+}
+async function submitPasswordChange(){
+  const oldP=document.getElementById('pwOld').value;
+  const n1=document.getElementById('pwNew').value;
+  const n2=document.getElementById('pwNew2').value;
+  if(!oldP||!n1||!n2){showToast('Please fill in all password fields.','error');return;}
+  if(n1.length<8){showToast('New password must be at least 8 characters.','error');return;}
+  if(n1!==n2){showToast('New passwords do not match.','error');return;}
+  const btn=document.getElementById('pwSaveBtn');btn.disabled=true;btn.textContent='Saving...';
+  const res=await callAPI({action:'changePassword',token:session.token,oldPassword:oldP,newPassword:n1});
+  btn.disabled=false;btn.textContent='Change Password';
+  if(!res.success){showToast(res.message||'Failed to change password.','error');return;}
+  showToast('Password changed.','success');
+  closeModal('passwordModal');
+}
+
+/* ═══════════════ ADMIN ═══════════════ */
+async function openAdmin(){
+  if(!session||session.user.role!=='admin'){showToast('Admin access required.','error');return;}
+  showView('admin');
+  ['adminPageDash','adminPageUsers','adminPageQuotes','adminPageSettings'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('adminLoading').style.display='flex';
+  const res=await callAPI({action:'getAdminData',token:session.token});
+  document.getElementById('adminLoading').style.display='none';
+  if(!res.success){showToast(res.message||'Failed to load admin data.','error');return;}
+  adminData=res;
+  populateDeptFilters();
+  showAdminPage(adminPageCur||'dash');
+}
+function showAdminPage(p){
+  adminPageCur=p;
+  const map={dash:'asDash',users:'asUsers',quotes:'asQuotes',settings:'asSettings'};
+  Object.keys(map).forEach(k=>document.getElementById(map[k]).classList.toggle('active',k===p));
+  ['adminPageDash','adminPageUsers','adminPageQuotes','adminPageSettings'].forEach(id=>document.getElementById(id).style.display='none');
+  document.getElementById('adminPage'+p.charAt(0).toUpperCase()+p.slice(1)).style.display='block';
+  if(p==='dash')renderAdminDash();
+  else if(p==='users')renderAdminUsers();
+  else if(p==='quotes')renderAdminQuotes();
+  else if(p==='settings')applyLogo();
+}
+function populateDeptFilters(){
+  if(!adminData)return;
+  const depts=[...new Set(adminData.users.map(u=>String(u.department||'').trim()).filter(Boolean))].sort();
+  ['admDashDept','admUserDept','admQDept'].forEach(id=>{
+    const sel=document.getElementById(id);
+    const cur=sel.value;
+    sel.innerHTML='<option value="All">All Departments</option>'+depts.map(d=>'<option>'+escapeHtml(d)+'</option>').join('');
+    if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+  });
+}
+function deptOf(email){
+  const u=adminData.users.find(x=>String(x.email).toLowerCase()===String(email).toLowerCase());
+  return u?(u.department||''):'';
+}
+function renderAdminDash(){
+  if(!adminData)return;
+  const dept=document.getElementById('admDashDept').value;
+  const range=document.getElementById('admDashDate').value;
+  const quotes=adminData.quotes.filter(q=>
+    (dept==='All'||deptOf(q.owner)===dept)&&inDateRange(q.updated,range));
+  const users=adminData.users.filter(u=>dept==='All'||String(u.department||'')===dept);
+  const tSell=quotes.reduce((s,q)=>s+(Number(q.totalSelling)||0),0);
+  const tCost=quotes.reduce((s,q)=>s+(Number(q.totalCost)||0),0);
+  const avgM=quotes.length?quotes.reduce((s,q)=>s+(Number(q.netMargin)||0),0)/quotes.length:0;
+  document.getElementById('adminSumCards').innerHTML=
+    '<div class="sum-card"><small>Total Users</small><div class="val">'+adminData.users.length+'</div></div>'+
+    '<div class="sum-card"><small>Total Quotations</small><div class="val">'+quotes.length+'</div></div>'+
+    '<div class="sum-card"><small>Total Selling</small><div class="val" style="color:#166534;">₱'+peso(tSell)+'</div></div>'+
+    '<div class="sum-card"><small>Total Cost</small><div class="val">₱'+peso(tCost)+'</div></div>'+
+    '<div class="sum-card"><small>Avg Net Margin</small><div class="val" style="color:'+(avgM<20?'#991b1b':'#166534')+';">'+avgM.toFixed(2)+'%</div></div>';
+  document.getElementById('admUserStats').innerHTML=users.map(u=>{
+    const uq=quotes.filter(q=>String(q.owner).toLowerCase()===String(u.email).toLowerCase());
+    const s=uq.reduce((a,q)=>a+(Number(q.totalSelling)||0),0);
+    const pft=uq.reduce((a,q)=>a+(Number(q.netProfit)||0),0);
+    const m=uq.length?uq.reduce((a,q)=>a+(Number(q.netMargin)||0),0)/uq.length:0;
+    return '<tr class="clickable" onclick="showAdminUserDetail(\''+escapeHtml(u.email)+'\')">'+
+      '<td><strong>'+escapeHtml(u.name)+'</strong><br><span style="font-size:.68rem;color:var(--gray);">'+escapeHtml(u.email)+'</span></td>'+
+      '<td>'+escapeHtml(u.department||'—')+'</td><td>'+uq.length+'</td>'+
+      '<td style="color:#166534;font-weight:600;">₱'+peso(s)+'</td>'+
+      '<td>₱'+peso(pft)+'</td><td>'+(uq.length?m.toFixed(2)+'%':'—')+'</td></tr>';
+  }).join('')||'<tr><td colspan="6" style="color:var(--gray);text-align:center;">No users found.</td></tr>';
+}
+function showAdminUserDetail(email){
+  const range=document.getElementById('admDashDate').value;
+  const uq=adminData.quotes.filter(q=>String(q.owner).toLowerCase()===String(email).toLowerCase()&&inDateRange(q.updated,range));
+  const u=adminData.users.find(x=>String(x.email).toLowerCase()===String(email).toLowerCase());
+  document.getElementById('admUserDetailTitle').textContent='Quotations — '+(u?u.name:email);
+  document.getElementById('admUserDetailBody').innerHTML=uq.map(q=>
+    '<tr><td>'+escapeHtml(q.quoteId)+'</td><td>'+escapeHtml(q.client||'—')+'</td><td>'+escapeHtml(q.project||'—')+'</td>'+
+    '<td>'+fmtDate(q.updated)+'</td><td><span class="badge-status badge-'+q.status+'">'+q.status+'</span></td>'+
+    '<td style="color:#166534;font-weight:600;">₱'+peso(Number(q.totalSelling)||0)+'</td>'+
+    '<td>'+(Number(q.netMargin)||0).toFixed(2)+'%</td></tr>'
+  ).join('')||'<tr><td colspan="7" style="color:var(--gray);text-align:center;">No quotations.</td></tr>';
+  document.getElementById('admUserDetailCard').style.display='block';
+  document.getElementById('admUserDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function renderAdminUsers(){
+  if(!adminData)return;
+  const term=document.getElementById('admUserSearch').value.trim().toLowerCase();
+  const dept=document.getElementById('admUserDept').value;
+  const users=adminData.users.filter(u=>
+    (dept==='All'||String(u.department||'')===dept)&&
+    (!term||String(u.name||'').toLowerCase().includes(term)||String(u.email||'').toLowerCase().includes(term)));
+  document.getElementById('admUsersBody').innerHTML=users.map(u=>
+    '<tr><td><strong>'+escapeHtml(u.name)+'</strong></td><td>'+escapeHtml(u.email)+'</td>'+
+    '<td>'+escapeHtml(u.department||'—')+'</td>'+
+    '<td>'+(u.role==='admin'?'<span class="badge-status badge-Approved">admin</span>':'user')+'</td>'+
+    '<td>'+(u.status==='Active'?'<span class="badge-status badge-Approved">Active</span>':'<span class="badge-status badge-Rejected">Inactive</span>')+'</td>'+
+    '<td style="font-size:.72rem;">'+fmtDateTime(u.lastLogin)+'</td>'+
+    '<td><button class="at-btn" onclick="adminResetPassword(\''+escapeHtml(u.email)+'\')">Reset Password</button>'+
+    '<button class="at-btn warn" onclick="adminToggleUser(\''+escapeHtml(u.email)+'\')">'+(u.status==='Active'?'Deactivate':'Activate')+'</button></td></tr>'
+  ).join('')||'<tr><td colspan="7" style="color:var(--gray);text-align:center;">No users found.</td></tr>';
+}
+async function adminResetPassword(email){
+  if(!confirm('Reset password for '+email+' to "'+DEFAULT_RESET_PW+'"?'))return;
+  const res=await callAPI({action:'resetPassword',token:session.token,email,newPassword:DEFAULT_RESET_PW});
+  if(res.success)showToast('Password reset. New password: '+DEFAULT_RESET_PW,'success');
+  else showToast(res.message||'Failed to reset password.','error');
+}
+async function adminToggleUser(email){
+  const u=adminData.users.find(x=>String(x.email).toLowerCase()===String(email).toLowerCase());
+  const verb=u&&u.status==='Active'?'Deactivate':'Activate';
+  if(!confirm(verb+' account '+email+'?'))return;
+  const res=await callAPI({action:'toggleUserStatus',token:session.token,email});
+  if(res.success){
+    if(u)u.status=res.status;
+    renderAdminUsers();
+    showToast(email+' is now '+res.status+'.','success');
+  }else showToast(res.message||'Failed.','error');
+}
+function renderAdminQuotes(){
+  if(!adminData)return;
+  const term=document.getElementById('admQSearch').value.trim().toLowerCase();
+  const dept=document.getElementById('admQDept').value;
+  const stat=document.getElementById('admQStatus').value;
+  const range=document.getElementById('admQDate').value;
+  const list=adminData.quotes.filter(q=>
+    (dept==='All'||deptOf(q.owner)===dept)&&
+    (stat==='All'||q.status===stat)&&
+    inDateRange(q.updated,range)&&
+    (!term||String(q.client||'').toLowerCase().includes(term)||String(q.project||'').toLowerCase().includes(term)||
+      String(q.owner||'').toLowerCase().includes(term)||String(q.quotationNo||'').toLowerCase().includes(term)||
+      String(q.quoteId||'').toLowerCase().includes(term)));
+  document.getElementById('admQuotesBody').innerHTML=list.map(q=>
+    '<tr><td>'+escapeHtml(q.quoteId)+(q.quotationNo?'<br><span style="font-size:.66rem;color:var(--gray);">#'+escapeHtml(q.quotationNo)+'</span>':'')+'</td>'+
+    '<td style="font-size:.72rem;">'+escapeHtml(q.owner)+'</td>'+
+    '<td>'+escapeHtml(q.client||'—')+'</td>'+
+    '<td>'+fmtDate(q.updated)+'</td>'+
+    '<td><span class="badge-status badge-'+q.status+'">'+q.status+'</span></td>'+
+    '<td style="color:#166534;font-weight:600;">₱'+peso(Number(q.totalSelling)||0)+'</td>'+
+    '<td>₱'+peso(Number(q.totalCost)||0)+'</td>'+
+    '<td>₱'+peso(Number(q.netProfit)||0)+'</td>'+
+    '<td>'+(Number(q.netMargin)||0).toFixed(2)+'%</td>'+
+    '<td><button class="at-btn" onclick="openQuote(\''+escapeHtml(q.quoteId)+'\')">Open</button></td></tr>'
+  ).join('')||'<tr><td colspan="10" style="color:var(--gray);text-align:center;">No quotations found.</td></tr>';
+}
+function uploadLogo(input){
+  if(!input.files||!input.files[0])return;
+  compressImage(input.files[0],300,0.8,dataUrl=>{
+    try{localStorage.setItem(LOGO_KEY,dataUrl);applyLogo();showToast('Logo updated.','success');}
+    catch(e){showToast('Logo too large to store.','error');}
+  });
+  input.value='';
+}
+function removeLogo(){localStorage.removeItem(LOGO_KEY);applyLogo();showToast('Logo removed.','success');}
+async function adminAddUser(){
+  const name=document.getElementById('admNewName').value.trim();
+  const email=document.getElementById('admNewEmail').value.trim().toLowerCase();
+  const dept=document.getElementById('admNewDept').value.trim();
+  const role=document.getElementById('admNewRole').value;
+  if(!name||!email){showToast('Name and email are required.','error');return;}
+  if(email.indexOf(ALLOWED_DOMAIN)===-1){showToast('Only '+ALLOWED_DOMAIN+' emails are allowed.','error');return;}
+  const res=await callAPI({action:'register',name,email,department:dept,password:DEFAULT_RESET_PW,role});
+  if(!res.success){showToast(res.message||'Failed to add user.','error');return;}
+  adminData.users.push({email,name,department:dept,role,status:'Active',photo:'',lastLogin:''});
+  populateDeptFilters();
+  ['admNewName','admNewEmail','admNewDept'].forEach(id=>document.getElementById(id).value='');
+  showToast('User added. Default password: '+DEFAULT_RESET_PW,'success');
+}
+
+/* ═══════════════ INIT ═══════════════ */
+async function initApp(){
+  loadSettings();
+  applyLogo();
+  session=getSession();
+  if(session&&session.expiry>Date.now()){
+    initUser();
+    if(session.user.role==='admin'){showView('admin');openAdmin();}
+    else{showView('dash');loadDashboard();}
+  }else{
+    clearSession();session=null;
+    showView('auth');showAuthPanel('login');
+  }
+  document.getElementById('loadingScreen').style.display='none';
+  startExpiryWatch();
+  const dc=document.getElementById('docClient');
+  if(dc)dc.addEventListener('input',()=>{document.getElementById('qtClient').textContent=dc.value;});
+  document.querySelectorAll('.modal-back').forEach(m=>{
+    m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';});
+  });
+}
+document.addEventListener('DOMContentLoaded',initApp);
 
 </script>
 </body>
