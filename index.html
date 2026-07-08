@@ -515,7 +515,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 <div id="viewQuote" style="display:none;">
 <div class="quote-toolbar no-print">
   <button class="btn-outline-maroon" onclick="backToDashboard()">← Dashboard</button>
-  <span class="qt-id" id="qtQuoteId">New</span>
+  <span class="qt-id" id="qtQuoteId" style="display:none;">New</span>
   <span class="qt-client" id="qtClient"></span>
   <span class="badge-status badge-Draft" id="qtStatus">Draft</span>
   <button class="btn-outline-maroon" style="padding:4px 10px;font-size:.72rem;" onclick="openStatusModal(currentQuoteId)">Change Status</button>
@@ -1091,23 +1091,25 @@ function inDateRange(v,range){
 /* ═══════════════ API ═══════════════ */
 async function callAPI(data, skipGetFallback) {
   let out;
+  const ctrl=new AbortController();
+  const killer=setTimeout(()=>ctrl.abort(),30000); // never hang the UI more than 30s
   try {
     const form = new FormData();
     form.append('payload', JSON.stringify(data));
-    const res = await fetch(API_URL, {method:'POST', body:form});
+    const res = await fetch(API_URL, {method:'POST', body:form, signal:ctrl.signal});
     out = await res.json();
   } catch(e) {
     if (skipGetFallback) {
-      out = {success: false, message: 'Connection failed. Check your internet.'};
+      out = {success: false, message: 'Server is not responding. Please try again.'};
     } else {
       try {
-        const res = await fetch(API_URL + '?payload=' + encodeURIComponent(JSON.stringify(data)));
+        const res = await fetch(API_URL + '?payload=' + encodeURIComponent(JSON.stringify(data)), {signal:ctrl.signal});
         out = await res.json();
       } catch(e2) {
-        out = {success: false, message: 'Connection failed. Check your internet.'};
+        out = {success: false, message: 'Server is not responding. Please try again.'};
       }
     }
-  }
+  } finally { clearTimeout(killer); }
   if(out && out.sessionExpired){ forceLogout('Your session has expired. Please log in again.'); }
   return out;
 }
@@ -2155,6 +2157,7 @@ function updateQuoteToolbar(){
 
 /* ═══════════════ CLOUD SAVE ═══════════════ */
 let cloudSaving=false;
+let lastSavedSnapshot=null;
 function readSummaryMeta(){
   const nm=document.getElementById('netMargin').innerText.match(/-?[\d.]+/);
   return{
@@ -2183,6 +2186,11 @@ async function cloudSave(){
       meta:readSummaryMeta(),
       data:tab?tab.data:collectCurrentData()
     };
+    const snap=String(payload.quoteId)+'|'+JSON.stringify(payload.meta)+'|'+JSON.stringify(payload.data);
+    if(payload.quoteId&&snap===lastSavedSnapshot){
+      st.textContent='\u2713 Saved to Cloud';st.className='save-status saved';
+      return; /* nothing changed since last save — instant */
+    }
     let res=await callAPI(payload,true);
     if(!(res&&res.success)&&!(res&&res.sessionExpired)){
       await new Promise(r=>setTimeout(r,1500));
@@ -2192,6 +2200,7 @@ async function cloudSave(){
       if(tab){tab.quoteId=res.quoteId;if(tab.id===activeTabId)currentQuoteId=res.quoteId;}
       else currentQuoteId=res.quoteId;
       dashLoaded=false;
+      lastSavedSnapshot=String(res.quoteId)+'|'+JSON.stringify(payload.meta)+'|'+JSON.stringify(payload.data);
       updateQuoteToolbar();
       st.textContent='✓ Saved to Cloud';st.className='save-status saved';
     }else{
@@ -2210,17 +2219,23 @@ function backToDashboard(){
 
 /* ═══════════════ DASHBOARD ═══════════════ */
 const QUOTE_STATUSES=['All','Draft','Submitted','Approved','Rejected','Archived'];
+const pendingDeletes=new Set();
 async function loadDashboard(){
   if(!session)return;
   showView('dash');
-  document.getElementById('dashLoading').style.display='flex';
-  document.getElementById('qCards').innerHTML='';
-  document.getElementById('dashEmpty').style.display='none';
+  if(dashLoaded&&allQuotes.length){
+    renderDashboard(); /* instant from cache; fresh data loads silently below */
+  }else{
+    document.getElementById('dashLoading').style.display='flex';
+    document.getElementById('qCards').innerHTML='';
+    document.getElementById('dashEmpty').style.display='none';
+  }
   const res=await callAPI({action:'getQuotations',token:session.token});
   document.getElementById('dashLoading').style.display='none';
-  if(!res.success){showToast(res.message||'Failed to load quotations.','error');return;}
-  allQuotes=res.quotes||[];dashLoaded=true;
-  renderDashboard();
+  if(!res.success){if(!dashLoaded)showToast(res.message||'Failed to load quotations.','error');return;}
+  allQuotes=(res.quotes||[]).filter(q=>!pendingDeletes.has(q.quoteId));
+  dashLoaded=true;
+  if(document.getElementById('viewDash').style.display!=='none')renderDashboard();
 }
 function setStatusFilter(s){currentStatus=s;renderDashboard();}
 function renderDashboard(){
@@ -2318,6 +2333,7 @@ async function deleteQuote(id){
   if(!confirm('Delete this quotation permanently? This cannot be undone.'))return;
   /* Optimistic: remove from UI instantly, sync with server in background */
   const backup=allQuotes.slice();
+  pendingDeletes.add(id);
   allQuotes=allQuotes.filter(q=>q.quoteId!==id);
   const t=tabs.find(t=>t.quoteId===id);
   if(t){
@@ -2328,7 +2344,9 @@ async function deleteQuote(id){
   renderDashboard();
   showToast('Quotation deleted.','success');
   const res=await callAPI({action:'deleteQuotation',token:session.token,quoteId:id});
-  if(!(res&&res.success)&&!(res&&res.sessionExpired)){
+  if(res&&res.success){pendingDeletes.delete(id);}
+  else if(!(res&&res.sessionExpired)){
+    pendingDeletes.delete(id);
     allQuotes=backup;renderDashboard();
     showToast((res&&res.message)||'Delete failed — quotation restored.','error');
   }
