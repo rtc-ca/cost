@@ -924,7 +924,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
         <li><strong>7. Sign</strong> — Fill signatory names at the bottom.</li>
         <li><strong>8. Export</strong> — Click <em>Export PDF</em> to save or print.</li>
         <li><strong>9. Multiple Quotes</strong> — Use tabs at top. Click <em>＋ New Quote</em>. Double-click tab to rename.</li>
-        <li><strong>10. Auto-Save</strong> — Saves to the cloud automatically every 3 seconds.</li>
+        <li><strong>10. Saving</strong> — Your work is backed up in this browser as you type. Click <strong>💾 Save</strong> (or ← Dashboard) to save to the cloud.</li>
       </ul>
       <h4 style="margin-top:14px;margin-bottom:8px;">Goods &amp; PDM Breakdown</h4>
       <ul>
@@ -979,7 +979,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
       <h4>Frequently Asked Questions</h4>
       <p><strong>Why is my Net Margin red?</strong><br>It's below 20%. Increase selling price or reduce costs.</p>
       <p><strong>How do I rename a tab?</strong><br>Double-click the tab name and type the new name. Press Enter to confirm.</p>
-      <p><strong>Is my data saved automatically?</strong><br>Yes — every 3 seconds, saved automatically to the cloud.</p>
+      <p><strong>Is my data saved automatically?</strong><br>It is backed up in your browser as you type. Cloud save happens when you click 💾 Save or go back to the Dashboard.</p>
       <p><strong>Can others see my saved data?</strong><br>Your quotations are stored in your company account. Only you and administrators can see them.</p>
       <p><strong>Keyboard shortcuts:</strong><br>
         <span class="kbd">Enter</span> — move to next row &nbsp;
@@ -1283,8 +1283,9 @@ function autoResize(el){if(!el)return;el.style.height='auto';el.style.height=el.
 function markUnsaved(){
   document.getElementById('saveStatus').textContent='Unsaved changes';
   document.getElementById('saveStatus').className='save-status unsaved';
+  cloudDirty=true;
   clearTimeout(cloudSaveTimer);
-  cloudSaveTimer=setTimeout(()=>cloudSave(),3000);
+  cloudSaveTimer=setTimeout(()=>saveLocalDraft(),1000);
 }
 function markSaved(){
   document.getElementById('saveStatus').textContent='\u2713 Saved to Cloud';
@@ -1562,8 +1563,9 @@ function collectCurrentData(){
 /* ══ SAVE (cloud) ══ */
 function saveAll(){
   if(activeTabId){const tab=tabs.find(t=>t.id===activeTabId);if(tab)tab.data=collectCurrentData();}
+  cloudDirty=true;
   clearTimeout(cloudSaveTimer);
-  cloudSaveTimer=setTimeout(()=>cloudSave(),3000);
+  cloudSaveTimer=setTimeout(()=>saveLocalDraft(),1000);
 }
 function manualSave(){clearTimeout(cloudSaveTimer);cloudSave();}
 
@@ -2158,6 +2160,27 @@ function updateQuoteToolbar(){
 /* ═══════════════ CLOUD SAVE ═══════════════ */
 let cloudSaving=false;
 let lastSavedSnapshot=null;
+let cloudDirty=false;
+const DRAFT_KEY='rtc_drafts_v1';
+function saveLocalDraft(){
+  try{
+    if(document.getElementById('viewQuote').style.display==='none')return;
+    const tab=tabs.find(t=>t.id===activeTabId);
+    if(tab)tab.data=collectCurrentData();
+    const drafts=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');
+    const key=(tab&&tab.quoteId)?tab.quoteId:'unsaved_'+(tab?tab.id:'x');
+    drafts[key]={data:tab?tab.data:collectCurrentData(),ts:Date.now()};
+    const cutoff=Date.now()-7*24*3600*1000; /* prune drafts older than 7 days */
+    Object.keys(drafts).forEach(k=>{if(drafts[k].ts<cutoff)delete drafts[k];});
+    localStorage.setItem(DRAFT_KEY,JSON.stringify(drafts));
+  }catch(e){/* storage full — non-fatal */}
+}
+function clearLocalDraft(key){
+  try{const d=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');delete d[key];localStorage.setItem(DRAFT_KEY,JSON.stringify(d));}catch(e){}
+}
+window.addEventListener('beforeunload',(e)=>{
+  if(cloudDirty&&session){saveLocalDraft();e.preventDefault();e.returnValue='';}
+});
 function readSummaryMeta(){
   const nm=document.getElementById('netMargin').innerText.match(/-?[\d.]+/);
   return{
@@ -2189,6 +2212,7 @@ async function cloudSave(){
     const snap=String(payload.quoteId)+'|'+JSON.stringify(payload.meta)+'|'+JSON.stringify(payload.data);
     if(payload.quoteId&&snap===lastSavedSnapshot){
       st.textContent='\u2713 Saved to Cloud';st.className='save-status saved';
+      cloudDirty=false;
       return; /* nothing changed since last save — instant */
     }
     let res=await callAPI(payload,true);
@@ -2201,6 +2225,9 @@ async function cloudSave(){
       else currentQuoteId=res.quoteId;
       dashLoaded=false;
       lastSavedSnapshot=String(res.quoteId)+'|'+JSON.stringify(payload.meta)+'|'+JSON.stringify(payload.data);
+      cloudDirty=false;
+      clearLocalDraft(String(res.quoteId));
+      if(tab)clearLocalDraft('unsaved_'+tab.id);
       updateQuoteToolbar();
       st.textContent='✓ Saved to Cloud';st.className='save-status saved';
     }else{
@@ -2213,7 +2240,7 @@ async function cloudSave(){
 }
 function backToDashboard(){
   clearTimeout(cloudSaveTimer);
-  cloudSave();
+  if(cloudDirty)cloudSave(); /* auto-save on exit only when something changed */
   loadDashboard();
 }
 
@@ -2316,6 +2343,16 @@ async function openQuote(id){
   document.getElementById('pdmContainer').innerHTML='';
   loadDataIntoUI(res.data||{});
   compressLegacyImages(); /* shrink old full-res images so future saves are fast */
+  try{
+    const drafts=JSON.parse(localStorage.getItem(DRAFT_KEY)||'{}');
+    const d=drafts[id];
+    if(d&&d.data&&(!res.meta||d.ts>new Date(res.meta.updated).getTime())
+       &&confirm('You have an unsaved draft of this quotation that is newer than the cloud copy. Restore it?')){
+      loadDataIntoUI(d.data);
+      const tb=tabs.find(t=>t.id===tid);if(tb)tb.data=d.data;
+      cloudDirty=true;
+    }
+  }catch(e){}
   currentQuoteId=id;
   if(res.meta&&!allQuotes.find(q=>q.quoteId===id))allQuotes.push(res.meta);
   updateQuoteToolbar();
