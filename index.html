@@ -523,7 +523,7 @@ body.show-admin #viewAdmin{display:block;}
 </div>
 
 <!-- ══ DASHBOARD VIEW ══ -->
-<div id="viewDash">
+<div id="viewDash" style="display:none;">
   <div class="dash-wrap">
     <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
       <div><div class="dash-title">My Quotations</div><div style="font-size:.76rem;color:var(--gray);margin-top:2px;" id="quoteCountLabel">Loading...</div></div>
@@ -549,7 +549,7 @@ body.show-admin #viewAdmin{display:block;}
 </div>
 
 <!-- ══ QUOTATION VIEW ══ -->
-<div id="viewQuote">
+<div id="viewQuote" style="display:none;">
   <div class="quote-view-bar no-print">
     <button class="btn-back" onclick="showDashboard()">← Dashboard</button>
     <div style="flex:1;min-width:0;">
@@ -899,7 +899,7 @@ body.show-admin #viewAdmin{display:block;}
 </div>
 
 <!-- ══ ADMIN VIEW ══ -->
-<div id="viewAdmin">
+<div id="viewAdmin" style="display:none;">
   <div class="admin-wrap">
     <div class="admin-sidebar">
       <div class="admin-sidebar-label">Overview</div>
@@ -1126,14 +1126,28 @@ function removeLogo(){localStorage.removeItem('rtc_logo');document.getElementByI
 
 /* ══ VIEW SWITCHING ══ */
 function showView(view){
+  document.getElementById('viewAuth').style.display='none';
+  document.getElementById('viewDash').style.display='none';
+  document.getElementById('viewQuote').style.display='none';
+  document.getElementById('viewAdmin').style.display='none';
   document.body.className='show-'+view;
   const header=document.getElementById('appHeader');
-  if(view==='auth'){header.style.display='none';}
-  else{header.style.display='flex';}
-  if(view==='quote'){
+  if(view==='auth'){
+    header.style.display='none';
+    document.getElementById('viewAuth').style.display='flex';
+  } else if(view==='dash'){
+    header.style.display='flex';
+    document.getElementById('viewDash').style.display='block';
+    document.getElementById('saveStatus').style.display='none';
+    document.getElementById('quoteHeaderBtns').style.display='none';
+  } else if(view==='quote'){
+    header.style.display='flex';
+    document.getElementById('viewQuote').style.display='block';
     document.getElementById('saveStatus').style.display='flex';
     document.getElementById('quoteHeaderBtns').style.display='flex';
-  }else{
+  } else if(view==='admin'){
+    header.style.display='flex';
+    document.getElementById('viewAdmin').style.display='block';
     document.getElementById('saveStatus').style.display='none';
     document.getElementById('quoteHeaderBtns').style.display='none';
   }
@@ -1160,7 +1174,6 @@ async function doLogin(){
   setLoading('loginBtn','loginSpinner','loginBtnText',true,'Signing in...');
   const result=await callAPI({action:'login',email,password,rememberMe});
   setLoading('loginBtn','loginSpinner','loginBtnText',false,'Login');
-  alert('Login result: ' + JSON.stringify(result).substring(0,300));
   if(!result.success){showToast(result.message,'error');return;}
   saveSession(result,rememberMe);
   session=result;
