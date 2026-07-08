@@ -1089,7 +1089,7 @@ function inDateRange(v,range){
 }
 
 /* ═══════════════ API ═══════════════ */
-async function callAPI(data) {
+async function callAPI(data, skipGetFallback) {
   let out;
   try {
     const form = new FormData();
@@ -1097,11 +1097,15 @@ async function callAPI(data) {
     const res = await fetch(API_URL, {method:'POST', body:form});
     out = await res.json();
   } catch(e) {
-    try {
-      const res = await fetch(API_URL + '?payload=' + encodeURIComponent(JSON.stringify(data)));
-      out = await res.json();
-    } catch(e2) {
+    if (skipGetFallback) {
       out = {success: false, message: 'Connection failed. Check your internet.'};
+    } else {
+      try {
+        const res = await fetch(API_URL + '?payload=' + encodeURIComponent(JSON.stringify(data)));
+        out = await res.json();
+      } catch(e2) {
+        out = {success: false, message: 'Connection failed. Check your internet.'};
+      }
     }
   }
   if(out && out.sessionExpired){ forceLogout('Your session has expired. Please log in again.'); }
@@ -2173,12 +2177,17 @@ async function cloudSave(){
     const tab=tabs.find(t=>t.id===activeTabId);
     if(tab)tab.data=collectCurrentData();
     st.textContent='⏳ Saving...';st.className='save-status';
-    const res=await callAPI({
+    const payload={
       action:'saveQuotation',token:session.token,
       quoteId:(tab&&tab.quoteId)?tab.quoteId:null,
       meta:readSummaryMeta(),
       data:tab?tab.data:collectCurrentData()
-    });
+    };
+    let res=await callAPI(payload,true);
+    if(!(res&&res.success)&&!(res&&res.sessionExpired)){
+      await new Promise(r=>setTimeout(r,1500));
+      res=await callAPI(payload,true);
+    }
     if(res&&res.success){
       if(tab){tab.quoteId=res.quoteId;if(tab.id===activeTabId)currentQuoteId=res.quoteId;}
       else currentQuoteId=res.quoteId;
@@ -2267,6 +2276,8 @@ function newQuotation(){
   showView('quote');
   addTab();
   updateQuoteToolbar();
+  clearTimeout(cloudSaveTimer);
+  cloudSave(); /* create the cloud record immediately — Quote ID assigned on first response */
 }
 async function openQuote(id){
   const existing=tabs.find(t=>t.quoteId===id);
@@ -2289,6 +2300,7 @@ async function openQuote(id){
   document.getElementById('goodsContainer').innerHTML='';
   document.getElementById('pdmContainer').innerHTML='';
   loadDataIntoUI(res.data||{});
+  compressLegacyImages(); /* shrink old full-res images so future saves are fast */
   currentQuoteId=id;
   if(res.meta&&!allQuotes.find(q=>q.quoteId===id))allQuotes.push(res.meta);
   updateQuoteToolbar();
@@ -2304,8 +2316,8 @@ async function duplicateQuote(id){
 }
 async function deleteQuote(id){
   if(!confirm('Delete this quotation permanently? This cannot be undone.'))return;
-  const res=await callAPI({action:'deleteQuotation',token:session.token,quoteId:id});
-  if(!res.success){showToast(res.message||'Failed to delete.','error');return;}
+  /* Optimistic: remove from UI instantly, sync with server in background */
+  const backup=allQuotes.slice();
   allQuotes=allQuotes.filter(q=>q.quoteId!==id);
   const t=tabs.find(t=>t.quoteId===id);
   if(t){
@@ -2313,14 +2325,23 @@ async function deleteQuote(id){
     if(activeTabId===t.id){activeTabId=tabs.length?tabs[0].id:null;currentQuoteId=activeTabId?(tabs[0].quoteId||null):null;}
     renderTabs();
   }
-  showToast('Quotation deleted.','success');
   renderDashboard();
+  showToast('Quotation deleted.','success');
+  const res=await callAPI({action:'deleteQuotation',token:session.token,quoteId:id});
+  if(!(res&&res.success)&&!(res&&res.sessionExpired)){
+    allQuotes=backup;renderDashboard();
+    showToast((res&&res.message)||'Delete failed — quotation restored.','error');
+  }
 }
 
 /* ═══════════════ MODALS ═══════════════ */
 function closeModal(id){document.getElementById(id).style.display='none';}
 function openStatusModal(id){
-  if(!id){showToast('This quotation has not been saved yet — auto-save runs every 3 seconds. Try again in a moment.','warn');return;}
+  if(!id){
+    clearTimeout(cloudSaveTimer);cloudSave();
+    showToast('Saving quotation now — try Change Status again in a few seconds.','warn');
+    return;
+  }
   statusTargetId=id;
   const meta=allQuotes.find(q=>q.quoteId===id)||(adminData&&adminData.quotes?adminData.quotes.find(q=>q.quoteId===id):null);
   selectedStatus=meta?meta.status:'Draft';
@@ -2333,16 +2354,24 @@ function selectStatus(s){
 }
 async function applyStatus(){
   if(!statusTargetId||!selectedStatus){closeModal('statusModal');return;}
-  const res=await callAPI({action:'updateStatus',token:session.token,quoteId:statusTargetId,status:selectedStatus});
-  if(res.success){
-    const q=allQuotes.find(x=>x.quoteId===statusTargetId);if(q)q.status=res.status;
-    if(adminData&&adminData.quotes){const aq=adminData.quotes.find(x=>x.quoteId===statusTargetId);if(aq)aq.status=res.status;}
+  const id=statusTargetId,st=selectedStatus;
+  closeModal('statusModal');
+  /* Optimistic: apply instantly, sync with server in background */
+  const q=allQuotes.find(x=>x.quoteId===id);const prev=q?q.status:null;
+  if(q)q.status=st;
+  if(adminData&&adminData.quotes){const aq=adminData.quotes.find(x=>x.quoteId===id);if(aq)aq.status=st;}
+  updateQuoteToolbar();
+  if(document.getElementById('viewDash').style.display!=='none')renderDashboard();
+  if(document.getElementById('viewAdmin').style.display!=='none'&&adminPageCur==='quotes')renderAdminQuotes();
+  showToast('Status updated to '+st+'.','success');
+  const res=await callAPI({action:'updateStatus',token:session.token,quoteId:id,status:st});
+  if(!(res&&res.success)&&!(res&&res.sessionExpired)){
+    if(q)q.status=prev||q.status;
+    if(adminData&&adminData.quotes){const aq=adminData.quotes.find(x=>x.quoteId===id);if(aq&&prev)aq.status=prev;}
     updateQuoteToolbar();
     if(document.getElementById('viewDash').style.display!=='none')renderDashboard();
-    if(document.getElementById('viewAdmin').style.display!=='none'&&adminPageCur==='quotes')renderAdminQuotes();
-    showToast('Status updated to '+res.status+'.','success');
-  }else showToast(res.message||'Failed to update status.','error');
-  closeModal('statusModal');
+    showToast((res&&res.message)||'Failed to update status — reverted.','error');
+  }
 }
 
 /* profile */
@@ -2562,6 +2591,33 @@ async function adminAddUser(){
   populateDeptFilters();
   ['admNewName','admNewEmail','admNewDept'].forEach(id=>document.getElementById(id).value='');
   showToast('User added. Default password: '+DEFAULT_RESET_PW,'success');
+}
+
+/* Override (declared later, so it wins): compress row images before storing.
+   Full-resolution photos made every cloud save upload megabytes. */
+function setImgOnBtn(btn,src){
+  const apply=(finalSrc)=>{const el=btn.querySelector('img');el.src=finalSrc;el.style.display='';btn.classList.add('has-img');};
+  if(!src||!src.startsWith('data:')){apply(src);return;}
+  const im=new Image();
+  im.onload=()=>{
+    let w=im.width,h2=im.height;const MAX=700;
+    if(w<=MAX&&h2<=MAX&&src.length<300000){apply(src);return;}
+    if(w>h2){h2=Math.round(h2*MAX/w);w=MAX;}else{w=Math.round(w*MAX/h2);h2=MAX;}
+    const c=document.createElement('canvas');c.width=w;c.height=h2;
+    const ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h2);ctx.drawImage(im,0,0,w,h2);
+    apply(c.toDataURL('image/jpeg',0.8));
+  };
+  im.onerror=()=>apply(src);
+  im.src=src;
+}
+
+function compressLegacyImages(){
+  let found=false;
+  document.querySelectorAll('#tableBody .img-upload-btn').forEach(btn=>{
+    const img=btn.querySelector('img');
+    if(img&&img.src&&img.src.startsWith('data:')&&img.src.length>300000){found=true;setImgOnBtn(btn,img.src);}
+  });
+  if(found)setTimeout(()=>{if(document.getElementById('viewQuote').style.display!=='none')markUnsaved();},1000);
 }
 
 /* ═══════════════ INIT ═══════════════ */
