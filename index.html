@@ -835,6 +835,18 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
   </div>
 </div>
 
+<!-- ═══════ CONFIRM MODAL ═══════ -->
+<div class="modal-back no-print" id="confirmModal" style="display:none;" onclick="if(event.target===this)confirmAnswer(false)">
+  <div class="modal-card" style="max-width:380px;">
+    <div class="modal-head">Please Confirm <button onclick="confirmAnswer(false)">✕</button></div>
+    <div class="modal-body"><p id="confirmMsg" style="margin:0;font-size:.88rem;line-height:1.6;color:var(--dark);"></p></div>
+    <div class="modal-foot">
+      <button class="btn-outline-maroon" onclick="confirmAnswer(false)">Cancel</button>
+      <button class="btn-maroon" id="confirmOkBtn" onclick="confirmAnswer(true)">OK</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════ TOASTS ═══════ -->
 <div id="toastWrap" class="no-print"></div>
 
@@ -2381,7 +2393,7 @@ async function openQuote(id){
   /* INSTANT open from local copy when available; verify against cloud in background */
   if(cached&&cached.data){
     let data=cached.data,ts=cached.updated||0;
-    if(draft&&draft.ts>ts&&confirm('You have an unsaved draft of this quotation. Restore it?')){data=draft.data;ts=draft.ts;cloudDirty=true;}
+    if(draft&&draft.ts>ts&&await confirmDialog('You have an unsaved draft of this quotation. Restore it?','Restore')){data=draft.data;ts=draft.ts;cloudDirty=true;}
     const tid=openQuoteRenderTab(id,data,meta&&(meta.client||meta.quotationNo));
     if(cloudDirty){const st=document.getElementById('saveStatus');st.textContent='Unsaved changes';st.className='save-status unsaved';}
     const res=await callAPI({action:'getQuotation',token:session.token,quoteId:id},true);
@@ -2403,7 +2415,7 @@ async function openQuote(id){
   let data=res.data||{};
   const serverTs=res.meta&&res.meta.updated?new Date(res.meta.updated).getTime():0;
   qcachePut(id,data,serverTs||Date.now());
-  if(draft&&draft.ts>serverTs&&confirm('You have an unsaved draft of this quotation that is newer than the cloud copy. Restore it?')){data=draft.data;cloudDirty=true;}
+  if(draft&&draft.ts>serverTs&&await confirmDialog('You have an unsaved draft of this quotation that is newer than the cloud copy. Restore it?','Restore')){data=draft.data;cloudDirty=true;}
   if(res.meta&&!allQuotes.find(q=>q.quoteId===id))allQuotes.push(res.meta);
   const tid2=openQuoteRenderTab(id,data,res.meta&&(res.meta.client||res.meta.quotationNo));
   const tb2=tabs.find(t=>t.id===tid2);if(tb2)tb2.data=data;
@@ -2416,7 +2428,7 @@ async function duplicateQuote(id){
   else showToast(res.message||'Failed to duplicate.','error');
 }
 async function deleteQuote(id){
-  if(!confirm('Delete this quotation permanently? This cannot be undone.'))return;
+  if(!await confirmDialog('Delete this quotation permanently? This cannot be undone.','Delete'))return;
   /* Optimistic: remove from UI instantly, sync with server in background */
   const backup=allQuotes.slice();
   pendingDeletes.add(id);
@@ -2441,6 +2453,19 @@ async function deleteQuote(id){
 
 /* ═══════════════ MODALS ═══════════════ */
 function closeModal(id){document.getElementById(id).style.display='none';}
+let confirmResolve=null;
+function confirmDialog(msg,okLabel){
+  return new Promise(res=>{
+    confirmResolve=res;
+    document.getElementById('confirmMsg').textContent=msg;
+    document.getElementById('confirmOkBtn').textContent=okLabel||'OK';
+    document.getElementById('confirmModal').style.display='flex';
+  });
+}
+function confirmAnswer(v){
+  document.getElementById('confirmModal').style.display='none';
+  if(confirmResolve){const r=confirmResolve;confirmResolve=null;r(v);}
+}
 function openStatusModal(id){
   if(!id){
     clearTimeout(cloudSaveTimer);cloudSave();
@@ -2632,7 +2657,7 @@ function renderAdminUsers(){
   ).join('')||'<tr><td colspan="7" style="color:var(--gray);text-align:center;">No users found.</td></tr>';
 }
 async function adminResetPassword(email){
-  if(!confirm('Reset password for '+email+' to "'+DEFAULT_RESET_PW+'"?'))return;
+  if(!await confirmDialog('Reset password for '+email+' to "'+DEFAULT_RESET_PW+'"?','Reset'))return;
   const res=await callAPI({action:'resetPassword',token:session.token,email,newPassword:DEFAULT_RESET_PW});
   if(res.success)showToast('Password reset. New password: '+DEFAULT_RESET_PW,'success');
   else showToast(res.message||'Failed to reset password.','error');
@@ -2640,7 +2665,7 @@ async function adminResetPassword(email){
 async function adminToggleUser(email){
   const u=adminData.users.find(x=>String(x.email).toLowerCase()===String(email).toLowerCase());
   const verb=u&&u.status==='Active'?'Deactivate':'Activate';
-  if(!confirm(verb+' account '+email+'?'))return;
+  if(!await confirmDialog(verb+' account '+email+'?',verb))return;
   const res=await callAPI({action:'toggleUserStatus',token:session.token,email});
   if(res.success){
     if(u)u.status=res.status;
