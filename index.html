@@ -367,6 +367,57 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 .toastx.warn{background:#b07d27;}
 @keyframes toastin{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
+/* ═══════ PHONE (≤640px) ═══════ */
+@media (max-width:640px){
+  .app-header{padding:8px 10px;}
+  .rtc-title{font-size:1.02rem;}
+  .header-logo{height:24px;max-width:80px;}
+  #quoteHeaderBtns button{padding:6px 8px;font-size:.68rem;}
+  #installBtn{display:none !important;}
+  .save-status{font-size:.6rem;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .avatar{width:32px;height:32px;font-size:.75rem;}
+  .quote-toolbar{gap:6px;padding:6px 10px;}
+  .quote-toolbar .btn-outline-maroon{padding:5px 9px;font-size:.7rem;}
+  .qt-client{max-width:130px;}
+  .container-fluid{padding-left:8px !important;padding-right:8px !important;}
+  .main-card .card-body{padding:10px 8px;}
+  .doc-info-card{padding:10px 12px;}
+  .doc-info-grid{grid-template-columns:1fr 1fr;}
+  .toolbar{gap:5px;}
+  .toolbar input[type="number"]{width:110px;}
+  .table-responsive{-webkit-overflow-scrolling:touch;}
+  .breakdown-card{padding:10px 10px;}
+  .sig-grid{grid-template-columns:1fr 1fr;gap:12px;}
+  .dash-wrap{padding:12px 8px 40px;}
+  .dash-title{font-size:1.2rem;}
+  .dash-controls{flex-direction:column;}
+  .dash-controls select{width:100%;}
+  .status-tab{padding:5px 10px;font-size:.7rem;}
+  .q-card{padding:12px;}
+  .q-card-btns button{padding:7px 10px;font-size:.74rem;}
+  .sum-cards{grid-template-columns:repeat(2,1fr);gap:8px;}
+  .sum-card .val{font-size:1.05rem;}
+  .admin-main{padding:12px 8px;}
+  .admin-filters input{min-width:0;width:100%;}
+  .admin-filters select{flex:1;min-width:120px;}
+  .modal-back{padding:10px;}
+  .modal-card{max-width:100%;}
+  .help-panel,.settings-panel{width:auto;left:10px;right:10px;top:60px;max-height:calc(100vh - 76px);}
+  .auth-card{padding:26px 18px 22px;}
+  .auth-logo-title{font-size:1.4rem;}
+  #toastWrap{left:12px;right:12px;bottom:14px;align-items:stretch;}
+  .toastx{max-width:none;}
+  #loadingScreen .ls-title{font-size:1.5rem;}
+}
+/* ═══════ TABLET (641–991px) ═══════ */
+@media (min-width:641px) and (max-width:991px){
+  .app-header{flex-wrap:wrap;gap:8px;}
+  #quoteHeaderBtns button{padding:6px 10px;font-size:.74rem;}
+  .doc-info-grid{grid-template-columns:repeat(3,1fr);}
+  .sum-cards{grid-template-columns:repeat(3,1fr);}
+  .q-cards{grid-template-columns:repeat(2,1fr);}
+  .dash-wrap{padding:18px 14px 50px;}
+}
 @media (max-width:820px){
   .admin-wrap{flex-direction:column;}
   .admin-side{width:100%;display:flex;overflow-x:auto;padding:8px;border-right:none;border-bottom:1px solid var(--border);}
