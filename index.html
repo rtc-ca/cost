@@ -761,7 +761,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
             <button class="at-btn" onclick="document.getElementById('admUserDetailCard').style.display='none'">✕ Close</button>
           </div>
           <table class="admin-table"><thead><tr>
-            <th>Quote No</th><th>Client</th><th>Project</th><th>Date</th><th>Status</th><th>Total Selling</th><th>Net Margin</th>
+            <th>Quote No</th><th>Client</th><th>Project</th><th>Date</th><th>Status</th><th>Total Selling</th><th>Net Profit</th><th>Net Margin</th>
           </tr></thead><tbody id="admUserDetailBody"></tbody></table>
         </div>
       </div>
@@ -2653,7 +2653,7 @@ function renderAdminDash(){
   const dept=document.getElementById('admDashDept').value;
   const range=document.getElementById('admDashDate').value;
   const quotes=adminData.quotes.filter(q=>
-    (dept==='All'||deptOf(q.owner)===dept)&&inDateRange(q.updated,range));
+    (dept==='All'||deptOf(q.owner)===dept)&&inDateRange(q.updated,range)&&(Number(q.totalSelling)||0)>0);
   const users=adminData.users.filter(u=>u.role!=='admin'&&(dept==='All'||String(u.department||'')===dept));
   const tSell=quotes.reduce((s,q)=>s+(Number(q.totalSelling)||0),0);
   const tCost=quotes.reduce((s,q)=>s+(Number(q.totalCost)||0),0);
@@ -2681,15 +2681,16 @@ function renderAdminDash(){
 }
 function showAdminUserDetail(email){
   const range=document.getElementById('admDashDate').value;
-  const uq=adminData.quotes.filter(q=>String(q.owner).toLowerCase()===String(email).toLowerCase()&&inDateRange(q.updated,range));
+  const uq=adminData.quotes.filter(q=>String(q.owner).toLowerCase()===String(email).toLowerCase()&&inDateRange(q.updated,range)&&(Number(q.totalSelling)||0)>0);
   const u=adminData.users.find(x=>String(x.email).toLowerCase()===String(email).toLowerCase());
   document.getElementById('admUserDetailTitle').textContent='Quotations — '+(u?u.name:email);
   document.getElementById('admUserDetailBody').innerHTML=uq.map(q=>
     '<tr><td>'+escapeHtml(q.quoteId)+'</td><td>'+escapeHtml(q.client||'—')+'</td><td>'+escapeHtml(q.project||'—')+'</td>'+
     '<td>'+fmtDate(q.updated)+'</td><td><span class="badge-status badge-'+q.status+'">'+q.status+'</span></td>'+
     '<td style="color:#166534;font-weight:600;">₱'+peso(Number(q.totalSelling)||0)+'</td>'+
-    '<td>'+(Number(q.netMargin)||0).toFixed(2)+'%</td></tr>'
-  ).join('')||'<tr><td colspan="7" style="color:var(--gray);text-align:center;">No quotations.</td></tr>';
+    '<td style="color:'+((Number(q.netProfit)||0)<0?'#991b1b':'#166534')+';font-weight:600;">₱'+peso(Number(q.netProfit)||0)+'</td>'+
+    '<td style="color:'+((Number(q.netMargin)||0)<20?'#991b1b':'#166534')+';">'+(Number(q.netMargin)||0).toFixed(2)+'%</td></tr>'
+  ).join('')||'<tr><td colspan="8" style="color:var(--gray);text-align:center;">No quotations.</td></tr>';
   document.getElementById('admUserDetailCard').style.display='block';
   document.getElementById('admUserDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
