@@ -25,7 +25,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--dark);fon
 .tab-btn.active{background:var(--white);color:var(--maroon);border-color:var(--border);border-bottom-color:var(--white);}
 .tab-btn .tab-close{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;background:transparent;border:none;cursor:pointer;color:var(--gray);padding:0;transition:background .15s,color .15s;}
 .tab-btn .tab-close:hover{background:#fee2e2;color:#991b1b;}
-.tab-btn .tab-name{max-width:120px;overflow:hidden;text-overflow:ellipsis;}
+.tab-btn .tab-name{max-width:none;white-space:nowrap;}
 .tab-name-input{border:none;border-bottom:1px solid var(--maroon);outline:none;font-size:.8rem;font-weight:600;color:var(--maroon);background:transparent;width:100px;font-family:'DM Sans',sans-serif;}
 .add-tab-btn{padding:6px 10px;font-size:.85rem;color:var(--gray);background:transparent;border:none;cursor:pointer;border-radius:6px;margin-bottom:2px;transition:all .15s;}
 .add-tab-btn:hover{background:var(--maroon-pale);color:var(--maroon);}
@@ -2364,7 +2364,7 @@ function newQuotation(){
 function openQuoteRenderTab(id,data,metaName){
   if(activeTabId){const cur=tabs.find(t=>t.id===activeTabId);if(cur)cur.data=collectCurrentData();}
   const tid=uid();
-  tabs.push({id:tid,quoteId:id,name:String(metaName||'Quote').substring(0,18),data:data||{}});
+  tabs.push({id:tid,quoteId:id,name:String(metaName||'Quote'),data:data||{}});
   activeTabId=tid;renderTabs();
   document.getElementById('tableBody').innerHTML='';
   goodsSectionCount=0;pdmSectionCount=0;
@@ -2766,7 +2766,15 @@ async function initApp(){
   document.getElementById('loadingScreen').style.display='none';
   startExpiryWatch();
   const dc=document.getElementById('docClient');
-  if(dc)dc.addEventListener('input',()=>{document.getElementById('qtClient').textContent=dc.value;});
+  if(dc)dc.addEventListener('input',()=>{
+    document.getElementById('qtClient').textContent=dc.value;
+    const tab=tabs.find(t=>t.id===activeTabId);
+    if(tab&&dc.value.trim()){
+      tab.name=dc.value.trim();
+      const span=document.querySelector('.tab-btn[data-id="'+tab.id+'"] .tab-name');
+      if(span)span.textContent=tab.name;
+    }
+  });
   document.querySelectorAll('.modal-back').forEach(m=>{
     m.addEventListener('click',e=>{if(e.target===m)m.style.display='none';});
   });
