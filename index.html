@@ -2603,12 +2603,15 @@ function renderAdminDash(){
   const range=document.getElementById('admDashDate').value;
   const quotes=adminData.quotes.filter(q=>
     (dept==='All'||deptOf(q.owner)===dept)&&inDateRange(q.updated,range));
-  const users=adminData.users.filter(u=>dept==='All'||String(u.department||'')===dept);
+  const users=adminData.users.filter(u=>u.role!=='admin'&&(dept==='All'||String(u.department||'')===dept));
   const tSell=quotes.reduce((s,q)=>s+(Number(q.totalSelling)||0),0);
   const tCost=quotes.reduce((s,q)=>s+(Number(q.totalCost)||0),0);
   const avgM=quotes.length?quotes.reduce((s,q)=>s+(Number(q.netMargin)||0),0)/quotes.length:0;
+  const regUserCount=adminData.users.filter(u=>u.role!=='admin').length;
+  const adminCount=adminData.users.length-regUserCount;
   document.getElementById('adminSumCards').innerHTML=
-    '<div class="sum-card"><small>Total Users</small><div class="val">'+adminData.users.length+'</div></div>'+
+    '<div class="sum-card"><small>Total Users</small><div class="val">'+regUserCount+'</div>'+
+    (adminCount?'<small style="text-transform:none;letter-spacing:0;color:var(--gray);">+'+adminCount+' admin'+(adminCount>1?'s':'')+'</small>':'')+'</div>'+
     '<div class="sum-card"><small>Total Quotations</small><div class="val">'+quotes.length+'</div></div>'+
     '<div class="sum-card"><small>Total Selling</small><div class="val" style="color:#166534;">₱'+peso(tSell)+'</div></div>'+
     '<div class="sum-card"><small>Total Cost</small><div class="val">₱'+peso(tCost)+'</div></div>'+
