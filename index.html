@@ -12,7 +12,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--maroon:#7b0d0d;--maroon-light:#a01515;--maroon-pale:#fdf3f3;--dark:#1a1a2e;--gray:#6b7280;--border:#e5e7eb;--bg:#f7f8fc;--white:#ffffff;--tbl-bw:1.5px;--tbl-bc:#000;}
+:root{--maroon:#7b0d0d;--maroon-light:#a01515;--maroon-pale:#fdf3f3;--brand-dark:#6b0000;--brand-darker:#4b0505;--brand-darkest:#3a0404;--dark:#1a1a2e;--gray:#6b7280;--border:#e5e7eb;--bg:#f7f8fc;--white:#ffffff;--tbl-bw:1.5px;--tbl-bc:#000;}
 *{box-sizing:border-box;}
 body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--dark);font-size:.875rem;margin:0;}
 
@@ -46,7 +46,7 @@ body{background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--dark);fon
 
 .table-responsive{overflow-x:auto;}
 table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var(--tbl-bw) solid var(--tbl-bc);}
-.cost-table thead tr th{background:var(--maroon);color:#fff;font-weight:600;padding:8px 6px;text-align:center;white-space:nowrap;font-size:.72rem;letter-spacing:.2px;border:var(--tbl-bw) solid #6b0000;}
+.cost-table thead tr th{background:var(--maroon);color:#fff;font-weight:600;padding:8px 6px;text-align:center;white-space:nowrap;font-size:.72rem;letter-spacing:.2px;border:var(--tbl-bw) solid var(--brand-dark);}
 .cost-table tbody tr:hover{background:var(--maroon-pale);}
 .cost-table tbody td{padding:4px 4px;border-bottom:var(--tbl-bw) solid var(--tbl-bc);border-right:var(--tbl-bw) solid var(--tbl-bc);vertical-align:middle;}
 .cost-table input[type="text"],.cost-table input[type="number"]{border:1px solid transparent;border-radius:4px;padding:4px 5px;width:100%;font-size:.78rem;background:transparent;transition:border-color .15s,background .15s;min-width:55px;text-align:center;}
@@ -90,7 +90,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 
 .breakdown-card{background:var(--white);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-top:14px;box-shadow:0 1px 6px rgba(0,0,0,.04);}
 .breakdown-table{width:100%;border-collapse:collapse;font-size:.78rem;margin-top:8px;border:var(--tbl-bw) solid var(--tbl-bc);}
-.breakdown-table thead tr th{background:#4b0505;color:#fff;font-weight:600;padding:7px 8px;text-align:center;font-size:.72rem;border:var(--tbl-bw) solid #3a0404;}
+.breakdown-table thead tr th{background:var(--brand-darker);color:#fff;font-weight:600;padding:7px 8px;text-align:center;font-size:.72rem;border:var(--tbl-bw) solid var(--brand-darkest);}
 .breakdown-table tbody td{padding:5px 6px;border-bottom:var(--tbl-bw) solid var(--tbl-bc);border-right:var(--tbl-bw) solid var(--tbl-bc);vertical-align:top;}
 .breakdown-table tbody tr:last-child td{border-bottom:var(--tbl-bw) solid var(--tbl-bc);}
 .breakdown-table input[type="number"]{-moz-appearance:textfield;appearance:textfield;}
@@ -188,7 +188,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
   .main-card{border:1px solid #ccc !important;}
   .main-card .card-body{padding:6pt !important;}
   .doc-info-card{border-radius:0 !important;margin-bottom:6pt !important;padding:5pt 8pt !important;border:1px solid #ddd !important;}
-  .doc-info-grid{display:grid !important;grid-template-columns:repeat(5,1fr) !important;gap:0 8pt !important;align-items:start !important;}
+  .doc-info-grid{display:grid !important;grid-template-columns:repeat(6,1fr) !important;gap:0 8pt !important;align-items:start !important;}
   .doc-field label{font-size:6pt !important;margin-bottom:1pt !important;}
   .doc-field input,.doc-field textarea{font-size:7.5pt !important;border-bottom:none !important;padding:0 !important;overflow:hidden !important;}
   .cost-table{font-size:7pt !important;}
@@ -212,7 +212,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
   .breakdown-table input{border:none !important;background:transparent !important;font-size:7pt !important;}
   .breakdown-table textarea.bd-item{border:none !important;background:transparent !important;padding:0 !important;font-size:7pt !important;resize:none !important;overflow:visible !important;height:auto !important;}
   #notesText{border:none !important;background:transparent !important;font-size:7.5pt !important;padding:0 !important;resize:none !important;overflow:visible !important;height:auto !important;width:100% !important;}
-  .sig-section{position:static !important;margin-top:10pt !important;background:#fff !important;border:none !important;border-top:1.5px solid #7b0d0d !important;border-radius:0 !important;box-shadow:none !important;padding:6pt 0 0 !important;page-break-inside:avoid;break-inside:avoid;break-before:avoid;}
+  .sig-section{position:static !important;margin-top:10pt !important;background:#fff !important;border:none !important;border-top:1.5px solid var(--maroon) !important;border-radius:0 !important;box-shadow:none !important;padding:6pt 0 0 !important;page-break-inside:avoid;break-inside:avoid;break-before:avoid;}
   .sig-grid{display:grid !important;grid-template-columns:repeat(4,1fr) !important;gap:0 !important;}
   .sig-block{text-align:center !important;padding:0 8pt !important;}
   .sig-space{height:22pt !important;margin-bottom:3pt !important;}
@@ -239,8 +239,18 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 @keyframes rtcspin{to{transform:rotate(360deg);}}
 
 /* Auth */
-.auth-bg{min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(135deg,#5c0808 0%,#7b0d0d 55%,#a01515 100%);padding:20px;}
-.auth-card{background:#fff;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);width:100%;max-width:430px;padding:34px 32px 28px;}
+.auth-bg{min-height:100vh;align-items:center;justify-content:center;background:linear-gradient(135deg,#4a0606 0%,#7b0d0d 42%,#1a2f6e 78%,#0751d8 100%);padding:20px;}
+.auth-card{background:#fff;border-radius:18px;box-shadow:0 24px 70px rgba(0,0,0,.4);width:100%;max-width:430px;padding:38px 32px 28px;position:relative;overflow:hidden;}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,#7b0d0d 0%,#7b0d0d 50%,#0751d8 50%,#0751d8 100%);}
+@keyframes authIn{from{opacity:0;transform:translateY(20px) scale(.96);}to{opacity:1;transform:none;}}
+.auth-card{animation:authIn .55s cubic-bezier(.2,.8,.3,1);transition:transform .25s ease,box-shadow .25s ease;}
+.auth-card:hover{transform:translateY(-4px);box-shadow:0 32px 90px rgba(0,0,0,.5);}
+.auth-btn{transition:transform .18s ease,box-shadow .18s ease,background .2s;}
+.auth-btn:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(123,13,13,.38);}
+.auth-btn:active{transform:scale(.98);}
+.auth-field input:focus,.auth-field select:focus{border-color:var(--maroon);box-shadow:0 0 0 3px rgba(123,13,13,.13);}
+.auth-links a{transition:opacity .15s;}
+.auth-links a:hover{opacity:.75;}
 .auth-logo-title{font-family:'Playfair Display',serif;color:var(--maroon);font-size:1.7rem;font-weight:900;text-align:center;margin:0;}
 .auth-sub{text-align:center;color:var(--gray);font-size:.78rem;letter-spacing:1.2px;text-transform:uppercase;margin:4px 0 22px;}
 .auth-field{margin-bottom:14px;}
@@ -367,6 +377,34 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 .toastx.warn{background:#b07d27;}
 @keyframes toastin{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
 
+/* ═══════ PREMIUM LOADER ═══════ */
+.rtc-loader{display:flex;flex-direction:column;align-items:center;gap:13px;padding:14px 0;}
+.rtc-loader .ic{position:relative;width:54px;height:54px;}
+.rtc-loader .ring{position:absolute;top:-9px;left:-9px;width:72px;height:72px;border:3px solid rgba(0,0,0,.06);border-top-color:var(--maroon);border-radius:50%;animation:rtcspin 1.7s cubic-bezier(.5,.1,.4,.9) infinite;}
+.rtc-loader .fbox{width:100%;height:100%;border:3px solid var(--maroon);border-radius:8px;background:var(--maroon-pale);display:flex;flex-direction:column;justify-content:center;gap:5px;padding:10px;animation:rtcpulse 2.4s infinite ease-in-out;}
+.rtc-loader .fl{height:3px;background:var(--maroon-light);border-radius:2px;opacity:.5;}
+.rtc-loader .fl.l1{width:80%;}.rtc-loader .fl.l2{width:55%;}.rtc-loader .fl.l3{width:70%;}
+.rtc-loader .ptxt{font-size:.72rem;color:var(--gray);letter-spacing:.5px;text-transform:uppercase;font-weight:600;}
+.rtc-loader .pbar{width:150px;height:3px;background:rgba(0,0,0,.07);border-radius:10px;overflow:hidden;}
+.rtc-loader .pline{width:100%;height:100%;background:linear-gradient(90deg,var(--maroon),var(--maroon-light));transform:translateX(-100%);animation:rtcslide 2s infinite ease-in-out;}
+@keyframes rtcpulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05);}}
+@keyframes rtcslide{0%{transform:translateX(-100%);}50%{transform:translateX(0);}100%{transform:translateX(100%);}}
+
+/* ═══════ COMPANY + PO FIELD ═══════ */
+.po-chip{border:1.5px solid var(--border);background:#fff;color:var(--gray);border-radius:14px;padding:3px 10px;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
+.po-chip:hover{border-color:var(--maroon);color:var(--maroon);}
+.po-chip.active{background:var(--maroon);border-color:var(--maroon);color:#fff;}
+.po-print{display:none;}
+.company-print{display:none;}
+@media print{
+  .po-btns{display:none !important;}
+  #poWhen{display:none !important;}
+  .po-print{display:block !important;font-size:7.5pt !important;color:#000 !important;}
+  .company-print{display:block !important;font-family:'Playfair Display',serif !important;font-weight:700 !important;font-size:11pt !important;color:var(--maroon) !important;margin-bottom:4pt !important;}
+}
+#viewQuote.view-only .po-btns{pointer-events:none;}
+#viewQuote.view-only #companySelect{pointer-events:none;}
+
 /* ═══════ VIEW-ONLY MODE (admin viewing user quotes) ═══════ */
 #viewQuote.view-only #mainContent input,#viewQuote.view-only #mainContent textarea,#viewQuote.view-only #mainContent select{pointer-events:none;}
 #viewQuote.view-only .toolbar,#viewQuote.view-only #addGoodsBtn,#viewQuote.view-only #addPdmBtn,#viewQuote.view-only #addNotesBtn{display:none !important;}
@@ -444,8 +482,8 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 
 <!-- ═══════ LOADING SCREEN ═══════ -->
 <div id="loadingScreen" class="no-print">
-  <div class="ls-title">RTC Cost Analysis</div>
-  <div class="ls-sub">Ramesh Trading Corporation</div>
+  <div class="ls-title">Cost Analysis System</div>
+  <div class="ls-sub">Ramesh Trading · Everlast Supply</div>
   <div class="spinner"></div>
 </div>
 
@@ -483,10 +521,17 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 <!-- ═══════ VIEW: AUTH ═══════ -->
 <div id="viewAuth" class="auth-bg no-print" style="display:none;">
   <div class="auth-card">
+    <div id="authBusy" style="display:none;position:absolute;inset:0;background:rgba(255,255,255,.95);z-index:6;align-items:center;justify-content:center;">
+      <div class="rtc-loader"><div class="ic"><div class="ring"></div><div class="fbox"><div class="fl l1"></div><div class="fl l2"></div><div class="fl l3"></div></div></div><div class="ptxt" id="authBusyTxt">Logging in…</div><div class="pbar"><div class="pline"></div></div></div>
+    </div>
     <!-- LOGIN PANEL -->
     <div id="loginPanel">
-      <h1 class="auth-logo-title">RTC Cost Analysis</h1>
-      <div class="auth-sub">Ramesh Trading Corporation</div>
+      <h1 class="auth-logo-title" style="color:var(--dark);font-size:2.1rem;font-weight:900;line-height:1.15;margin-bottom:4px;">Cost Analysis System</h1>
+      <div class="auth-sub" style="letter-spacing:.4px;text-transform:none;font-size:.8rem;">
+        <span style="color:#7b0d0d;font-weight:700;">Ramesh Trading Corporation</span>
+        <span style="color:#9ca3af;"> / </span>
+        <span style="color:#0751d8;font-weight:700;">Everlast Supply Corporation</span>
+      </div>
       <div class="auth-err" id="loginErr"></div>
       <div class="auth-field">
         <label>Email</label>
@@ -522,8 +567,25 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
         <input type="email" id="regEmail" placeholder="you@rameshtrading.com.ph">
       </div>
       <div class="auth-field">
+        <label>Account Type</label>
+        <select id="regType" onchange="onRegTypeChange()">
+          <option value="regular">Regular</option>
+          <option value="sa">Sales Assistant</option>
+        </select>
+      </div>
+      <div class="auth-field">
         <label>Department</label>
-        <input type="text" id="regDept" placeholder="e.g. Sales, Accounting, Executive Assistant">
+        <select id="regDeptSel" onchange="onRegDeptChange()">
+          <option value="Corporate Sales">Corporate Sales</option>
+          <option value="Strategic Partnership Division">Strategic Partnership Division</option>
+          <option value="__other">Others…</option>
+        </select>
+        <input type="text" id="regDeptOther" placeholder="Type your department" style="display:none;margin-top:6px;">
+      </div>
+      <div class="auth-field" id="regHeadsWrap" style="display:none;">
+        <label>Select your Head(s)</label>
+        <div id="regHeadsList" style="max-height:150px;overflow-y:auto;border:1.5px solid var(--border);border-radius:8px;padding:8px 10px;font-size:.85rem;"></div>
+        <p style="font-size:.7rem;color:var(--gray);margin:4px 0 0;">Your Head must approve your request before you get access to their workspace.</p>
       </div>
       <div class="auth-field">
         <label>Password (min 8 characters)</label>
@@ -548,12 +610,23 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 <div id="viewDash" class="no-print" style="display:none;">
   <div class="dash-wrap">
     <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;">
-      <h2 class="dash-title">My Quotations</h2>
-      <button class="btn-maroon" onclick="newQuotation()" style="padding:9px 18px;">＋ New Quotation</button>
+      <div style="display:flex;align-items:center;gap:9px;">
+        <h2 class="dash-title" id="dashTitle" style="margin:0;">My Quotations</h2>
+        <button class="btn-outline-maroon" id="dashRefreshBtn" onclick="refreshDashboard()" title="Refresh" style="padding:5px 11px;font-size:.85rem;line-height:1;">⟳</button>
+      </div>
+      <button class="btn-maroon" id="newQuoteBtn" onclick="newQuotation()" style="padding:9px 18px;">＋ New Quotation</button>
     </div>
+    <div id="headRequests"></div>
+    <div id="saContextBar" style="display:none;align-items:center;gap:10px;margin:12px 0 4px;flex-wrap:wrap;"></div>
+    <div id="saFolders" class="q-cards" style="display:none;margin-top:14px;"></div>
     <div class="status-tabs" id="statusTabs"></div>
-    <div class="dash-controls">
+    <div class="dash-controls" id="dashControls">
       <input type="text" id="dashSearch" placeholder="🔍 Search client, project, or quotation number..." oninput="renderDashboard()">
+      <select id="dashCompany" onchange="renderDashboard()">
+        <option value="all">All Companies</option>
+        <option value="rtc">Ramesh Trading Corporation</option>
+        <option value="ever">Everlast Supply Corporation</option>
+      </select>
       <select id="dashSort" onchange="renderDashboard()">
         <option value="newest">Newest first</option>
         <option value="oldest">Oldest first</option>
@@ -562,7 +635,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
         <option value="amountLow">Lowest amount</option>
       </select>
     </div>
-    <div class="dash-loading" id="dashLoading" style="display:none;"><div class="spinner dark"></div></div>
+    <div class="dash-loading" id="dashLoading" style="display:none;"><div class="rtc-loader"><div class="ic"><div class="ring"></div><div class="fbox"><div class="fl l1"></div><div class="fl l2"></div><div class="fl l3"></div></div></div><div class="ptxt">Loading quotations…</div><div class="pbar"><div class="pline"></div></div></div></div>
     <div class="q-cards" id="qCards"></div>
     <div class="dash-empty" id="dashEmpty" style="display:none;">
       <div class="big">📄</div>
@@ -580,7 +653,7 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
   <span class="qt-client" id="qtClient"></span>
   <span class="badge-status badge-Draft" id="qtStatus">Draft</span>
   <span class="badge-status" id="qtViewOnly" style="display:none;background:#fef3c7;color:#92400e;">👁 VIEW ONLY</span>
-  <button class="btn-outline-maroon" style="padding:4px 10px;font-size:.72rem;" onclick="openStatusModal(currentQuoteId)">Change Status</button>
+  <button class="btn-outline-maroon" id="qtStatusBtn" style="padding:4px 10px;font-size:.72rem;" onclick="openStatusModal(currentQuoteId)">Change Status</button>
 </div>
 
 <div class="tabs-bar no-print" id="tabsBar">
@@ -589,6 +662,14 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 
 <div class="container-fluid py-3 px-3 px-md-4" id="mainContent">
   <div class="doc-info-card">
+    <div class="no-print" style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+      <span style="font-size:.68rem;font-weight:600;color:var(--maroon);text-transform:uppercase;letter-spacing:.7px;">Company</span>
+      <select id="companySelect" onchange="onCompanyChange(this.value)" style="border:1.5px solid var(--border);border-radius:7px;padding:5px 10px;font-size:.8rem;outline:none;background:#fff;color:var(--dark);max-width:290px;">
+        <option value="rtc">Ramesh Trading Corporation</option>
+        <option value="ever">Everlast Supply Corporation</option>
+      </select>
+    </div>
+    <div class="company-print" id="companyPrint">Ramesh Trading Corporation</div>
     <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
       <div class="doc-info-grid" style="flex:1;">
         <div class="doc-field"><label>Date</label><input type="date" id="docDate" oninput="markUnsaved()"></div>
@@ -596,6 +677,15 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
         <div class="doc-field"><label>Name of Project</label><textarea id="docProject" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved()"></textarea></div>
         <div class="doc-field"><label>Ref No.</label><textarea id="docRef" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved()"></textarea></div>
         <div class="doc-field"><label>Quotation Number</label><textarea id="docQuotation" placeholder=" " rows="1" oninput="autoResize(this);markUnsaved()"></textarea></div>
+        <div class="doc-field"><label>PO</label>
+          <div class="po-btns" style="display:flex;gap:6px;margin-top:2px;flex-wrap:wrap;">
+            <button type="button" class="po-chip" id="poWithBtn" onclick="setPoMode('with')">With PO</button>
+            <button type="button" class="po-chip" id="poWithoutBtn" onclick="setPoMode('without')">Without PO</button>
+          </div>
+          <div id="poYesLabel" style="display:none;font-size:.85rem;font-weight:700;color:#166534;margin-top:3px;">YES</div>
+          <input type="text" id="poWhen" placeholder="When? (tentative)" oninput="markUnsaved();updatePoPrint()" style="display:none;border:none;border-bottom:1.5px solid var(--border);padding:3px 2px;font-size:.8rem;width:100%;background:transparent;outline:none;margin-top:3px;font-family:'DM Sans',sans-serif;color:var(--dark);">
+          <div class="po-print" id="poPrint"></div>
+        </div>
       </div>
       <button onclick="clearAllFields()" class="btn-danger-sm no-print" style="white-space:nowrap;margin-top:18px;flex-shrink:0;">✕ Clear</button>
     </div>
@@ -745,11 +835,11 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
       <div class="as-item" id="asSettings" onclick="showAdminPage('settings')">⚙ Settings</div>
     </div>
     <div class="admin-main">
-      <div class="dash-loading" id="adminLoading" style="display:none;"><div class="spinner dark"></div></div>
+      <div class="dash-loading" id="adminLoading" style="display:none;"><div class="rtc-loader"><div class="ic"><div class="ring"></div><div class="fbox"><div class="fl l1"></div><div class="fl l2"></div><div class="fl l3"></div></div></div><div class="ptxt">Loading dashboard…</div><div class="pbar"><div class="pline"></div></div></div></div>
 
       <!-- ADMIN: DASHBOARD -->
       <div id="adminPageDash" style="display:none;">
-        <h3 class="admin-h">Admin Dashboard</h3>
+        <h3 class="admin-h" id="admDashTitle">Admin Dashboard</h3>
         <div class="sum-cards" id="adminSumCards"></div>
         <div class="admin-filters">
           <select id="admDashDept" onchange="renderAdminDash()"><option value="All">All Departments</option></select>
@@ -759,8 +849,13 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
             <option value="Week">This Week</option>
             <option value="Month">This Month</option>
           </select>
+          <select id="admDashCompany" onchange="renderAdminDash()">
+            <option value="all">All Companies</option>
+            <option value="rtc">Ramesh Trading Corporation</option>
+            <option value="ever">Everlast Supply Corporation</option>
+          </select>
         </div>
-        <div class="admin-card">
+        <div class="admin-card" id="admUserStatsCard">
           <div style="font-weight:700;font-size:.9rem;color:var(--maroon);margin-bottom:8px;">Quotations per User <span style="font-weight:400;color:var(--gray);font-size:.72rem;">(click a user to see their quotations)</span></div>
           <table class="admin-table"><thead><tr>
             <th>User</th><th>Department</th><th>Quotes</th><th>Total Selling</th><th>Net Profit</th><th>Avg Margin</th>
@@ -769,10 +864,10 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
         <div class="admin-card" id="admUserDetailCard" style="display:none;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
             <div style="font-weight:700;font-size:.9rem;color:var(--maroon);" id="admUserDetailTitle"></div>
-            <button class="at-btn" onclick="document.getElementById('admUserDetailCard').style.display='none'">✕ Close</button>
+            <button class="at-btn" onclick="closeAdminUserDetail()">✕ Close</button>
           </div>
           <table class="admin-table"><thead><tr>
-            <th>Quote No</th><th>Client</th><th>Project</th><th>Date</th><th>Status</th><th>Total Selling</th><th>Net Profit</th><th>Net Margin</th><th></th>
+            <th>#</th><th>Client</th><th>Project</th><th>Date</th><th>Status</th><th>Total Selling</th><th>Net Profit</th><th>Net Margin</th><th></th>
           </tr></thead><tbody id="admUserDetailBody"></tbody></table>
         </div>
       </div>
@@ -805,10 +900,15 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
             <option value="All">All Time</option><option value="Today">Today</option>
             <option value="Week">This Week</option><option value="Month">This Month</option>
           </select>
+          <select id="admQCompany" onchange="renderAdminQuotes()">
+            <option value="all">All Companies</option>
+            <option value="rtc">Ramesh Trading Corporation</option>
+            <option value="ever">Everlast Supply Corporation</option>
+          </select>
         </div>
         <div class="admin-card">
           <table class="admin-table"><thead><tr>
-            <th>Quote No</th><th>Owner</th><th>Client</th><th>Date</th><th>Status</th>
+            <th>#</th><th>Owner</th><th>Client</th><th>Date</th><th>Status</th>
             <th>Total Selling</th><th>Total Cost</th><th>Net Profit</th><th>Net Margin</th><th></th>
           </tr></thead><tbody id="admQuotesBody"></tbody></table>
         </div>
@@ -831,9 +931,12 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
           <p style="font-size:.76rem;color:var(--gray);">Default password: <strong>ChangeMe123!</strong> — ask the user to change it after first login.</p>
           <div class="auth-field"><label>Full Name</label><input type="text" id="admNewName"></div>
           <div class="auth-field"><label>Email (@rameshtrading.com.ph)</label><input type="email" id="admNewEmail"></div>
-          <div class="auth-field"><label>Department</label><input type="text" id="admNewDept"></div>
+          <div class="auth-field"><label>Department</label>
+            <select id="admNewDeptSel" onchange="document.getElementById('admNewDeptOther').style.display=this.value==='__other'?'block':'none'"></select>
+            <input type="text" id="admNewDeptOther" placeholder="Type department" style="display:none;margin-top:6px;">
+          </div>
           <div class="auth-field"><label>Role</label>
-            <select id="admNewRole"><option value="user">User</option><option value="admin">Admin</option></select>
+            <select id="admNewRole"><option value="user">User</option><option value="admin">Admin</option><option value="adminlite">Admin Lite (own department only)</option></select>
           </div>
           <button class="btn-maroon" onclick="adminAddUser()" style="width:100%;padding:9px;">+ Add User</button>
         </div>
@@ -870,8 +973,10 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
         <label class="btn-outline-maroon" style="cursor:pointer;font-size:.76rem;">📷 Change Photo<input type="file" accept="image/*" onchange="changeProfilePhoto(this)" style="display:none;"></label>
       </div>
       <div class="auth-field"><label>Full Name</label><input type="text" id="profName"></div>
-      <div class="auth-field"><label>Department</label><input type="text" id="profDept"></div>
+      <div class="auth-field"><label>Department</label><input type="text" id="profDept" disabled style="background:#f3f4f6;color:var(--gray);">
+        <p style="font-size:.68rem;color:var(--gray);margin:3px 0 0;">Contact your administrator to change your department.</p></div>
       <div class="auth-field"><label>Email</label><input type="email" id="profEmail" disabled style="background:#f3f4f6;color:var(--gray);"></div>
+      <div id="profLinksSection" style="margin-bottom:12px;"></div>
       <button class="btn-outline-maroon" style="width:100%;padding:8px;" onclick="openPasswordModal()">🔒 Change Password</button>
     </div>
     <div class="modal-foot">
@@ -907,6 +1012,11 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
       <button class="btn-maroon" id="confirmOkBtn" onclick="confirmAnswer(true)">OK</button>
     </div>
   </div>
+</div>
+
+<!-- ═══════ SAVING OVERLAY ═══════ -->
+<div id="saveOverlay" class="no-print" style="display:none;position:fixed;inset:0;background:rgba(255,255,255,.93);z-index:10008;align-items:center;justify-content:center;">
+  <div class="rtc-loader"><div class="ic"><div class="ring"></div><div class="fbox"><div class="fl l1"></div><div class="fl l2"></div><div class="fl l3"></div></div></div><div class="ptxt">Saving Quote…</div><div class="pbar"><div class="pline"></div></div></div>
 </div>
 
 <!-- ═══════ TOASTS ═══════ -->
@@ -1212,7 +1322,7 @@ function persistSession(){
 }
 function clearSession(){localStorage.removeItem(SESSION_STORE_KEY);sessionStorage.removeItem(SESSION_STORE_KEY);}
 function forceLogout(msg){
-  clearSession();session=null;allQuotes=[];adminData=null;dashLoaded=false;
+  clearSession();session=null;allQuotes=[];adminData=null;dashLoaded=false;saActiveHead=null;myLinks=null;
   currentQuoteId=null;sessionWarned=false;
   closeUserDrop();
   ['statusModal','profileModal','passwordModal'].forEach(id=>{const m=document.getElementById(id);if(m)m.style.display='none';});
@@ -1250,6 +1360,12 @@ function setAuthBusy(btnId,spinId,txtId,busy,busyTxt,idleTxt){
   document.getElementById(btnId).disabled=busy;
   document.getElementById(spinId).style.display=busy?'inline-block':'none';
   document.getElementById(txtId).textContent=busy?busyTxt:idleTxt;
+  const ov=document.getElementById('authBusy');
+  if(ov){
+    ov.style.display=busy?'flex':'none';
+    const t=document.getElementById('authBusyTxt');
+    if(t&&busy)t.textContent=busyTxt;
+  }
 }
 
 async function doLogin(){
@@ -1267,7 +1383,7 @@ async function doLogin(){
   document.getElementById('loginPassword').value='';
   initUser();
   sessionWarned=false;
-  if(session.user.role==='admin'){showView('admin');openAdmin();}
+  if(session.user.role==='admin'||session.user.role==='adminlite'){showView('admin');openAdmin();}
   else{showView('dash');loadDashboard();}
   showToast('Welcome back, '+(session.user.name||'').split(' ')[0]+'!','success');
 }
@@ -1275,23 +1391,26 @@ async function doLogin(){
 async function doRegister(){
   const name=document.getElementById('regName').value.trim();
   const email=document.getElementById('regEmail').value.trim().toLowerCase();
-  const dept=document.getElementById('regDept').value.trim();
+  const dept=getRegDept();
+  const accountType=document.getElementById('regType').value;
+  const heads=[...document.querySelectorAll('.reg-head-cb:checked')].map(c=>c.value);
   const p1=document.getElementById('regPass').value;
   const p2=document.getElementById('regPass2').value;
   document.getElementById('regErr').style.display='none';
   if(!name||!email||!dept||!p1||!p2){authError('regErr','Please fill in all fields.');return;}
+  if(accountType==='sa'&&heads.length===0){authError('regErr','Please select at least one Head.');return;}
   if(!validateDomain(email)){authError('regErr','Only '+ALLOWED_DOMAIN+' email addresses are allowed.');return;}
   if(p1.length<8){authError('regErr','Password must be at least 8 characters.');return;}
   if(p1!==p2){authError('regErr','Passwords do not match.');return;}
   setAuthBusy('regBtn','regSpin','regBtnTxt',true,'Creating account...','Register');
-  const res=await callAPI({action:'register',name,email,department:dept,password:p1});
+  const res=await callAPI({action:'register',name,email,department:dept,password:p1,accountType,heads});
   setAuthBusy('regBtn','regSpin','regBtnTxt',false,'','Register');
   if(!res.success){authError('regErr',res.message||'Registration failed.');return;}
   showAuthPanel('login');
   document.getElementById('loginEmail').value=email;
   document.getElementById('loginPassword').value='';
-  ['regName','regEmail','regDept','regPass','regPass2'].forEach(id=>document.getElementById(id).value='');
-  showToast('Account created! You can log in now.','success');
+  ['regName','regEmail','regDeptOther','regPass','regPass2'].forEach(id=>document.getElementById(id).value='');
+  showToast(res.message||'Account created!','success');
 }
 
 /* ═══════════════ USER / HEADER ═══════════════ */
@@ -1305,7 +1424,7 @@ function initUser(){
   else{av.textContent=initials(session.user.name);}
   document.getElementById('udName').textContent=session.user.name||'—';
   document.getElementById('udEmail').textContent=session.user.email||'—';
-  document.getElementById('udAdmin').style.display=session.user.role==='admin'?'flex':'none';
+  document.getElementById('udAdmin').style.display=(session.user.role==='admin'||session.user.role==='adminlite')?'flex':'none';
   applyLogo();
 }
 function applyLogo(){
@@ -1385,7 +1504,7 @@ function applyFontSettings(){
   let st=document.getElementById('fontSettingsStyle');
   if(!st){st=document.createElement('style');st.id='fontSettingsStyle';document.head.appendChild(st);}
   st.innerHTML=`
-    body,body *:not(.rtc-title):not(.section-label):not(.summary-header):not(.auto-green):not(.markup-value):not(.profit-pct-main):not(.profit-pct-round){
+    body,body *:not(.rtc-title):not(.section-label):not(.summary-header):not(.auto-green):not(.markup-value):not(.profit-pct-main):not(.profit-pct-round):not(.auth-logo-title):not(.ls-title):not(.dash-title):not(.admin-h):not(.brand-seg){
       font-family:${font} !important;font-size:${size}px !important;font-weight:${bold?'700':'400'} !important;
     }
     .cost-table input.auto-green{font-weight:700 !important;color:#166534 !important;}
@@ -1625,6 +1744,9 @@ function collectCurrentData(){
     ref:document.getElementById('docRef').value,
     quotation:document.getElementById('docQuotation').value,
     expPct:document.getElementById('expensePercent').value,
+    company:currentCompany,
+    poMode:poMode,
+    poWhen:document.getElementById('poWhen')?document.getElementById('poWhen').value:'',
     ewtEnabled,ewtPct:document.getElementById('ewtPercent')?.value||'1',
     sigName0:document.getElementById('sigName0').value,sigName1:document.getElementById('sigName1').value,
     sigName2:document.getElementById('sigName2').value,sigName3:document.getElementById('sigName3').value,
@@ -1654,6 +1776,16 @@ function loadDataIntoUI(data){
   document.getElementById('docRef').value=data.ref||'';
   document.getElementById('docQuotation').value=data.quotation||'';
   document.getElementById('expensePercent').value=data.expPct||'';
+  if(typeof applyCompanyTheme==='function'){
+    currentCompany=data.company||'rtc';
+    const cSel=document.getElementById('companySelect');if(cSel)cSel.value=currentCompany;
+    applyCompanyTheme(currentCompany);
+  }
+  if(typeof renderPoUI==='function'){
+    poMode=data.poMode||'';
+    const pwEl=document.getElementById('poWhen');if(pwEl)pwEl.value=data.poWhen||'';
+    renderPoUI();
+  }
   document.getElementById('sigName0').value=data.sigName0||'';
   document.getElementById('sigName1').value=data.sigName1||'';
   document.getElementById('sigName2').value=data.sigName2||'';
@@ -1804,10 +1936,10 @@ function switchTab(id){
   viewOnly=!!tab.viewOnly;applyViewOnlyUI();
   updateQuoteToolbar();
 }
-function closeTab(id,e){
+async function closeTab(id,e){
   e.stopPropagation();
   if(tabs.length===1){showToast('Need at least one tab.','warn');return;}
-  if(!confirm('Close this quotation tab?'))return;
+  if(!await confirmDialog('Close this quotation tab?','Close'))return;
   const idx=tabs.findIndex(t=>t.id===id);tabs.splice(idx,1);
   if(activeTabId===id){
     activeTabId=tabs[Math.max(0,idx-1)].id;
@@ -1942,8 +2074,8 @@ function createRows(){
   for(let i=0;i<n;i++)addRow();
   document.getElementById('rowCount').value='';calculate();
 }
-function deleteAllRows(){
-  if(!confirm('Delete all rows?'))return;
+async function deleteAllRows(){
+  if(!await confirmDialog('Delete all rows?','Delete'))return;
   document.getElementById('tableBody').innerHTML='';
   goodsSectionCount=0;pdmSectionCount=0;
   document.getElementById('goodsContainer').innerHTML='';
@@ -1953,11 +2085,14 @@ function deleteAllRows(){
   document.getElementById('addNotesBtn').style.display='block';
   calculate();markUnsaved();
 }
-function clearAllFields(){
-  if(!confirm('Clear all header fields?'))return;
+async function clearAllFields(){
+  if(!await confirmDialog('Clear all header fields?','Clear'))return;
   document.getElementById('docDate').value=getTodayDate();
   ['docClient','docProject','docRef','docQuotation'].forEach(id=>document.getElementById(id).value='');
   document.querySelectorAll('.doc-field textarea').forEach(t=>autoResize(t));
+  poMode='';
+  const pwClr=document.getElementById('poWhen');if(pwClr)pwClr.value='';
+  renderPoUI();
   markUnsaved();
 }
 
@@ -2248,6 +2383,8 @@ function applyViewOnlyUI(){
   document.getElementById('viewQuote').classList.toggle('view-only',viewOnly);
   const sb=document.getElementById('saveBtnHdr');if(sb)sb.style.display=viewOnly?'none':'';
   const chip=document.getElementById('qtViewOnly');if(chip)chip.style.display=viewOnly?'inline-block':'none';
+  const stb=document.getElementById('qtStatusBtn');
+  if(stb)stb.style.display=(viewOnly&&session&&session.user.role==='adminlite')?'none':'';
   if(viewOnly){const st=document.getElementById('saveStatus');st.textContent='View only';st.className='save-status';}
   document.querySelectorAll('#mainContent input,#mainContent textarea').forEach(el=>{el.readOnly=viewOnly;});
   document.querySelectorAll('#mainContent select').forEach(el=>{el.disabled=viewOnly;});
@@ -2286,6 +2423,7 @@ function readSummaryMeta(){
     client:document.getElementById('docClient').value.trim(),
     project:document.getElementById('docProject').value.trim(),
     quotationNo:document.getElementById('docQuotation').value.trim(),
+    company:currentCompany,
     totalSelling:numFromText(document.getElementById('totalSelling').innerText),
     totalCost:numFromText(document.getElementById('totalCost').innerText),
     netProfit:numFromText(document.getElementById('netProfit').innerText),
@@ -2304,10 +2442,15 @@ async function cloudSave(){
     st.textContent='⏳ Saving...';st.className='save-status';
     const payload={
       action:'saveQuotation',token:session.token,
+      ownerEmail:(session.user.accountType==='sa'&&saActiveHead)?saActiveHead:undefined,
       quoteId:(tab&&tab.quoteId)?tab.quoteId:null,
       meta:readSummaryMeta(),
       data:tab?tab.data:collectCurrentData()
     };
+    if(!payload.quoteId&&!String(payload.meta.client||'').trim()&&(Number(payload.meta.totalSelling)||0)<=0){
+      st.textContent='Add a client name to save';st.className='save-status unsaved';
+      return; /* never create empty quotations in the cloud */
+    }
     const snap=String(payload.quoteId)+'|'+JSON.stringify(payload.meta)+'|'+JSON.stringify(payload.data);
     if(payload.quoteId&&snap===lastSavedSnapshot){
       st.textContent='\u2713 Saved to Cloud';st.className='save-status saved';
@@ -2338,15 +2481,60 @@ async function cloudSave(){
     st.textContent='✗ Save failed';st.className='save-status unsaved';
   }finally{cloudSaving=false;}
 }
-function backToDashboard(){
+async function saveBeforeLeave(){
+  if(!session)return true;
+  if(document.getElementById('viewQuote').style.display==='none')return true;
+  if(!cloudDirty||viewOnly)return true;
+  /* empty new quote — nothing worth saving in the cloud */
+  const tab=tabs.find(t=>t.id===activeTabId);
+  const hasId=tab&&tab.quoteId;
+  const clientVal=document.getElementById('docClient').value.trim();
+  const tsVal=numFromText(document.getElementById('totalSelling').innerText);
+  if(!hasId&&!clientVal&&tsVal<=0)return true;
   clearTimeout(cloudSaveTimer);
-  if(cloudDirty&&!viewOnly)cloudSave(); /* auto-save on exit only when something changed */
-  if(openedFrom==='admin'&&session&&session.user.role==='admin')openAdmin();
+  const ov=document.getElementById('saveOverlay');
+  if(ov)ov.style.display='flex';
+  try{
+    let tries=0;
+    while((cloudSaving||cloudDirty)&&tries<3){
+      while(cloudSaving)await new Promise(r=>setTimeout(r,200));
+      if(cloudDirty)await cloudSave();
+      while(cloudSaving)await new Promise(r=>setTimeout(r,200));
+      tries++;
+    }
+  }catch(e){}
+  if(ov)ov.style.display='none';
+  if(cloudDirty){
+    showToast('Save failed — staying in the editor so nothing is lost. Check your connection and press Save.','error');
+    return false;
+  }
+  return true;
+}
+function backToDashboard(){
+  if(openedFrom==='admin'&&session&&(session.user.role==='admin'||session.user.role==='adminlite'))openAdmin();
   else loadDashboard();
 }
 
 /* ═══════════════ DASHBOARD ═══════════════ */
 const QUOTE_STATUSES=['All','Draft','Submitted','Approved','Rejected','Archived'];
+function loaderHtml(text){
+  return '<div class="rtc-loader"><div class="ic"><div class="ring"></div><div class="fbox"><div class="fl l1"></div><div class="fl l2"></div><div class="fl l3"></div></div></div>'+
+    '<div class="ptxt">'+escapeHtml(text||'Loading…')+'</div><div class="pbar"><div class="pline"></div></div></div>';
+}
+function refreshDashboard(){
+  const b=document.getElementById('dashRefreshBtn');
+  if(b){b.style.transition='transform .5s';b.style.transform='rotate(360deg)';setTimeout(()=>{b.style.transition='none';b.style.transform='none';},520);}
+  dashLoaded=false;allQuotes=[];
+  if(session&&session.user.accountType==='sa'&&!saActiveHead){showSaFolders();return;}
+  loadDashboard();
+}
+function saNameFor(email){
+  const e=String(email||'').toLowerCase();
+  const l=(myLinks||[]).find(x=>String(x.email).toLowerCase()===e);
+  if(l&&l.name)return l.name;
+  if(adminData&&adminData.users){const u=adminData.users.find(x=>String(x.email).toLowerCase()===e);if(u)return u.name;}
+  return e.split('@')[0];
+}
 const pendingDeletes=new Set();
 /* Local quote cache — open instantly, refresh from cloud in background */
 const QCACHE_KEY='rtc_qcache_v1';
@@ -2376,7 +2564,14 @@ function prefetchRecentQuotes(){
 }
 async function loadDashboard(){
   if(!session)return;
+  if(!await saveBeforeLeave())return;
   showView('dash');
+  applyCompanyTheme('rtc');
+  setNeutralTitle();
+  if(session.user.accountType==='sa'&&!saActiveHead){showSaFolders();return;}
+  setDashMode('quotes');
+  updateSaContextBar();
+  if(session.user.accountType!=='sa')refreshHeadRequests();
   if(dashLoaded&&allQuotes.length){
     renderDashboard(); /* instant from cache; fresh data loads silently below */
   }else{
@@ -2384,7 +2579,7 @@ async function loadDashboard(){
     document.getElementById('qCards').innerHTML='';
     document.getElementById('dashEmpty').style.display='none';
   }
-  const res=await callAPI({action:'getQuotations',token:session.token});
+  const res=await callAPI({action:'getQuotations',token:session.token,headEmail:saActiveHead||undefined});
   document.getElementById('dashLoading').style.display='none';
   if(!res.success){if(!dashLoaded)showToast(res.message||'Failed to load quotations.','error');return;}
   allQuotes=(res.quotes||[]).filter(q=>!pendingDeletes.has(q.quoteId));
@@ -2404,6 +2599,8 @@ function renderDashboard(){
   const term=document.getElementById('dashSearch').value.trim().toLowerCase();
   const sort=document.getElementById('dashSort').value;
   let list=allQuotes.filter(q=>currentStatus==='All'||q.status===currentStatus);
+  const comp=document.getElementById('dashCompany')?document.getElementById('dashCompany').value:'all';
+  if(comp!=='all')list=list.filter(q=>comp==='ever'?q.company==='ever':q.company!=='ever');
   if(term)list=list.filter(q=>
     String(q.client||'').toLowerCase().includes(term)||
     String(q.project||'').toLowerCase().includes(term)||
@@ -2421,12 +2618,16 @@ function renderDashboard(){
   document.getElementById('dashEmpty').style.display=list.length?'none':'block';
   cards.innerHTML=list.map(q=>{
     const sell=Number(q.totalSelling)||0,prof=Number(q.netProfit)||0,marg=Number(q.netMargin)||0;
-    return '<div class="q-card">'+
+    return '<div class="q-card"'+(q.company==='ever'?' style="border-left-color:#0751d8;"':'')+'>'+
       '<div class="q-card-top"><div class="q-client">'+(escapeHtml(q.client)||'<span style="color:#9ca3af;">(No client)</span>')+'</div>'+
-      '<span class="badge-status badge-'+q.status+'">'+q.status+'</span></div>'+
+      '<div style="display:flex;gap:5px;flex-shrink:0;align-items:flex-start;">'+
+      (q.company==='ever'?'<span class="badge-status" style="background:#e3edfc;color:#0645b8;">EVERLAST</span>':'')+
+      '<span class="badge-status badge-'+q.status+'">'+q.status+'</span></div></div>'+
       '<div class="q-project">'+(escapeHtml(q.project)||'—')+'</div>'+
       '<div class="q-dates">Created '+fmtDate(q.created)+' · Modified '+fmtDateTime(q.updated)+
       (q.quotationNo?' · #'+escapeHtml(q.quotationNo):'')+'</div>'+
+      ((q.createdBy&&String(q.createdBy).toLowerCase()!==String(q.owner||'').toLowerCase())?
+        '<div style="font-size:.68rem;font-weight:600;color:#7c3aed;margin:-4px 0 8px;">✍️ Created by '+escapeHtml(saNameFor(q.createdBy))+'</div>':'')+
       '<div class="q-nums">'+
       '<div class="q-num"><small>Total Selling</small><div class="sell">₱'+peso(sell)+'</div></div>'+
       '<div class="q-num"><small>Net Profit</small><div style="color:'+(prof<0?'#991b1b':'#166534')+';">₱'+peso(prof)+'</div></div>'+
@@ -2447,8 +2648,8 @@ function newQuotation(){
   showView('quote');
   addTab();
   updateQuoteToolbar();
-  clearTimeout(cloudSaveTimer);
-  cloudSave(); /* create the cloud record immediately — Quote ID assigned on first response */
+  applyCompanyTheme(currentCompany);
+  /* cloud record is created on first save once the quote has a client name or amounts */
 }
 function openQuoteRenderTab(id,data,metaName){
   if(activeTabId){const cur=tabs.find(t=>t.id===activeTabId);if(cur)cur.data=collectCurrentData();}
@@ -2464,6 +2665,7 @@ function openQuoteRenderTab(id,data,metaName){
   currentQuoteId=id;
   updateQuoteToolbar();
   showView('quote');
+  document.querySelectorAll('.rtc-title').forEach(el=>{el.textContent=(COMPANIES[currentCompany]||COMPANIES.rtc).title;});
   const st=document.getElementById('saveStatus');
   st.textContent='\u2713 Saved to Cloud';st.className='save-status saved';
   return tid;
@@ -2474,14 +2676,18 @@ async function openQuote(id){
   if(existing){
     showView('quote');
     if(activeTabId!==existing.id)switchTab(existing.id);
-    else{currentQuoteId=id;viewOnly=!!existing.viewOnly;applyViewOnlyUI();updateQuoteToolbar();}
+    else{
+      currentQuoteId=id;viewOnly=!!existing.viewOnly;applyViewOnlyUI();
+      applyCompanyTheme((existing.data&&existing.data.company)||currentCompany||'rtc');
+      updateQuoteToolbar();
+    }
     return;
   }
   const meta=allQuotes.find(q=>q.quoteId===id);
   const cached=qcacheGet(id);
   const draft=getDraft(id);
   const qOwner=quoteOwner(id);
-  const vo=session.user.role==='admin'&&!!qOwner&&String(qOwner).toLowerCase()!==String(session.user.email).toLowerCase();
+  const vo=(session.user.role==='admin'||session.user.role==='adminlite')&&!!qOwner&&String(qOwner).toLowerCase()!==String(session.user.email).toLowerCase();
   /* INSTANT open from local copy when available; verify against cloud in background */
   if(cached&&cached.data){
     let data=cached.data,ts=cached.updated||0;
@@ -2565,7 +2771,7 @@ function confirmAnswer(v){
 function openStatusModal(id){
   if(!id){
     clearTimeout(cloudSaveTimer);cloudSave();
-    showToast('Saving quotation now — try Change Status again in a few seconds.','warn');
+    showToast('Add a client name first — the quotation saves to the cloud once it has content.','warn');
     return;
   }
   statusTargetId=id;
@@ -2613,6 +2819,7 @@ function openProfileModal(){
   if(session.user.photo)pp.innerHTML='<img src="'+session.user.photo+'">';
   else pp.textContent=initials(session.user.name);
   document.getElementById('profileModal').style.display='flex';
+  renderProfLinks();
 }
 function changeProfilePhoto(input){
   if(!input.files||!input.files[0])return;
@@ -2627,7 +2834,7 @@ async function saveProfile(){
   const dept=document.getElementById('profDept').value.trim();
   if(!name){showToast('Name is required.','error');return;}
   const btn=document.getElementById('profSaveBtn');btn.disabled=true;btn.textContent='Saving...';
-  const payload={action:'updateProfile',token:session.token,name,department:dept};
+  const payload={action:'updateProfile',token:session.token,name};
   if(profPhotoTemp)payload.photo=profPhotoTemp;
   const res=await callAPI(payload);
   btn.disabled=false;btn.textContent='Save Profile';
@@ -2657,14 +2864,20 @@ async function submitPasswordChange(){
 
 /* ═══════════════ ADMIN ═══════════════ */
 async function openAdmin(){
-  if(!session||session.user.role!=='admin'){showToast('Admin access required.','error');return;}
+  if(!session||(session.user.role!=='admin'&&session.user.role!=='adminlite')){showToast('Admin access required.','error');return;}
+  if(!await saveBeforeLeave())return;
   showView('admin');
+  applyCompanyTheme('rtc');
+  setNeutralTitle();
   ['adminPageDash','adminPageUsers','adminPageQuotes','adminPageSettings'].forEach(id=>document.getElementById(id).style.display='none');
   document.getElementById('adminLoading').style.display='flex';
   const res=await callAPI({action:'getAdminData',token:session.token});
   document.getElementById('adminLoading').style.display='none';
   if(!res.success){showToast(res.message||'Failed to load admin data.','error');return;}
   adminData=res;
+  const lite=!!adminData.lite;
+  ['asUsers','asQuotes','asSettings'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=lite?'none':'';});
+  if(lite)adminPageCur='dash';
   populateDeptFilters();
   showAdminPage(adminPageCur||'dash');
 }
@@ -2677,7 +2890,16 @@ function showAdminPage(p){
   if(p==='dash')renderAdminDash();
   else if(p==='users')renderAdminUsers();
   else if(p==='quotes')renderAdminQuotes();
-  else if(p==='settings')applyLogo();
+  else if(p==='settings'){applyLogo();populateAdmNewDept();}
+}
+function populateAdmNewDept(){
+  const sel=document.getElementById('admNewDeptSel');
+  if(!sel||!adminData)return;
+  const set=new Set(['Corporate Sales','Strategic Partnership Division']);
+  adminData.users.forEach(u=>{const d=String(u.department||'').trim();if(d)set.add(d);});
+  const cur=sel.value;
+  sel.innerHTML=[...set].sort().map(d=>'<option>'+escapeHtml(d)+'</option>').join('')+'<option value="__other">Others…</option>';
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
 }
 function populateDeptFilters(){
   if(!adminData)return;
@@ -2695,19 +2917,28 @@ function deptOf(email){
 }
 function renderAdminDash(){
   if(!adminData)return;
+  closeAdminUserDetail();
+  const t=document.getElementById('admDashTitle');
+  if(t)t.textContent=adminData.lite?(adminData.department+' — Admin Lite (view only)'):'Admin Dashboard';
   const dept=document.getElementById('admDashDept').value;
   const range=document.getElementById('admDashDate').value;
+  const compF=document.getElementById('admDashCompany')?document.getElementById('admDashCompany').value:'all';
   const quotes=adminData.quotes.filter(q=>
-    (dept==='All'||deptOf(q.owner)===dept)&&inDateRange(q.updated,range)&&(Number(q.totalSelling)||0)>0);
-  const users=adminData.users.filter(u=>u.role!=='admin'&&(dept==='All'||String(u.department||'')===dept));
+    (dept==='All'||deptOf(q.owner)===dept)&&inDateRange(q.updated,range)&&
+    (compF==='all'||(compF==='ever'?q.company==='ever':q.company!=='ever'))&&
+    (Number(q.totalSelling)||0)>0&&String(q.client||'').trim()!=='');
+  const users=adminData.users.filter(u=>u.role==='user'&&u.accountType!=='sa'&&(dept==='All'||String(u.department||'')===dept));
   const tSell=quotes.reduce((s,q)=>s+(Number(q.totalSelling)||0),0);
   const tCost=quotes.reduce((s,q)=>s+(Number(q.totalCost)||0),0);
   const avgM=quotes.length?quotes.reduce((s,q)=>s+(Number(q.netMargin)||0),0)/quotes.length:0;
-  const regUserCount=adminData.users.filter(u=>u.role!=='admin').length;
-  const adminCount=adminData.users.length-regUserCount;
+  const regUserCount=adminData.users.filter(u=>u.role==='user'&&u.accountType!=='sa').length;
+  const adminCount=adminData.users.filter(u=>u.role==='admin').length;
+  const liteCount=adminData.users.filter(u=>u.role==='adminlite').length;
+  const saCount=adminData.users.filter(u=>u.accountType==='sa').length;
+  const extras=[adminCount?'+'+adminCount+' admin'+(adminCount>1?'s':''):'',liteCount?'+'+liteCount+' lite':'',saCount?'+'+saCount+' SA':''].filter(Boolean).join(' · ');
   document.getElementById('adminSumCards').innerHTML=
     '<div class="sum-card"><small>Total Users</small><div class="val">'+regUserCount+'</div>'+
-    (adminCount?'<small style="text-transform:none;letter-spacing:0;color:var(--gray);">+'+adminCount+' admin'+(adminCount>1?'s':'')+'</small>':'')+'</div>'+
+    (extras?'<small style="text-transform:none;letter-spacing:0;color:var(--gray);">'+extras+'</small>':'')+'</div>'+
     '<div class="sum-card"><small>Total Quotations</small><div class="val">'+quotes.length+'</div></div>'+
     '<div class="sum-card"><small>Total Selling</small><div class="val" style="color:#166534;">₱'+peso(tSell)+'</div></div>'+
     '<div class="sum-card"><small>Total Cost</small><div class="val">₱'+peso(tCost)+'</div></div>'+
@@ -2718,25 +2949,37 @@ function renderAdminDash(){
     const pft=uq.reduce((a,q)=>a+(Number(q.netProfit)||0),0);
     const m=uq.length?uq.reduce((a,q)=>a+(Number(q.netMargin)||0),0)/uq.length:0;
     return '<tr class="clickable" onclick="showAdminUserDetail(\''+escapeHtml(u.email)+'\')">'+
-      '<td><strong>'+escapeHtml(u.name)+'</strong><br><span style="font-size:.68rem;color:var(--gray);">'+escapeHtml(u.email)+'</span></td>'+
+      '<td><div style="display:flex;align-items:center;gap:9px;">'+userAvatarHtml(u)+'<div><strong>'+escapeHtml(u.name)+'</strong><br><span style="font-size:.68rem;color:var(--gray);">'+escapeHtml(u.email)+'</span></div></div></td>'+
       '<td>'+escapeHtml(u.department||'—')+'</td><td>'+uq.length+'</td>'+
       '<td style="color:#166534;font-weight:600;">₱'+peso(s)+'</td>'+
       '<td>₱'+peso(pft)+'</td><td>'+(uq.length?m.toFixed(2)+'%':'—')+'</td></tr>';
   }).join('')||'<tr><td colspan="6" style="color:var(--gray);text-align:center;">No users found.</td></tr>';
 }
+function closeAdminUserDetail(){
+  document.getElementById('admUserDetailCard').style.display='none';
+  document.getElementById('admUserStatsCard').style.display='';
+}
+function userAvatarHtml(u,size){
+  size=size||30;
+  const st='width:'+size+'px;height:'+size+'px;border-radius:50%;object-fit:cover;flex-shrink:0;';
+  if(u&&u.photo)return '<img src="'+u.photo+'" style="'+st+'" alt="">';
+  return '<span style="'+st+'background:var(--maroon);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-weight:700;font-size:.62rem;">'+escapeHtml(initials(u?u.name:'?'))+'</span>';
+}
 function showAdminUserDetail(email){
   const range=document.getElementById('admDashDate').value;
-  const uq=adminData.quotes.filter(q=>String(q.owner).toLowerCase()===String(email).toLowerCase()&&inDateRange(q.updated,range)&&(Number(q.totalSelling)||0)>0);
+  const compD=document.getElementById('admDashCompany')?document.getElementById('admDashCompany').value:'all';
+  const uq=adminData.quotes.filter(q=>String(q.owner).toLowerCase()===String(email).toLowerCase()&&inDateRange(q.updated,range)&&(compD==='all'||(compD==='ever'?q.company==='ever':q.company!=='ever'))&&(Number(q.totalSelling)||0)>0&&String(q.client||'').trim()!=='');
   const u=adminData.users.find(x=>String(x.email).toLowerCase()===String(email).toLowerCase());
-  document.getElementById('admUserDetailTitle').textContent='Quotations — '+(u?u.name:email);
-  document.getElementById('admUserDetailBody').innerHTML=uq.map(q=>
-    '<tr><td>'+escapeHtml(q.quoteId)+'</td><td>'+escapeHtml(q.client||'—')+'</td><td>'+escapeHtml(q.project||'—')+'</td>'+
+  document.getElementById('admUserDetailTitle').innerHTML='<div style="display:flex;align-items:center;gap:9px;">'+userAvatarHtml(u,34)+'<span>Quotations — '+escapeHtml(u?u.name:email)+'</span></div>';
+  document.getElementById('admUserDetailBody').innerHTML=uq.map((q,i)=>
+    '<tr><td>'+(i+1)+'</td><td>'+(q.company==='ever'?'<span class="badge-status" style="background:#e3edfc;color:#0645b8;margin-right:5px;">E</span>':'')+escapeHtml(q.client||'—')+'</td><td>'+escapeHtml(q.project||'—')+'</td>'+
     '<td>'+fmtDate(q.updated)+'</td><td><span class="badge-status badge-'+q.status+'">'+q.status+'</span></td>'+
     '<td style="color:#166534;font-weight:600;">₱'+peso(Number(q.totalSelling)||0)+'</td>'+
     '<td style="color:'+((Number(q.netProfit)||0)<0?'#991b1b':'#166534')+';font-weight:600;">₱'+peso(Number(q.netProfit)||0)+'</td>'+
     '<td style="color:'+((Number(q.netMargin)||0)<20?'#991b1b':'#166534')+';">'+(Number(q.netMargin)||0).toFixed(2)+'%</td>'+
     '<td><button class="at-btn" onclick="openQuote(\''+escapeHtml(q.quoteId)+'\')">Open</button></td></tr>'
   ).join('')||'<tr><td colspan="9" style="color:var(--gray);text-align:center;">No quotations.</td></tr>';
+  document.getElementById('admUserStatsCard').style.display='none';
   document.getElementById('admUserDetailCard').style.display='block';
   document.getElementById('admUserDetailCard').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
@@ -2748,9 +2991,9 @@ function renderAdminUsers(){
     (dept==='All'||String(u.department||'')===dept)&&
     (!term||String(u.name||'').toLowerCase().includes(term)||String(u.email||'').toLowerCase().includes(term)));
   document.getElementById('admUsersBody').innerHTML=users.map(u=>
-    '<tr><td><strong>'+escapeHtml(u.name)+'</strong></td><td>'+escapeHtml(u.email)+'</td>'+
+    '<tr><td><div style="display:flex;align-items:center;gap:9px;">'+userAvatarHtml(u)+'<strong>'+escapeHtml(u.name)+'</strong></div></td><td>'+escapeHtml(u.email)+'</td>'+
     '<td>'+escapeHtml(u.department||'—')+'</td>'+
-    '<td>'+(u.role==='admin'?'<span class="badge-status badge-Approved">admin</span>':'user')+'</td>'+
+    '<td>'+(u.role==='admin'?'<span class="badge-status badge-Approved">admin</span>':u.role==='adminlite'?'<span class="badge-status badge-Archived">admin lite</span>':'user')+(u.accountType==='sa'?' <span class="badge-status badge-Submitted">SA</span>':'')+'</td>'+
     '<td>'+(u.status==='Active'?'<span class="badge-status badge-Approved">Active</span>':'<span class="badge-status badge-Rejected">Inactive</span>')+'</td>'+
     '<td style="font-size:.72rem;">'+fmtDateTime(u.lastLogin)+'</td>'+
     '<td><button class="at-btn" onclick="adminResetPassword(\''+escapeHtml(u.email)+'\')">Reset Password</button>'+
@@ -2780,17 +3023,20 @@ function renderAdminQuotes(){
   const dept=document.getElementById('admQDept').value;
   const stat=document.getElementById('admQStatus').value;
   const range=document.getElementById('admQDate').value;
+  const compQ=document.getElementById('admQCompany')?document.getElementById('admQCompany').value:'all';
   const list=adminData.quotes.filter(q=>
+    (compQ==='all'||(compQ==='ever'?q.company==='ever':q.company!=='ever'))&&
+    (Number(q.totalSelling)||0)>0&&String(q.client||'').trim()!==''&&
     (dept==='All'||deptOf(q.owner)===dept)&&
     (stat==='All'||q.status===stat)&&
     inDateRange(q.updated,range)&&
     (!term||String(q.client||'').toLowerCase().includes(term)||String(q.project||'').toLowerCase().includes(term)||
       String(q.owner||'').toLowerCase().includes(term)||String(q.quotationNo||'').toLowerCase().includes(term)||
       String(q.quoteId||'').toLowerCase().includes(term)));
-  document.getElementById('admQuotesBody').innerHTML=list.map(q=>
-    '<tr><td>'+escapeHtml(q.quoteId)+(q.quotationNo?'<br><span style="font-size:.66rem;color:var(--gray);">#'+escapeHtml(q.quotationNo)+'</span>':'')+'</td>'+
+  document.getElementById('admQuotesBody').innerHTML=list.map((q,i)=>
+    '<tr><td>'+(i+1)+(q.quotationNo?'<br><span style="font-size:.66rem;color:var(--gray);">#'+escapeHtml(q.quotationNo)+'</span>':'')+'</td>'+
     '<td style="font-size:.72rem;">'+escapeHtml(q.owner)+'</td>'+
-    '<td>'+escapeHtml(q.client||'—')+'</td>'+
+    '<td>'+(q.company==='ever'?'<span class="badge-status" style="background:#e3edfc;color:#0645b8;margin-right:5px;">E</span>':'')+escapeHtml(q.client||'—')+'</td>'+
     '<td>'+fmtDate(q.updated)+'</td>'+
     '<td><span class="badge-status badge-'+q.status+'">'+q.status+'</span></td>'+
     '<td style="color:#166534;font-weight:600;">₱'+peso(Number(q.totalSelling)||0)+'</td>'+
@@ -2812,7 +3058,8 @@ function removeLogo(){localStorage.removeItem(LOGO_KEY);applyLogo();showToast('L
 async function adminAddUser(){
   const name=document.getElementById('admNewName').value.trim();
   const email=document.getElementById('admNewEmail').value.trim().toLowerCase();
-  const dept=document.getElementById('admNewDept').value.trim();
+  const dsel=document.getElementById('admNewDeptSel');
+  const dept=dsel.value==='__other'?document.getElementById('admNewDeptOther').value.trim():dsel.value;
   const role=document.getElementById('admNewRole').value;
   if(!name||!email){showToast('Name and email are required.','error');return;}
   if(!validateDomain(email)){showToast('Only '+ALLOWED_DOMAIN+' emails are allowed.','error');return;}
@@ -2820,7 +3067,7 @@ async function adminAddUser(){
   if(!res.success){showToast(res.message||'Failed to add user.','error');return;}
   adminData.users.push({email,name,department:dept,role,status:'Active',photo:'',lastLogin:''});
   populateDeptFilters();
-  ['admNewName','admNewEmail','admNewDept'].forEach(id=>document.getElementById(id).value='');
+  ['admNewName','admNewEmail','admNewDeptOther'].forEach(id=>document.getElementById(id).value='');
   showToast('User added. Default password: '+DEFAULT_RESET_PW,'success');
 }
 
@@ -2851,6 +3098,208 @@ function compressLegacyImages(){
   if(found)setTimeout(()=>{if(document.getElementById('viewQuote').style.display!=='none')markUnsaved();},1000);
 }
 
+/* ═══════════════ SALES ASSISTANT SYSTEM ═══════════════ */
+let saActiveHead=null;
+let myLinks=null;
+function getRegDept(){
+  const s=document.getElementById('regDeptSel').value;
+  return s==='__other'?document.getElementById('regDeptOther').value.trim():s;
+}
+function onRegDeptChange(){
+  document.getElementById('regDeptOther').style.display=document.getElementById('regDeptSel').value==='__other'?'block':'none';
+  if(document.getElementById('regType').value==='sa')loadRegHeads();
+}
+function onRegTypeChange(){
+  const sa=document.getElementById('regType').value==='sa';
+  document.getElementById('regHeadsWrap').style.display=sa?'block':'none';
+  if(sa)loadRegHeads();
+}
+async function loadRegHeads(){
+  const list=document.getElementById('regHeadsList');
+  list.innerHTML='<span style="color:var(--gray);font-size:.78rem;">Loading…</span>';
+  const res=await callAPI({action:'listHeads',department:getRegDept()});
+  if(!res.success){list.innerHTML='<span style="color:#991b1b;font-size:.78rem;">Failed to load heads.</span>';return;}
+  if(!res.heads.length){list.innerHTML='<span style="color:var(--gray);font-size:.78rem;">No users found in this department yet.</span>';return;}
+  list.innerHTML=res.heads.map(x=>'<label style="display:flex;align-items:center;gap:8px;padding:3px 0;cursor:pointer;"><input type="checkbox" class="reg-head-cb" value="'+escapeHtml(x.email)+'" style="accent-color:var(--maroon);width:15px;height:15px;flex-shrink:0;"><span>'+escapeHtml(x.name)+'</span></label>').join('');
+}
+function setDashMode(m){
+  const q='quotes';
+  const dt=document.getElementById('dashTitle');
+  if(dt)dt.textContent=m==='folders'?'My Heads':'My Quotations';
+  document.getElementById('statusTabs').style.display=m===q?'flex':'none';
+  document.getElementById('dashControls').style.display=m===q?'flex':'none';
+  document.getElementById('qCards').style.display=m===q?'grid':'none';
+  if(m!==q){document.getElementById('dashEmpty').style.display='none';document.getElementById('dashLoading').style.display='none';}
+  document.getElementById('saFolders').style.display=m==='folders'?'grid':'none';
+  document.getElementById('saContextBar').style.display=(m===q&&saActiveHead)?'flex':'none';
+  const nb=document.getElementById('newQuoteBtn');
+  if(nb)nb.style.display=(session&&session.user.accountType==='sa'&&!saActiveHead)?'none':'';
+}
+async function showSaFolders(){
+  saActiveHead=null;
+  setDashMode('folders');
+  const f=document.getElementById('saFolders');
+  f.innerHTML='<div class="dash-loading" style="grid-column:1/-1;display:flex;">'+loaderHtml('Loading heads…')+'</div>';
+  const res=await callAPI({action:'getLinks',token:session.token});
+  if(!res.success){f.innerHTML='';showToast(res.message||'Failed to load heads.','error');return;}
+  myLinks=res.links||[];
+  if(!myLinks.length){
+    f.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:50px 20px;color:var(--gray);"><div style="font-size:2.2rem;">👥</div><div style="font-weight:700;color:var(--dark);">No Heads yet</div><div style="font-size:.82rem;">Add a Head from your Profile (avatar → My Profile).</div></div>';
+    return;
+  }
+  f.innerHTML=myLinks.map(l=>{
+    const acc=l.status==='accepted';
+    return '<div class="q-card" style="cursor:'+(acc?'pointer':'default')+';opacity:'+(acc?'1':'.72')+';" '+(acc?'onclick="openHeadFolder(\''+escapeHtml(l.email)+'\')"':'')+'>'+
+      '<div style="display:flex;align-items:center;gap:12px;">'+
+      '<span style="font-size:1.7rem;">📁</span>'+
+      '<div style="flex:1;min-width:0;"><div class="q-client">'+escapeHtml(l.name||l.email)+'</div>'+
+      '<div style="font-size:.72rem;color:var(--gray);">'+escapeHtml(l.department||'')+'</div></div>'+
+      (acc?''
+        :l.status==='pending'?'<span class="badge-status badge-Submitted">Pending approval</span>'
+        :'<span class="badge-status badge-Rejected">Rejected</span>')+
+      '</div></div>';
+  }).join('');
+}
+function openHeadFolder(email){
+  saActiveHead=email;dashLoaded=false;allQuotes=[];currentStatus='All';
+  loadDashboard();
+}
+function exitHeadFolder(){
+  saActiveHead=null;dashLoaded=false;allQuotes=[];
+  loadDashboard();
+}
+function updateSaContextBar(){
+  const bar=document.getElementById('saContextBar');
+  if(!bar)return;
+  if(saActiveHead){
+    const l=(myLinks||[]).find(x=>x.email===saActiveHead);
+    bar.innerHTML='<button class="btn-outline-maroon" onclick="exitHeadFolder()">← My Heads</button>'+
+      '<span style="font-weight:700;">📁 '+escapeHtml(l?(l.name||l.email):saActiveHead)+'</span>'+
+      '<span style="font-size:.72rem;color:var(--gray);">Working in your Head\'s workspace — everything here is visible to them</span>';
+  }
+}
+async function refreshHeadRequests(){
+  const wrap=document.getElementById('headRequests');
+  if(!wrap||!session)return;
+  if(session.user.accountType==='sa'||session.user.role==='admin'||session.user.role==='adminlite'){wrap.innerHTML='';return;}
+  const res=await callAPI({action:'getLinks',token:session.token});
+  if(!res.success)return;
+  myLinks=res.links||[];
+  const pending=myLinks.filter(l=>l.status==='pending'&&l.direction==='incoming');
+  wrap.innerHTML=pending.map(l=>'<div class="admin-card" style="display:flex;align-items:center;gap:10px;border-left:4px solid #b07d27;flex-wrap:wrap;margin-top:12px;">'+
+    '<span style="font-size:1.3rem;">👤</span>'+
+    '<div style="flex:1;min-width:160px;font-size:.86rem;"><strong>'+escapeHtml(l.name||l.email)+'</strong> requests to be your Sales Assistant. They will get full access to your quotations.</div>'+
+    '<button class="btn-maroon" onclick="respondSA(\''+escapeHtml(l.email)+'\',\'accepted\')">Accept</button>'+
+    '<button class="btn-danger-sm" onclick="respondSA(\''+escapeHtml(l.email)+'\',\'rejected\')">Reject</button>'+
+    '</div>').join('');
+}
+async function respondSA(email,decision){
+  const res=await callAPI({action:'respondAssistant',token:session.token,saEmail:email,decision});
+  if(res.success){showToast(decision==='accepted'?'Sales Assistant approved.':'Request rejected.','success');refreshHeadRequests();}
+  else showToast(res.message||'Failed.','error');
+}
+async function renderProfLinks(){
+  const box=document.getElementById('profLinksSection');
+  if(!box||!session)return;
+  if(session.user.role==='admin'){box.innerHTML='';return;}
+  box.innerHTML='<div style="font-size:.75rem;color:var(--gray);">Loading…</div>';
+  const res=await callAPI({action:'getLinks',token:session.token});
+  if(!res.success){box.innerHTML='';return;}
+  myLinks=res.links||[];
+  const badge=s=>'<span class="badge-status '+(s==='accepted'?'badge-Approved':s==='pending'?'badge-Submitted':'badge-Rejected')+'">'+s+'</span>';
+  if(session.user.accountType==='sa'){
+    box.innerHTML='<label style="font-size:.7rem;font-weight:700;color:var(--maroon);text-transform:uppercase;letter-spacing:.7px;">My Heads</label>'+
+      ((myLinks.map(l=>'<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.82rem;">'+
+        '<span style="flex:1;min-width:0;">'+escapeHtml(l.name||l.email)+'</span>'+badge(l.status)+
+        '<button class="at-btn warn" onclick="removeLinkUI(\''+escapeHtml(l.email)+'\')">Remove</button></div>').join(''))||
+        '<div style="font-size:.78rem;color:var(--gray);padding:4px 0;">No Heads yet.</div>')+
+      '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;align-items:center;">'+
+      '<span style="font-size:.75rem;color:var(--gray);">Department: <strong style="color:var(--dark);">'+escapeHtml(session.user.department||'—')+'</strong></span>'+
+      '<button class="btn-outline-maroon" style="font-size:.72rem;padding:5px 10px;" onclick="profFindHeads()">Find Heads</button></div>'+
+      '<div id="profHeadResults" style="margin-top:6px;"></div>';
+  }else{
+    const accepted=myLinks.filter(l=>l.status==='accepted');
+    if(!accepted.length){box.innerHTML='';return;}
+    box.innerHTML='<label style="font-size:.7rem;font-weight:700;color:var(--maroon);text-transform:uppercase;letter-spacing:.7px;">My Sales Assistants</label>'+
+      accepted.map(l=>'<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:.82rem;">'+
+        '<span style="flex:1;min-width:0;">'+escapeHtml(l.name||l.email)+'</span>'+
+        '<button class="at-btn warn" onclick="removeLinkUI(\''+escapeHtml(l.email)+'\')">Remove</button></div>').join('');
+  }
+}
+async function profFindHeads(){
+  const dept=session.user.department||'';
+  const out=document.getElementById('profHeadResults');
+  out.innerHTML='<span style="font-size:.75rem;color:var(--gray);">Searching…</span>';
+  const res=await callAPI({action:'listHeads',department:dept});
+  if(!res.success){out.innerHTML='';return;}
+  const existing=new Set((myLinks||[]).map(l=>l.email));
+  const opts=res.heads.filter(x=>!existing.has(x.email)&&x.email!==session.user.email);
+  out.innerHTML=opts.map(x=>'<div style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:.8rem;">'+
+    '<span style="flex:1;min-width:0;">'+escapeHtml(x.name)+' <span style="color:var(--gray);font-size:.68rem;">'+escapeHtml(x.department||'')+'</span></span>'+
+    '<button class="at-btn" onclick="requestHeadUI(\''+escapeHtml(x.email)+'\')">Request</button></div>').join('')||
+    '<span style="font-size:.75rem;color:var(--gray);">No available Heads found.</span>';
+}
+async function requestHeadUI(email){
+  const res=await callAPI({action:'requestHead',token:session.token,headEmail:email});
+  if(res.success){showToast('Request sent — waiting for your Head\'s approval.','success');renderProfLinks();}
+  else showToast(res.message||'Failed.','error');
+}
+async function removeLinkUI(email){
+  if(!await confirmDialog('Remove this link? Access will be revoked immediately.','Remove'))return;
+  const res=await callAPI({action:'removeLink',token:session.token,otherEmail:email});
+  if(res.success){
+    showToast('Link removed.','success');
+    renderProfLinks();
+    dashLoaded=false;
+    if(session.user.accountType==='sa'&&saActiveHead===email)saActiveHead=null;
+  }else showToast(res.message||'Failed.','error');
+}
+
+/* ═══════════════ COMPANY THEMES + PO FIELD ═══════════════ */
+const COMPANIES={
+  rtc:{name:'Ramesh Trading Corporation',title:'RTC Cost Analysis',main:'#7b0d0d',light:'#a01515',pale:'#fdf3f3',dark:'#6b0000',darker:'#4b0505',darkest:'#3a0404'},
+  ever:{name:'Everlast Supply Corporation',title:'Everlast Cost Analysis',main:'#0751d8',light:'#2f6fe3',pale:'#eef3fd',dark:'#0645b8',darker:'#043a99',darkest:'#032d78'}
+};
+let currentCompany='rtc';
+let poMode='';
+function applyCompanyTheme(key){
+  const c=COMPANIES[key]||COMPANIES.rtc;
+  const r=document.documentElement.style;
+  r.setProperty('--maroon',c.main);
+  r.setProperty('--maroon-light',c.light);
+  r.setProperty('--maroon-pale',c.pale);
+  r.setProperty('--brand-dark',c.dark);
+  r.setProperty('--brand-darker',c.darker);
+  r.setProperty('--brand-darkest',c.darkest);
+  const vq=document.getElementById('viewQuote');
+  if(vq&&vq.style.display!=='none'){
+    document.querySelectorAll('.rtc-title').forEach(el=>{el.textContent=c.title;});
+  }
+  const cp=document.getElementById('companyPrint');if(cp)cp.textContent=c.name;
+}
+function setNeutralTitle(){
+  document.querySelectorAll('.rtc-title').forEach(el=>{
+    el.innerHTML='<span class="brand-seg" style="color:#7b0d0d;">RTC</span> <span class="brand-seg" style="color:#9ca3af;">/</span> <span class="brand-seg" style="color:#0751d8;">ESC</span> <span class="brand-seg" style="color:var(--dark);">Cost Analysis</span>';
+  });
+}
+function onCompanyChange(v){currentCompany=v;applyCompanyTheme(v);markUnsaved();}
+function setPoMode(m){poMode=(poMode===m)?'':m;renderPoUI();markUnsaved();}
+function renderPoUI(){
+  const w=document.getElementById('poWithBtn'),o=document.getElementById('poWithoutBtn');
+  if(!w||!o)return;
+  w.classList.toggle('active',poMode==='with');
+  o.classList.toggle('active',poMode==='without');
+  document.getElementById('poYesLabel').style.display=poMode==='with'?'block':'none';
+  document.getElementById('poWhen').style.display=poMode==='without'?'block':'none';
+  updatePoPrint();
+}
+function updatePoPrint(){
+  const el=document.getElementById('poPrint');if(!el)return;
+  const pw=document.getElementById('poWhen');
+  const when=pw?pw.value.trim():'';
+  el.textContent=poMode==='with'?'YES (With PO)':poMode==='without'?('Without PO'+(when?' \u2014 tentative: '+when:'')):'';
+}
+
 /* ═══════════════ INIT ═══════════════ */
 async function initApp(){
   loadSettings();
@@ -2858,7 +3307,7 @@ async function initApp(){
   session=getSession();
   if(session&&session.expiry>Date.now()){
     initUser();
-    if(session.user.role==='admin'){showView('admin');openAdmin();}
+    if(session.user.role==='admin'||session.user.role==='adminlite'){showView('admin');openAdmin();}
     else{showView('dash');loadDashboard();}
   }else{
     clearSession();session=null;
