@@ -1729,11 +1729,13 @@ function collectCurrentData(){
       const card=tbody.closest('.breakdown-card');
       const ewtUnitInputs=card?card.querySelectorAll('.bd-ewt-unit'):[];
       const ewtTotalInputs=card?card.querySelectorAll('.bd-ewt'):[];
+      const ewtRow1=card?card.querySelector('.breakdown-ewt-row'):null;
       const notesTA=card?card.querySelector('.bd-notes'):null;
       const notesRow=card?card.querySelector('.breakdown-notes-row'):null;
       sections.push({rows:brows,
         ewt1unit:ewtUnitInputs[0]?.value||'',ewt1:ewtTotalInputs[0]?.value||'',
         ewtV1unit:ewtUnitInputs[1]?.value||'',ewtV1:ewtTotalInputs[1]?.value||'',
+        ewtVisible:ewtRow1?ewtRow1.style.display!=='none':false,
         notes:notesTA?.value||'',notesVisible:notesRow?notesRow.style.display!=='none':false});
     });
     return sections;
@@ -1840,6 +1842,14 @@ function loadDataIntoUI(data){
     if(ewtTotal[0])ewtTotal[0].value=sec.ewt1||'';
     if(ewtUnit[1]){ewtUnit[1].value=sec.ewtV1unit||'';autoResize(ewtUnit[1]);}
     if(ewtTotal[1])ewtTotal[1].value=sec.ewtV1||'';
+    if(sec.ewtVisible||sec.ewt1||sec.ewtV1){
+      const ewtRow1=card?.querySelector(`[id^="goodsEwtRow1_"]`);
+      const ewtRow2=card?.querySelector(`[id^="goodsEwtRow2_"]`);
+      const ewtBtn=card?.querySelector('[id^="goodsEwtBtn_"]');
+      if(ewtRow1)ewtRow1.style.display='';
+      if(ewtRow2)ewtRow2.style.display='';
+      if(ewtBtn)ewtBtn.innerText='− Remove EWT';
+    }
     if(sec.notesVisible&&sec.notes){
       const notesRow=card?.querySelector('.breakdown-notes-row');
       const notesTA=card?.querySelector('.bd-notes');
@@ -1870,6 +1880,14 @@ function loadDataIntoUI(data){
     if(ewtTotal[0])ewtTotal[0].value=sec.ewt1||'';
     if(ewtUnit[1]){ewtUnit[1].value=sec.ewtV1unit||'';autoResize(ewtUnit[1]);}
     if(ewtTotal[1])ewtTotal[1].value=sec.ewtV1||'';
+    if(sec.ewtVisible||sec.ewt1||sec.ewtV1){
+      const ewtRow1=card?.querySelector(`[id^="pdmEwtRow1_"]`);
+      const ewtRow2=card?.querySelector(`[id^="pdmEwtRow2_"]`);
+      const ewtBtn=card?.querySelector('[id^="pdmEwtBtn_"]');
+      if(ewtRow1)ewtRow1.style.display='';
+      if(ewtRow2)ewtRow2.style.display='';
+      if(ewtBtn)ewtBtn.innerText='− Remove EWT';
+    }
     if(sec.notesVisible&&sec.notes){
       const notesRow=card?.querySelector('.breakdown-notes-row');
       const notesTA=card?.querySelector('.bd-notes');
@@ -2119,6 +2137,32 @@ function toggleBdNotes(rowId,btnId){
   }
 }
 
+/* ══ BREAKDOWN EWT (per-section, off by default) ══ */
+function ewtCompanyLabel(){
+  return (typeof currentCompany!=='undefined'&&currentCompany==='ever')?'ESC':'RTC';
+}
+function refreshEwtLabels(){
+  document.querySelectorAll('.bd-ewt-co').forEach(el=>{el.textContent=ewtCompanyLabel();});
+}
+function toggleBdEwt(type,count){
+  const row1=document.getElementById(`${type}EwtRow1_${count}`);
+  const row2=document.getElementById(`${type}EwtRow2_${count}`);
+  const btn=document.getElementById(`${type}EwtBtn_${count}`);
+  if(!row1||!row2)return;
+  const showing=row1.style.display!=='none';
+  if(showing){
+    row1.style.display='none';row2.style.display='none';
+    [row1,row2].forEach(r=>r.querySelectorAll('.bd-ewt,.bd-ewt-unit').forEach(el=>el.value=''));
+    if(btn)btn.innerText='+ Add EWT';
+    calcBreakdown(type);markUnsaved();
+  }else{
+    refreshEwtLabels();
+    row1.style.display='';row2.style.display='';
+    if(btn)btn.innerText='− Remove EWT';
+    markUnsaved();
+  }
+}
+
 /* ══ BREAKDOWN ══ */
 function addBreakdownSection(type){
   const container=document.getElementById(type==='goods'?'goodsContainer':'pdmContainer');
@@ -2144,13 +2188,13 @@ function addBreakdownSection(type){
           <thead><tr><th style="width:42%">Item</th><th>Qty</th><th>Unit Cost</th><th>Total</th><th class="no-print"></th></tr></thead>
           <tbody id="${bodyId}"></tbody>
           <tfoot>
-            <tr class="breakdown-ewt-row"><td colspan="2">NON-VAT EWT ${ewtPct} (Assumed by RTC)</td>
+            <tr class="breakdown-ewt-row" id="${type}EwtRow1_${count}" style="display:none;"><td colspan="2">NON-VAT EWT ${ewtPct} (Assumed by <span class="bd-ewt-co">${ewtCompanyLabel()}</span>)</td>
               <td><textarea class="bd-ewt-unit" rows="1" placeholder="—"
                 oninput="autoResize(this);calcBreakdown('${type}');markUnsaved()"
                 style="border:none;border-bottom:1px solid #fca5a5;width:100%;font-size:.72rem;background:transparent;padding:2px 4px;color:#c0392b;font-style:italic;text-align:center;outline:none;resize:none;overflow:hidden;font-family:inherit;line-height:1.4;min-height:24px;display:block;"></textarea></td>
               <td><input type="text" class="bd-ewt" style="border:none;border-bottom:1px solid #fca5a5;width:100%;font-size:.72rem;background:transparent;padding:2px 4px;color:#c0392b;font-style:italic;outline:none;" placeholder="—" oninput="calcBreakdown('${type}');markUnsaved()"></td>
               <td class="no-print"></td></tr>
-            <tr class="breakdown-ewt-row"><td colspan="2">VATABLE EWT ${ewtPct} (Assumed by RTC)</td>
+            <tr class="breakdown-ewt-row" id="${type}EwtRow2_${count}" style="display:none;"><td colspan="2">VATABLE EWT ${ewtPct} (Assumed by <span class="bd-ewt-co">${ewtCompanyLabel()}</span>)</td>
               <td><textarea class="bd-ewt-unit" rows="1" placeholder="—"
                 oninput="autoResize(this);calcBreakdown('${type}');markUnsaved()"
                 style="border:none;border-bottom:1px solid #fca5a5;width:100%;font-size:.72rem;background:transparent;padding:2px 4px;color:#c0392b;font-style:italic;text-align:center;outline:none;resize:none;overflow:hidden;font-family:inherit;line-height:1.4;min-height:24px;display:block;"></textarea></td>
@@ -2172,6 +2216,10 @@ function addBreakdownSection(type){
             </tr>
             <tr class="no-print">
               <td colspan="5" style="padding:2px 4px;border:none;">
+                <button id="${type}EwtBtn_${count}" onclick="toggleBdEwt('${type}',${count})"
+                  style="font-size:.68rem;color:var(--gray);background:none;border:none;cursor:pointer;padding:2px 12px 2px 0;text-decoration:underline;">
+                  + Add EWT
+                </button>
                 <button id="${type}NotesBtn_${count}" onclick="toggleBdNotes('${type}NotesRow_${count}','${type}NotesBtn_${count}')"
                   style="font-size:.68rem;color:var(--gray);background:none;border:none;cursor:pointer;padding:2px 0;text-decoration:underline;">
                   + Add Notes
@@ -3282,7 +3330,7 @@ function setNeutralTitle(){
     el.innerHTML='<span class="brand-seg" style="color:#7b0d0d;">RTC</span> <span class="brand-seg" style="color:#9ca3af;">/</span> <span class="brand-seg" style="color:#0751d8;">ESC</span> <span class="brand-seg" style="color:var(--dark);">Cost Analysis</span>';
   });
 }
-function onCompanyChange(v){currentCompany=v;applyCompanyTheme(v);markUnsaved();}
+function onCompanyChange(v){currentCompany=v;applyCompanyTheme(v);refreshEwtLabels();markUnsaved();}
 function setPoMode(m){poMode=(poMode===m)?'':m;renderPoUI();markUnsaved();}
 function renderPoUI(){
   const w=document.getElementById('poWithBtn'),o=document.getElementById('poWithoutBtn');
