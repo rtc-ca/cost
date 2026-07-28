@@ -394,6 +394,8 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
 .po-chip{border:1.5px solid var(--border);background:#fff;color:var(--gray);border-radius:14px;padding:3px 10px;font-size:.7rem;font-weight:600;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;}
 .po-chip:hover{border-color:var(--maroon);color:var(--maroon);}
 .po-chip.active{background:var(--maroon);border-color:var(--maroon);color:#fff;}
+.po-chip.po-required-flash{border-color:#c0392b !important;box-shadow:0 0 0 2px rgba(192,57,43,.25);animation:poShake .4s;}
+@keyframes poShake{0%,100%{transform:translateX(0);}25%{transform:translateX(-3px);}75%{transform:translateX(3px);}}
 .po-print{display:none;}
 .company-print{display:none;}
 @media print{
@@ -1767,7 +1769,7 @@ function saveAll(){
   clearTimeout(cloudSaveTimer);
   cloudSaveTimer=setTimeout(()=>saveLocalDraft(),1000);
 }
-function manualSave(){clearTimeout(cloudSaveTimer);cloudSave();}
+function manualSave(){if(!poRequiredOk())return;clearTimeout(cloudSaveTimer);cloudSave();}
 
 /* ══ LOAD ══ */
 function loadDataIntoUI(data){
@@ -2401,10 +2403,12 @@ document.addEventListener('keydown',function(e){
 
 /* ══ EXPORT PDF ══ */
 function exportPDF(){
+  if(!poRequiredOk())return;
   const prev=document.title;
   const client=(document.getElementById('docClient').value||'NoClient').trim().replace(/\s+/g,'').replace(/[^a-zA-Z0-9]/g,'');
   const d=new Date();
-  document.title=`${client}_RTC-CA_${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}-${d.getFullYear()}`;
+  const coTag=ewtCompanyLabel();
+  document.title=`${client}_${coTag}-CA_${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}-${d.getFullYear()}`;
   window.print();
   setTimeout(()=>{document.title=prev;},1500);
 }
@@ -3332,6 +3336,18 @@ function setNeutralTitle(){
 }
 function onCompanyChange(v){currentCompany=v;applyCompanyTheme(v);refreshEwtLabels();markUnsaved();}
 function setPoMode(m){poMode=(poMode===m)?'':m;renderPoUI();markUnsaved();}
+function flashPoRequired(){
+  const w=document.getElementById('poWithBtn'),o=document.getElementById('poWithoutBtn');
+  [w,o].forEach(el=>{if(!el)return;el.classList.add('po-required-flash');setTimeout(()=>el.classList.remove('po-required-flash'),2000);});
+}
+function poRequiredOk(){
+  if(!poMode){
+    showToast('Please select With PO or Without PO before continuing.','error');
+    flashPoRequired();
+    return false;
+  }
+  return true;
+}
 function renderPoUI(){
   const w=document.getElementById('poWithBtn'),o=document.getElementById('poWithoutBtn');
   if(!w||!o)return;
