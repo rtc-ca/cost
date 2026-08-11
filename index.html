@@ -833,8 +833,8 @@ table.cost-table{width:100%;border-collapse:collapse;font-size:.78rem;border:var
       </div>
       <div class="sig-block">
         <div class="sig-space"></div>
-        <input type="text" class="sig-name" id="sigName3" value="RAM MIRCH" placeholder=" " oninput="markUnsaved()">
-        <span class="sig-role">Approved by — CSO</span>
+        <input type="text" class="sig-name" id="sigName3" value="HIREN MIRCHANDANI" placeholder=" " oninput="markUnsaved()">
+        <span class="sig-role">Approved By</span>
       </div>
     </div>
   </div>
@@ -1807,7 +1807,7 @@ function loadDataIntoUI(data){
   document.getElementById('sigName0').value=data.sigName0||'';
   document.getElementById('sigName1').value=data.sigName1||'';
   document.getElementById('sigName2').value=data.sigName2||'';
-  document.getElementById('sigName3').value=data.sigName3||'RAM MIRCH';
+  document.getElementById('sigName3').value=data.sigName3||'HIREN MIRCHANDANI';
   document.getElementById('sigPos0').value=data.sigPos0||'';
   document.getElementById('sigPos1').value=data.sigPos1||'';
   autoResize(document.getElementById('sigPos0'));
@@ -1949,7 +1949,7 @@ function addTab(){
   const id=uid();const num=tabs.length+1;
   const c=loadSigContacts();
   const prep=c.prepared?.[0];const noted=c.noted?.[0];
-  tabs.push({id,quoteId:null,name:`Quote ${num}`,data:{sigName3:'RAM MIRCH',sigName0:prep?.name||'',sigPos0:prep?.pos||'',sigName1:noted?.name||'',sigPos1:noted?.pos||'',rows:[{}]}});
+  tabs.push({id,quoteId:null,name:`Quote ${num}`,data:{sigName3:'HIREN MIRCHANDANI',sigName0:prep?.name||'',sigPos0:prep?.pos||'',sigName1:noted?.name||'',sigPos1:noted?.pos||'',rows:[{}]}});
   activeTabId=id;renderTabs();
   loadDataIntoUI(tabs.find(t=>t.id===id).data);
   addRow();
